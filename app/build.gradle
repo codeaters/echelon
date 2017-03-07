@@ -36,6 +36,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.2.0'
     compile 'com.google.firebase:firebase-database:10.2.0'
     compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
 
     //Butterknife for cutting some code :D
     compile 'com.jakewharton:butterknife:8.5.1'
