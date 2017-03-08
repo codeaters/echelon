@@ -22,6 +22,7 @@ public class EchelonApplication extends Application {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "notes-db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
+
     }
 
     public DaoSession getDaoSession() {
