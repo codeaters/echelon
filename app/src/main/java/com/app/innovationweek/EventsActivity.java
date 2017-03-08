@@ -1,5 +1,6 @@
 package com.app.innovationweek;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,6 +36,9 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //check intent of pus notifications
+        checkIntent(getIntent());
+
         setContentView(R.layout.activity_events);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -45,6 +49,18 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkIntent(intent);
+    }
+
+    private void checkIntent(Intent intent) {
+        if (intent != null && intent.hasExtra("click_action")) {
+            NotificationActionHelper.startActivity(intent.getStringExtra("click_action"), intent.getExtras(), this);
+        }
     }
 
     @Override
