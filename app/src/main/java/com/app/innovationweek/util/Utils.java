@@ -15,4 +15,11 @@ public class Utils {
         SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(context);
         return spf.getBoolean("is_logged_in", false);
     }
+
+    public static String getUid(Context context) {
+        if (context == null)
+            return null;
+        SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(context);
+        return spf.getString("uid", "");
+    }
 }

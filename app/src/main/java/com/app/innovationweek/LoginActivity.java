@@ -188,7 +188,8 @@ public class LoginActivity extends AppCompatActivity {
                                     String uid = user.getUid();
                                     PreferenceManager.getDefaultSharedPreferences
                                             (getApplicationContext()).edit().putBoolean
-                                            ("is_logged_in", true).apply();
+                                            ("is_logged_in", true).putString("uid", user.getUid())
+                                            .apply();
                                     startActivity(new Intent(getApplicationContext(),
                                             EventsActivity.class));
                                     finish();

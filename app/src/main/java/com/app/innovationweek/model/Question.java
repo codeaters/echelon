@@ -136,6 +136,16 @@ public class Question {
         this.imgUri = imgUri;
     }
 
+
+    public long getMaxTime() {
+        return this.maxTime;
+    }
+
+
+    public void setMaxTime(long maxTime) {
+        this.maxTime = maxTime;
+    }
+
     @Id
     private String questionId;
 
@@ -146,6 +156,7 @@ public class Question {
 
     private String fibAnswer;
     private String imgUri;
+    private long maxTime;
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -154,13 +165,14 @@ public class Question {
     /** Used for active entity operations. */
     @Generated(hash = 891254763)
     private transient QuestionDao myDao;
-    @Generated(hash = 1492703747)
-    public Question(String questionId, String questionStatement, String fibAnswer,
-            String imgUri) {
+    @Generated(hash = 356189484)
+    public Question(String questionId, String questionStatement, String fibAnswer, String imgUri,
+            long maxTime) {
         this.questionId = questionId;
         this.questionStatement = questionStatement;
         this.fibAnswer = fibAnswer;
         this.imgUri = imgUri;
+        this.maxTime = maxTime;
     }
 
 
