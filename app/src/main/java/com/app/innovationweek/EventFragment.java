@@ -1,7 +1,9 @@
 package com.app.innovationweek;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,7 @@ import butterknife.ButterKnife;
  * Created by zeeshan on 3/7/2017.
  */
 
-public class EventFragment extends Fragment {
+public class EventFragment extends Fragment implements View.OnClickListener {
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -65,8 +67,8 @@ public class EventFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_EVENT_NAME, event.getName());
         args.putString(ARG_EVENT_DESC, event.getDescription());
-        args.putString(ARG_EVENT_RULES, event.getDescription());
-        args.putLong(ARG_EVENT_START_DATE, event.getStartDate().getTime());
+        args.putString(ARG_EVENT_RULES, event.getRule());
+        args.putLong(ARG_EVENT_START_DATE, event.getStartDate());
         args.putString(ARG_EVENT_ID, event.getId());
         args.putString(ARG_EVENT_ICON_ULR, event.getImageUrl());
         fragment.setArguments(args);
@@ -78,24 +80,31 @@ public class EventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_event, container, false);
-        ButterKnife.bind(rootView);
+        ButterKnife.bind(this, rootView);
         // extract event details from the bundle set in the static method above
         Bundle bundle = getArguments();
-        String eventName, eventDesc, eventRules, eventIconUrl;
+        String eventId, eventName, eventDesc, eventRules, eventIconUrl;
         long eventStartDate;
         eventName = bundle.getString(ARG_EVENT_NAME);
         eventDesc = bundle.getString(ARG_EVENT_DESC);
         eventRules = bundle.getString(ARG_EVENT_RULES);
         eventStartDate = bundle.getLong(ARG_EVENT_START_DATE);
         eventIconUrl = bundle.getString(ARG_EVENT_ICON_ULR);
+        eventId = bundle.getString(ARG_EVENT_ID);
         name.setText(eventName);
         description.setText(eventDesc);
         rules.setText(eventRules);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd, MMM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM");
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(eventStartDate);
-        startDate.setText(dateFormat.format(cal.getTime()));
-        Picasso.with(getActivity().getApplicationContext()).load(eventIconUrl).into(icon);
+        startDate.setText(getString(R.string.event_date, dateFormat.format(cal.getTime())));
+        Picasso.with(getActivity().getApplicationContext()).load(eventIconUrl).placeholder
+                (ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event)).into(icon);
+        if (eventId.equals("event_id3"))
+            gotoEvent.setVisibility(View.VISIBLE);
+        else
+            gotoEvent.setVisibility(View.GONE);
+        gotoEvent.setOnClickListener(this);
         return rootView;
     }
 
@@ -103,5 +112,17 @@ public class EventFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.goto_event:
+                Intent intent = new Intent(getActivity(), QuestionActivity.class);
+                intent.putExtra("quiz_id", "questions");
+                intent.putExtra("question_id", "qid1");
+                startActivity(intent);
+                break;
+        }
     }
 }

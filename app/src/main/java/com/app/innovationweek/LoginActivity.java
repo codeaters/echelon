@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         ButterKnife.bind(this);
 
         mAuth = FirebaseAuth.getInstance();
@@ -107,7 +108,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -249,6 +249,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        checkIntent(getIntent());
         if (Utils.isLoggedIn(getApplicationContext())) {
             startActivity(new Intent(getApplicationContext(), EventsActivity.class));
             finish();
@@ -261,6 +262,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+
+    private void checkIntent(Intent intent) {
+        Log.d(TAG, "oin check intent" + intent.toString());
+        if (intent != null && intent.hasExtra("quiz_id") && intent.hasExtra("question_id")) {
+            Log.d(TAG, "check intent" + intent.getStringExtra("quiz_id") + intent.getStringExtra
+                    ("question_id"));
+            Intent newIntent = new Intent(this, QuestionActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("quiz_id", intent.getStringExtra("questions"));
+            bundle.putString("question_id", intent.getStringExtra("qid1"));
+            intent.putExtras(bundle);
+            startActivity(intent);
+            finish();
         }
     }
 

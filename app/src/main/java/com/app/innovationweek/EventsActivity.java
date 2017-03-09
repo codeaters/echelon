@@ -1,7 +1,7 @@
 package com.app.innovationweek;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,14 +10,32 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
+import com.app.innovationweek.model.dao.EventDao;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class EventsActivity extends AppCompatActivity implements LoaderManager
         .LoaderCallbacks<List<Event>> {
+    public static final String TAG = EventsActivity.class.getSimpleName();
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    @BindView(R.id.container)
+    ViewPager mViewPager;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -27,41 +45,67 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private EventsActivity.SectionsPagerAdapter mSectionsPagerAdapter;
+    private DatabaseReference eventsRef;
+    private ChildEventListener eventListener;
+    private EventDao eventDao;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    {
+        eventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "events" + dataSnapshot);
+                if (dataSnapshot.getValue() != null) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    event.setId(dataSnapshot.getKey());
+                    eventDao.insertOrReplace(event);
+                    EventsActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //check intent of pus notifications
-        checkIntent(getIntent());
-
         setContentView(R.layout.activity_events);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), null);
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        tabLayout.setupWithViewPager(mViewPager);
         getSupportLoaderManager().initLoader(0, null, this);
+        eventsRef = FirebaseDatabase.getInstance().getReference("events");
+        eventsRef.addChildEventListener(eventListener);
+        eventDao = ((EchelonApplication) getApplication()).getDaoSession().getEventDao();
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        checkIntent(intent);
-    }
-
-    private void checkIntent(Intent intent) {
-        if (intent != null && intent.hasExtra("click_action")) {
-            NotificationActionHelper.startActivity(intent.getStringExtra("click_action"), intent.getExtras(), this);
-        }
-    }
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
@@ -108,15 +152,7 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+            return events.get(position).getName();
         }
 
         public void setEvents(List<Event> events) {

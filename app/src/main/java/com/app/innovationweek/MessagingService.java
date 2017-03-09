@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class MessagingService extends FirebaseMessagingService {
 
-    private static final String TAG= "MessagingService";
+    private static final String TAG = MessagingService.class.getSimpleName();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {

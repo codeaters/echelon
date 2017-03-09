@@ -2,6 +2,7 @@ package com.app.innovationweek.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
 /**
@@ -21,5 +22,12 @@ public class Utils {
             return null;
         SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(context);
         return spf.getString("uid", "");
+    }
+
+    public static boolean isInternetConnected(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+
     }
 }

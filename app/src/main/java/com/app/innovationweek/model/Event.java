@@ -17,11 +17,11 @@ public class Event {
     private String imageUrl;
     private String name;
     private String description;
-    private Date startDate;
+    private long startDate;
     private String rule;
-    @Generated(hash = 38598731)
+    @Generated(hash = 831176215)
     public Event(String id, String imageUrl, String name, String description,
-            Date startDate, String rule) {
+            long startDate, String rule) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.name = name;
@@ -56,10 +56,10 @@ public class Event {
     public void setDescription(String description) {
         this.description = description;
     }
-    public Date getStartDate() {
+    public long getStartDate() {
         return this.startDate;
     }
-    public void setStartDate(Date startDate) {
+    public void setStartDate(long startDate) {
         this.startDate = startDate;
     }
     public String getRule() {
@@ -68,4 +68,5 @@ public class Event {
     public void setRule(String rule) {
         this.rule = rule;
     }
+
 }
