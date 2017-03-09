@@ -33,6 +33,8 @@ import com.google.firebase.auth.FirebaseUser;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static java.lang.System.out;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -249,9 +251,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        checkIntent(getIntent());
         if (Utils.isLoggedIn(getApplicationContext())) {
-            startActivity(new Intent(getApplicationContext(), EventsActivity.class));
+            checkIntentForNotificationLaunch(getIntent());
+
+            //startActivity(new Intent(this, EventsActivity.class));
             finish();
         }
         mAuth.addAuthStateListener(mAuthListener);
@@ -266,17 +269,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void checkIntent(Intent intent) {
-        Log.d(TAG, "oin check intent" + intent.toString());
+    private void checkIntentForNotificationLaunch(Intent intent) {
+        System.out.println("inside check intent" + intent.toString());
+        Log.d(TAG, "inside check intent" + intent.toString());
         if (intent != null && intent.hasExtra("quiz_id") && intent.hasExtra("question_id")) {
-            Log.d(TAG, "check intent" + intent.getStringExtra("quiz_id") + intent.getStringExtra
+            Log.d(TAG, "check intent: " + intent.getStringExtra("quiz_id") + intent.getStringExtra
+                    ("question_id"));
+            System.out.println("check intent: " + intent.getStringExtra("quiz_id") + intent.getStringExtra
                     ("question_id"));
             Intent newIntent = new Intent(this, QuestionActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("quiz_id", intent.getStringExtra("questions"));
             bundle.putString("question_id", intent.getStringExtra("qid1"));
             intent.putExtras(bundle);
+            Log.d(TAG, "Starting Activity: " + QuestionActivity.class);
+            out.println("Starting Activity: " + QuestionActivity.class);
             startActivity(intent);
+            out.println("After Starting Activity: " + QuestionActivity.class);
             finish();
         }
     }

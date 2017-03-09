@@ -321,7 +321,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void saveResponse(final String checkedOptionKey) {
-        //TODO save Response for now stimulating network request
+        //TODO save Response for now simulating network request
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -339,7 +339,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             protected void onPostExecute(Void aVoid) {
                 String msg;
                 if (checkedOptionKey != null && !checkedOptionKey.isEmpty()) {
-                    if (((String) optionRadioGroup.getTag()).equals(checkedOptionKey)) {
+                    if (optionRadioGroup.getTag().equals(checkedOptionKey)) {
                         msg = "You marked the RIGHT answer";
                     } else {
                         msg = "You marked the WRONG answer";
