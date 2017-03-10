@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="This is IEEE paper presentation be ware of dogs!!"
+            android:text="This is IEEE paper presentation beware of dogs!!"
             android:textAppearance="?android:textAppearanceListItem"/>
 
         <TextView

@@ -8,21 +8,23 @@
         android:id="@+id/image"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/ic_play_light"/>
-    <TextView android:layout_width="match_parent"
+        android:src="@drawable/ic_face_red_400_48dp" />
+
+    <TextView
         android:id="@+id/name"
-        android:padding="5dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:textAppearance="?android:textAppearanceListItem"
         android:layout_toEndOf="@+id/image"
+        android:padding="5dp"
         tools:text="Firstname Lastname"
+        tools:textAppearance="?android:textAppearanceListItem"
         />
     <TextView android:layout_width="match_parent"
-        android:padding="5dp"
         android:layout_height="wrap_content"
-        tools:textAppearance="?android:textAppearanceListItemSecondary"
-        android:layout_toEndOf="@+id/image"
         android:layout_below="@+id/name"
+        android:layout_toEndOf="@+id/image"
+        android:padding="5dp"
         tools:text="Score: 1234"
+        tools:textAppearance="?android:textAppearanceListItemSecondary"
         />
 </RelativeLayout>
