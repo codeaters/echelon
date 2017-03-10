@@ -199,7 +199,11 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
+            // The first fragment must be a What's new fragment, which lists all the small events
+            if(position ==0)
+                return NewsFragment.newInstance("1","2");
+            else
+
             return EventFragment.newInstance(events.get(position));
         }
 

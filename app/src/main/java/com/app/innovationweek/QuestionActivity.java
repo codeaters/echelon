@@ -75,7 +75,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
     /**
      * The question this activity is showing
-     * TODO: DO NOT USE THIS instance variable yet
+     *
      */
     private Question question;
 
@@ -89,9 +89,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 question = dataSnapshot.getValue(Question.class);
 
                 resonseRef.addListenerForSingleValueEvent(responseListener);
-                //
-
-                //todo: hide progress
 
             }
 
@@ -99,7 +96,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "Question Listener", databaseError.toException());
-                //todo: hide progress
             }
         };
         responseListener = new ValueEventListener() {
@@ -169,7 +165,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 quizId = bundle.getString("quiz_id");
                 questionId = bundle.getString("question_id");
                 Log.d(TAG, "Question ID is:" + questionId + " " + quizId);
-            }//TOOD: show messages aleady answered or yet to appear
+            }//TODO: show messages aleady answered or yet to appear
         } else {
             quizId = savedInstanceState.getString("quiz_id");
             questionId = savedInstanceState.getString("question_id");
@@ -229,13 +225,13 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         } else {
             // set the options
             int i = 0;
-            for (Map.Entry<String, Option> oentry : question.getOptions().entrySet()) {
+            for (Map.Entry<String, Option> entry : question.getOptions().entrySet()) {
 
                 RadioButton radioButton = ((RadioButton) optionRadioGroup.getChildAt(i++));
-                radioButton.setText(oentry.getValue().getValue());
-                radioButton.setTag(oentry.getKey());
-                if (oentry.getValue().getCorrect())
-                    optionRadioGroup.setTag(oentry.getKey());
+                radioButton.setText(entry.getValue().getValue());
+                radioButton.setTag(entry.getKey());
+                if (entry.getValue().getCorrect())
+                    optionRadioGroup.setTag(entry.getKey());
             }
             // show the options
             optionRadioGroup.setVisibility(View.VISIBLE);
@@ -254,7 +250,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     .into(questionImageView, new Callback() {
                         @Override
                         public void onSuccess() {
-//                            startTimer();
+//                            //startTimer();
                         }
 
                         @Override

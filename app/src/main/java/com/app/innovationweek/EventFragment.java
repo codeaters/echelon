@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +40,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_EVENT_START_DATE = "event_date";
     private static final String ARG_EVENT_ID = "event_id";
     private static final String ARG_EVENT_ICON_ULR = "icon_url";
+    private static final String ARG_EVENT = "event";
 
     @BindView(R.id.name)
     TextView name;
@@ -55,6 +57,11 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     @BindView(R.id.leaderboard)
     Button leaderboard;
 
+    /**
+     * The event model being displayed in this Fragment
+     */
+    private Event event;
+
     public EventFragment() {
     }
 
@@ -65,12 +72,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     public static EventFragment newInstance(Event event) {
         EventFragment fragment = new EventFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_EVENT_NAME, event.getName());
-        args.putString(ARG_EVENT_DESC, event.getDescription());
-        args.putString(ARG_EVENT_RULES, event.getRule());
-        args.putLong(ARG_EVENT_START_DATE, event.getStartDate());
-        args.putString(ARG_EVENT_ID, event.getId());
-        args.putString(ARG_EVENT_ICON_ULR, event.getImageUrl());
+        args.putParcelable(ARG_EVENT, event);
         fragment.setArguments(args);
         //TODO: fetch this info in fragment and populate the data accordingly
         return fragment;
@@ -83,24 +85,19 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         ButterKnife.bind(this, rootView);
         // extract event details from the bundle set in the static method above
         Bundle bundle = getArguments();
-        String eventId, eventName, eventDesc, eventRules, eventIconUrl;
-        long eventStartDate;
-        eventName = bundle.getString(ARG_EVENT_NAME);
-        eventDesc = bundle.getString(ARG_EVENT_DESC);
-        eventRules = bundle.getString(ARG_EVENT_RULES);
-        eventStartDate = bundle.getLong(ARG_EVENT_START_DATE);
-        eventIconUrl = bundle.getString(ARG_EVENT_ICON_ULR);
-        eventId = bundle.getString(ARG_EVENT_ID);
-        name.setText(eventName);
-        description.setText(eventDesc);
-        rules.setText(eventRules);
+        event = bundle.getParcelable(ARG_EVENT);
+
+        name.setText(event.getName());
+        description.setText(event.getDescription());
+        rules.setText(event.getRules().toString());
         SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM");
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(eventStartDate);
-        startDate.setText(getString(R.string.event_date, dateFormat.format(cal.getTime())));
-        Picasso.with(getActivity().getApplicationContext()).load(eventIconUrl).placeholder
+        startDate.setText(getString(R.string.event_date, dateFormat.format(new Date(event.getStartDate()))));
+        if(event.getImageUrl()!= null)
+        Picasso.with(getActivity().getApplicationContext()).load(event.getImageUrl()).placeholder
                 (ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event)).into(icon);
-        if (eventId.equals("event_id3"))
+        else
+        icon.setImageDrawable(ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event));
+        if (event.getId().equals("event_id3"))
             gotoEvent.setVisibility(View.VISIBLE);
         else
             gotoEvent.setVisibility(View.GONE);
