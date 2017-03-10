@@ -29,22 +29,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="starts on 23 Mar 2017"/>
+            android:text="Starts on Wed, 23 Mar"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Description"
+            android:textAppearance="?android:textAppearanceSmall"/>
 
         <TextView
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="This is IEEE paper presentation beware of dogs!!"
             android:textAppearance="?android:textAppearanceListItem"/>
 
         <TextView
-            android:id="@+id/rules"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Only original idea"
+            android:text="Rules"
+            android:textAppearance="?android:textAppearanceSmall"/>
+
+        <TextView
+            android:id="@+id/rules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Only original idea \nNo Cheating"
             android:textAppearance="?android:textAppearanceListItem"/>
 
         <Button
