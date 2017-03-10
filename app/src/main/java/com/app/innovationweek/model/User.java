@@ -12,10 +12,12 @@ public class User {
     @Id
     private String id;
     private String name;
-    @Generated(hash = 1037321026)
-    public User(String id, String name) {
+    private String team;
+    @Generated(hash = 297613350)
+    public User(String id, String name, String team) {
         this.id = id;
         this.name = name;
+        this.team = team;
     }
     @Generated(hash = 586692638)
     public User() {
@@ -32,4 +34,11 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+    public String getTeam() {
+        return this.team;
+    }
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
 }
