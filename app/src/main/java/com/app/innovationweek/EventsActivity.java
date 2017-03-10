@@ -11,6 +11,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
@@ -27,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EventsActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Event>> {
+        .LoaderCallbacks<List<Event>>, View.OnClickListener {
     public static final String TAG = EventsActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -36,6 +39,16 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
     ViewPager mViewPager;
     @BindView(R.id.tabs)
     TabLayout tabLayout;
+    @BindView(R.id.progress)
+    View progress;
+    @BindView(R.id.progress_msg)
+    TextView progressMsg;
+    @BindView(R.id.error)
+    View error;
+    @BindView(R.id.error_msg)
+    TextView errorMsg;
+    @BindView(R.id.retry)
+    Button retry;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -53,18 +66,26 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
         eventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "events" + dataSnapshot);
+                Log.d(TAG, "event added" + dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
                     Event event = dataSnapshot.getValue(Event.class);
                     event.setId(dataSnapshot.getKey());
                     eventDao.insertOrReplace(event);
-                    EventsActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+                    EventsActivity.this.getSupportLoaderManager().restartLoader(0, null,
+                            EventsActivity.this);
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                Log.d(TAG, "event changed" + dataSnapshot);
+                if (dataSnapshot.getValue() != null) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    event.setId(dataSnapshot.getKey());
+                    eventDao.insertOrReplace(event);
+                    EventsActivity.this.getSupportLoaderManager().restartLoader(0, null,
+                            EventsActivity.this);
+                }
             }
 
             @Override
@@ -89,6 +110,7 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
         ButterKnife.bind(this);
+        retry.setOnClickListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -99,28 +121,66 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-        getSupportLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
-        eventsRef.addChildEventListener(eventListener);
         eventDao = ((EchelonApplication) getApplication()).getDaoSession().getEventDao();
+        showProgress(null);
     }
 
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         EventAsyncTaskLoader loader = new EventAsyncTaskLoader(getApplicationContext());
+        Log.d(TAG, "loader created");
         return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
+        Log.d(TAG, "loading fininshed");
         mSectionsPagerAdapter.setEvents(data);
         mSectionsPagerAdapter.notifyDataSetChanged();
+        hideProgress(false, null);
+        eventsRef.addChildEventListener(eventListener);
     }
 
     @Override
     public void onLoaderReset(Loader<List<Event>> loader) {
+        Log.d(TAG, "loader reset");
+    }
 
+    private void showProgress(String msg) {
+        if (progressMsg != null)
+            progressMsg.setText(msg == null || msg.isEmpty() ? getString(R.string.loading_event) : msg);
+        mViewPager.setVisibility(View.GONE);
+        progress.setVisibility(View.VISIBLE);
+
+    }
+
+    private void hideProgress(boolean showError, String errorMsg) {
+        if (showError) {
+            if (error != null) error.setVisibility(View.VISIBLE);
+            if (mViewPager != null) mViewPager.setVisibility(View.GONE);
+            if (progress != null) progress.setVisibility(View.GONE);
+            if (this.errorMsg != null)
+                this.errorMsg.setText(errorMsg == null || errorMsg.isEmpty() ?
+                        getString(R.string.error_general) : errorMsg);
+        } else {
+            if (mViewPager != null) mViewPager.setVisibility(View.VISIBLE);
+            if (progress != null) progress.setVisibility(View.GONE);
+            if (error != null) error.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.retry:
+                Log.d(TAG, "trying again");
+                break;
+            default:
+                Log.d(TAG, "click not implemented");
+        }
     }
 
     /**

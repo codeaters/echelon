@@ -22,10 +22,13 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="event_date">Starts on %1$s</string>
 
+    <string name="error_general">operation failed! retry</string>
+
     <string name="timer_msg">You have %1$d minutes %2$d seconds to answer this question</string>
     <string name="timer_msg_sec">You have %1$d seconds to answer this question</string>
     <string name="timer_expire">Time expired for this question</string>
     <string name="loading_question">Hold on !! loading the question for you..</string>
+    <string name="loading_event">Hold on !! loading events for you..</string>
     <string name="internet_unavailable">You need working internet connection for this</string>
     <string name="loading">loading please wait..</string>
     <string name="saving_response">submitting your response, please wait..</string>

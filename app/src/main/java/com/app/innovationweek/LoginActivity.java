@@ -33,8 +33,6 @@ import com.google.firebase.auth.FirebaseUser;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static java.lang.System.out;
-
 /**
  * A login screen that offers login via email/password.
  */
@@ -252,10 +250,14 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (Utils.isLoggedIn(getApplicationContext())) {
-            checkIntentForNotificationLaunch(getIntent());
-
-            //startActivity(new Intent(this, EventsActivity.class));
-            finish();
+            if (!checkIntentForNotificationLaunch(getIntent())) {
+                Intent newIntent = new Intent(this, EventsActivity.class);
+                startActivity(newIntent);
+                finish();
+            }else{
+                //the function checkIntentForNotificationLaunch already called finish() on this
+                // activity
+            }
         }
         mAuth.addAuthStateListener(mAuthListener);
     }
@@ -269,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void checkIntentForNotificationLaunch(Intent intent) {
+    private boolean checkIntentForNotificationLaunch(Intent intent) {
         System.out.println("inside check intent" + intent.toString());
         Log.d(TAG, "inside check intent" + intent.toString());
         if (intent != null && intent.hasExtra("quiz_id") && intent.hasExtra("question_id")) {
@@ -283,12 +285,13 @@ public class LoginActivity extends AppCompatActivity {
             bundle.putString("question_id", intent.getStringExtra("qid1"));
             intent.putExtras(bundle);
             Log.d(TAG, "Starting Activity: " + QuestionActivity.class);
-            out.println("Starting Activity: " + QuestionActivity.class);
-            startActivity(intent);
-            out.println("After Starting Activity: " + QuestionActivity.class);
-            finish();
+            startActivity(newIntent);
+            Log.d(TAG, "After Starting Activity: " + QuestionActivity.class);
+            return true;
         }
+        return false;
     }
+
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
