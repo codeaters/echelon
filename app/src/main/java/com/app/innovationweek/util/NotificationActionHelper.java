@@ -1,4 +1,4 @@
-package com.app.innovationweek;
+package com.app.innovationweek.util;
 
 import android.content.Context;
 import android.content.Intent;

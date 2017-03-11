@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.app.innovationweek.adapter.NewsAdapter;
+import com.app.innovationweek.loader.NewsAsyncTaskLoader;
 import com.app.innovationweek.model.News;
 import com.app.innovationweek.model.dao.NewsDao;
 import com.google.firebase.database.ChildEventListener;

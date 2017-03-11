@@ -1,4 +1,4 @@
-package com.app.innovationweek;
+package com.app.innovationweek.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.app.innovationweek.R;
 import com.app.innovationweek.model.News;
 import com.app.innovationweek.model.holder.NewsHolder;
 import com.squareup.picasso.Picasso;
