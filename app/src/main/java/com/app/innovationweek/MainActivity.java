@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Object>>, View.OnClickListener {
+        .LoaderCallbacks<List<Event>>, View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -132,14 +132,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
 
     @Override
-    public Loader<List<Object>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         EventAsyncTaskLoader loader = new EventAsyncTaskLoader(getApplicationContext());
         Log.d(TAG, "loader created");
         return loader;
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Object>> loader, List<Object> data) {
+    public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
         Log.d(TAG, "loading finished");
         mSectionsPagerAdapter.setPages(data);
         mSectionsPagerAdapter.notifyDataSetChanged();
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Object>> loader) {
+    public void onLoaderReset(Loader<List<Event>> loader) {
         Log.d(TAG, "loader reset");
     }
 
@@ -192,9 +192,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Object> pages = new ArrayList<>();
+        private List<Event> pages = new ArrayList<>();
 
-        public SectionsPagerAdapter(FragmentManager fm, List<Object> pages) {
+        public SectionsPagerAdapter(FragmentManager fm, List<Event> pages) {
             super(fm);
             this.pages = pages;
         }
@@ -206,21 +206,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             if (position == 0)
                 return NewsFragment.newInstance("!", "2");
             else
-                return EventFragment.newInstance((Event) pages.get(position));
+                return EventFragment.newInstance(pages.get(position - 1));
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return pages == null ? 0 : pages.size();
+            // Show number of events and a news page
+            return pages == null ? 1 : pages.size() + 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return ((Event) pages.get(position)).getName();
+            if (position == 0)
+                return "News";
+            return pages.get(position-1).getName();
         }
 
-        public void setPages(List<Object> pages) {
+        public void setPages(List<Event> pages) {
             this.pages = pages;
         }
     }

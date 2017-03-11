@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,7 +31,7 @@ import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
- *
+ * <p>
  * Use the {@link NewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -49,7 +50,7 @@ public class NewsFragment extends Fragment implements LoaderManager
     //Firebase variables
     private DatabaseReference mDatabaseReference;
     private ChildEventListener newsListener;
-
+    private NewsAdapter newsAdapter;
     private NewsDao newsDao;
 
     {
@@ -146,13 +147,13 @@ public class NewsFragment extends Fragment implements LoaderManager
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =inflater.inflate(R.layout.fragment_news, container, false);
-        ButterKnife.bind(this,rootView);
+        View rootView = inflater.inflate(R.layout.fragment_news, container, false);
+        ButterKnife.bind(this, rootView);
 
-        NewsAdapter newsAdapter = new NewsAdapter(getActivity().getApplicationContext());
+        newsAdapter = new NewsAdapter(getActivity().getApplicationContext(), new ArrayList<News>());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new NewsAdapter(getActivity()));
+        recyclerView.setAdapter(newsAdapter);
 
         getActivity().getSupportLoaderManager().initLoader(1, null, this).forceLoad();
 
