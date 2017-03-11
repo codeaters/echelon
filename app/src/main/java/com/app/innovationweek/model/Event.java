@@ -3,19 +3,19 @@ package com.app.innovationweek.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
+import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.model.dao.EventDao;
+import com.app.innovationweek.model.dao.RuleDao;
 
-import java.util.Date;
+import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.ToMany;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.ToMany;
-import org.greenrobot.greendao.DaoException;
-import com.app.innovationweek.model.dao.DaoSession;
-import com.app.innovationweek.model.dao.RuleDao;
-import com.app.innovationweek.model.dao.EventDao;
 
 
 /**
@@ -23,45 +23,6 @@ import com.app.innovationweek.model.dao.EventDao;
  */
 @Entity
 public class Event implements Parcelable{
-    @Id
-    private String id;
-    private String imageUrl;
-    private String name;
-    private String description;
-    private long startDate;
-
-    @ToMany(referencedJoinProperty = "eventId")
-    private List<Rule> rules;
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 1542254534)
-    private transient EventDao myDao;
-
-    @Generated(hash = 1670786169)
-    public Event(String id, String imageUrl, String name, String description,
-            long startDate) {
-        this.id = id;
-        this.imageUrl = imageUrl;
-        this.name = name;
-        this.description = description;
-        this.startDate = startDate;
-    }
-
-    @Generated(hash = 344677835)
-    public Event() {
-    }
-
-    protected Event(Parcel in) {
-        id = in.readString();
-        imageUrl = in.readString();
-        name = in.readString();
-        description = in.readString();
-        startDate = in.readLong();
-        rules = in.createTypedArrayList(Rule.CREATOR);
-    }
-
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -73,6 +34,56 @@ public class Event implements Parcelable{
             return new Event[size];
         }
     };
+    @Id
+    private String id;
+    private String imageUrl;
+    private String name;
+    private String description;
+    private long startDate;
+    @ToMany(referencedJoinProperty = "eventId")
+    private List<Rule> rules;
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    /** Used for active entity operations. */
+    @Generated(hash = 1542254534)
+    private transient EventDao myDao;
+
+    protected Event(Parcel in) {
+        id = in.readString();
+        imageUrl = in.readString();
+        name = in.readString();
+        description = in.readString();
+        startDate = in.readLong();
+        in.readTypedList(rules, Rule.CREATOR);
+    }
+    @Generated(hash = 1670786169)
+    public Event(String id, String imageUrl, String name, String description,
+            long startDate) {
+        this.id = id;
+        this.imageUrl = imageUrl;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+    }
+    @Generated(hash = 344677835)
+    public Event() {
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(imageUrl);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeLong(startDate);
+        dest.writeTypedList(rules);
+    }
 
     public String getId() {
         return this.id;
@@ -136,6 +147,17 @@ public class Event implements Parcelable{
         return rules;
     }
 
+    public void setRules(Map<String, Rule> rules) {
+        this.rules = new ArrayList<>();
+        for (Map.Entry<String, Rule> ruleEntry : rules.entrySet()) {
+            String id = ruleEntry.getKey();
+            Rule rule = ruleEntry.getValue();
+            rule.setId(id);
+            this.rules.add(rule);
+
+        }
+    }
+
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
@@ -183,20 +205,5 @@ public class Event implements Parcelable{
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getEventDao() : null;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(imageUrl);
-        dest.writeString(name);
-        dest.writeString(description);
-        dest.writeLong(startDate);
-        dest.writeTypedList(rules);
     }
 }

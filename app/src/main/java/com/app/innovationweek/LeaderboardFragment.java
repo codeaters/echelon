@@ -25,15 +25,13 @@ public class LeaderboardFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    //@BindView(R.id.leaderboard_title)
+    TextView leaderBoardTitle;
+    @BindView(R.id.leaderboard_recycler_view)
+    RecyclerView recyclerView;
 
     public LeaderboardFragment() {
     }
-
-    @BindView(R.id.leaderboard_title)
-    TextView leaderBoardTitle;
-
-    @BindView(R.id.leaderboard_recycler_view)
-    RecyclerView recyclerView;
 
     /**
      * Returns a new instance of this fragment for the given section

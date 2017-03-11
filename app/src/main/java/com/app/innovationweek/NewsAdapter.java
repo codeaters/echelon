@@ -1,7 +1,6 @@
 package com.app.innovationweek;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.innovationweek.model.News;
@@ -47,12 +46,5 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    private static class NewsHolder extends RecyclerView.ViewHolder{
 
-
-
-        public NewsHolder(View itemView) {
-            super(itemView);
-        }
-    }
 }

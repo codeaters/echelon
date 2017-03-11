@@ -60,6 +60,7 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
     private EventsActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private DatabaseReference eventsRef;
     private ChildEventListener eventListener;
+
     private EventDao eventDao;
 
     {
@@ -103,6 +104,7 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
 
             }
         };
+
     }
 
     @Override
@@ -200,11 +202,11 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // The first fragment must be a What's new fragment, which lists all the small events
-            if(position ==0)
+            //if(position ==0)
                 return NewsFragment.newInstance("1","2");
-            else
+            //else
 
-            return EventFragment.newInstance(events.get(position));
+            //return EventFragment.newInstance(events.get(position));
         }
 
         @Override
