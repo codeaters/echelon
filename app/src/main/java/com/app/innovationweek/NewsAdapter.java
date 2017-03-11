@@ -70,8 +70,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         NewsHolder newsHolder = (NewsHolder) holder;
 
+        Log.d(TAG, "Image URI is: " + news.getImgUrl());
         if (news.getImgUrl() != null)
-            Picasso.with(context).load(news.getImgUrl()).into(newsHolder.image);
+            Picasso.with(context).load(news.getImgUrl()).placeholder(R.drawable.loading_placeholder).into(newsHolder.image);
         else
             Picasso.with(context).load(R.drawable.loading_placeholder).into(newsHolder.image);
         newsHolder.content.setText(news.getContent());
