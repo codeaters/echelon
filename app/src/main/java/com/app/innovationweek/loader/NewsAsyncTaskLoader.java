@@ -1,9 +1,10 @@
-package com.app.innovationweek;
+package com.app.innovationweek.loader;
 
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.app.innovationweek.EchelonApplication;
 import com.app.innovationweek.model.News;
 
 import java.util.List;
