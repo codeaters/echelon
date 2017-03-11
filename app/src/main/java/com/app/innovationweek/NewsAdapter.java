@@ -73,7 +73,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (news.getImgUrl() != null)
             Picasso.with(context).load(news.getImgUrl()).into(newsHolder.image);
         else
-            newsHolder.image.setImageBitmap(null);
+            Picasso.with(context).load(R.drawable.loading_placeholder).into(newsHolder.image);
         newsHolder.content.setText(news.getContent());
         newsHolder.time.setText(simpleDateFormat.format(new Date(news.getTimestamp())));
 

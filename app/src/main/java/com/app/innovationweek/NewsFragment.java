@@ -60,9 +60,11 @@ public class NewsFragment extends Fragment implements LoaderManager
                 News news = dataSnapshot.getValue(News.class);
                 news.setNewsId(dataSnapshot.getKey());
                 NewsAdapter newsAdapter = ((NewsAdapter) recyclerView.getAdapter());
-                newsAdapter.getNewsList().add(0, news);
-                newsAdapter.notifyItemInserted(0);
-                newsDao.insertOrReplace(news);
+                if (!newsAdapter.getNewsList().contains(news)) {
+                    newsAdapter.getNewsList().add(0, news);
+                    newsAdapter.notifyItemInserted(0);
+                    newsDao.insertOrReplace(news);
+                }
 
                 Log.d(TAG, news.toString());
             }
