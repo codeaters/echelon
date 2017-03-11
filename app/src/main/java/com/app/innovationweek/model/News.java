@@ -53,6 +53,11 @@ public class News implements Parcelable{
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return this == obj || (obj != null && obj instanceof News && ((News) obj).getNewsId().equals(this.newsId));
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

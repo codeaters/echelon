@@ -29,17 +29,17 @@
             android:label="QuestionActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".EventsActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_events"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LeaderboardActivity"
             android:label="@string/title_activity_leaderboard"
-            android:parentActivityName=".EventsActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.app.innovationweek.EventsActivity" />
+                android:value="com.app.innovationweek.MainActivity" />
         </activity>
 
 

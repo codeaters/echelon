@@ -3,9 +3,11 @@ package com.app.innovationweek.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * Created by n188851 on 10-03-2017.
@@ -13,13 +15,23 @@ import org.greenrobot.greendao.annotation.Generated;
 
 
 @Entity
+@IgnoreExtraProperties
 public class Rule implements Parcelable{
 
+    public static final Creator<Rule> CREATOR = new Creator<Rule>() {
+        @Override
+        public Rule createFromParcel(Parcel in) {
+            return new Rule(in);
+        }
+
+        @Override
+        public Rule[] newArray(int size) {
+            return new Rule[size];
+        }
+    };
     @Id
     private String id;
-
     private String rule;
-
     private String eventId;
 
     @Generated(hash = 1028662984)
@@ -38,18 +50,6 @@ public class Rule implements Parcelable{
         rule = in.readString();
         eventId = in.readString();
     }
-
-    public static final Creator<Rule> CREATOR = new Creator<Rule>() {
-        @Override
-        public Rule createFromParcel(Parcel in) {
-            return new Rule(in);
-        }
-
-        @Override
-        public Rule[] newArray(int size) {
-            return new Rule[size];
-        }
-    };
 
     public String getId() {
         return this.id;

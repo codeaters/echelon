@@ -24,14 +24,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EventsActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Event>>, View.OnClickListener {
-    public static final String TAG = EventsActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity implements LoaderManager
+        .LoaderCallbacks<List<Object>>, View.OnClickListener {
+    public static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -57,7 +58,7 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private EventsActivity.SectionsPagerAdapter mSectionsPagerAdapter;
+    private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private DatabaseReference eventsRef;
     private ChildEventListener eventListener;
 
@@ -72,8 +73,8 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
                     Event event = dataSnapshot.getValue(Event.class);
                     event.setId(dataSnapshot.getKey());
                     eventDao.insertOrReplace(event);
-                    EventsActivity.this.getSupportLoaderManager().restartLoader(0, null,
-                            EventsActivity.this);
+                    MainActivity.this.getSupportLoaderManager().restartLoader(0, null,
+                            MainActivity.this);
                 }
             }
 
@@ -84,8 +85,8 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
                     Event event = dataSnapshot.getValue(Event.class);
                     event.setId(dataSnapshot.getKey());
                     eventDao.insertOrReplace(event);
-                    EventsActivity.this.getSupportLoaderManager().restartLoader(0, null,
-                            EventsActivity.this);
+                    MainActivity.this.getSupportLoaderManager().restartLoader(0, null,
+                            MainActivity.this);
                 }
             }
 
@@ -131,23 +132,23 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
 
 
     @Override
-    public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Object>> onCreateLoader(int id, Bundle args) {
         EventAsyncTaskLoader loader = new EventAsyncTaskLoader(getApplicationContext());
         Log.d(TAG, "loader created");
         return loader;
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        Log.d(TAG, "loading fininshed");
-        mSectionsPagerAdapter.setEvents(data);
+    public void onLoadFinished(Loader<List<Object>> loader, List<Object> data) {
+        Log.d(TAG, "loading finished");
+        mSectionsPagerAdapter.setPages(data);
         mSectionsPagerAdapter.notifyDataSetChanged();
         hideProgress(false, null);
         eventsRef.addChildEventListener(eventListener);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Event>> loader) {
+    public void onLoaderReset(Loader<List<Object>> loader) {
         Log.d(TAG, "loader reset");
     }
 
@@ -191,37 +192,36 @@ public class EventsActivity extends AppCompatActivity implements LoaderManager
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Event> events;
+        private List<Object> pages = new ArrayList<>();
 
-        public SectionsPagerAdapter(FragmentManager fm, List<Event> events) {
+        public SectionsPagerAdapter(FragmentManager fm, List<Object> pages) {
             super(fm);
-            this.events = events;
+            this.pages = pages;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // The first fragment must be a What's new fragment, which lists all the small events
-            //if(position ==0)
-                return NewsFragment.newInstance("1","2");
-            //else
-
-            //return EventFragment.newInstance(events.get(position));
+            if (position == 0)
+                return NewsFragment.newInstance("!", "2");
+            else
+                return EventFragment.newInstance((Event) pages.get(position));
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return events == null ? 0 : events.size();
+            return pages == null ? 0 : pages.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return events.get(position).getName();
+            return ((Event) pages.get(position)).getName();
         }
 
-        public void setEvents(List<Event> events) {
-            this.events = events;
+        public void setPages(List<Object> pages) {
+            this.pages = pages;
         }
     }
 }

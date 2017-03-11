@@ -191,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                                             ("is_logged_in", true).putString("uid", user.getUid())
                                             .apply();
                                     startActivity(new Intent(getApplicationContext(),
-                                            EventsActivity.class));
+                                            MainActivity.class));
                                     finish();
                                 }
                             }
@@ -251,7 +251,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         if (Utils.isLoggedIn(getApplicationContext())) {
             if (!checkIntentForNotificationLaunch(getIntent())) {
-                Intent newIntent = new Intent(this, EventsActivity.class);
+                Intent newIntent = new Intent(this, MainActivity.class);
                 startActivity(newIntent);
                 finish();
             }else{

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.EventDao;
 import com.app.innovationweek.model.dao.RuleDao;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Created by zeeshan on 3/8/2017.
  */
 @Entity
+@IgnoreExtraProperties
 public class Event implements Parcelable{
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
@@ -154,7 +156,6 @@ public class Event implements Parcelable{
             Rule rule = ruleEntry.getValue();
             rule.setId(id);
             this.rules.add(rule);
-
         }
     }
 
