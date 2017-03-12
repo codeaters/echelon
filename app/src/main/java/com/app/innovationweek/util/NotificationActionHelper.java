@@ -17,6 +17,7 @@ public class NotificationActionHelper {
                 //means you made a wrong input in firebase console
             }
             Intent i = new Intent(context, cls);
+            if (extras != null)
             i.putExtras(extras);
             context.startActivity(i);
         }

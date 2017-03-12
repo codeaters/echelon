@@ -52,6 +52,10 @@ public class LoginActivity extends AppCompatActivity {
     View mProgressView;
     @BindView(R.id.login_form)
     View mLoginFormView;
+
+    @BindView(R.id.message)
+    TextView loginMessage;
+
     /**
      * firebase auth
      */
@@ -106,6 +110,15 @@ public class LoginActivity extends AppCompatActivity {
                 attemptLogin();
             }
         });
+
+        System.out.println(TAG + ": gertIntent is: " + getIntent());
+        if (getIntent() != null) {
+            String message = getIntent().getStringExtra("loginMessage");
+            System.out.println(TAG + ": loginMessage is: " + getIntent().getStringExtra("loginMessage"));
+            loginMessage.setText(message);
+            loginMessage.setVisibility(View.VISIBLE);
+        } else
+            loginMessage.setVisibility(View.GONE);
 
     }
 
@@ -190,8 +203,16 @@ public class LoginActivity extends AppCompatActivity {
                                             (getApplicationContext()).edit().putBoolean
                                             ("is_logged_in", true).putString("uid", user.getUid())
                                             .apply();
-                                    startActivity(new Intent(getApplicationContext(),
-                                            MainActivity.class));
+
+                                    System.out.println(TAG + ": Activity to Launch: " + QuestionActivity.class.getSimpleName());
+                                    if (getIntent().getStringExtra("launchNext").equals(QuestionActivity.class.getSimpleName())) {
+                                        Intent intent = getIntent();
+                                        Intent newIntent = new Intent(getApplicationContext(), QuestionActivity.class);
+                                        newIntent.putExtra("question_id", intent.getStringExtra("question_id"));
+                                        newIntent.putExtra("quiz_id", intent.getStringExtra("quiz_id"));
+                                        startActivity(newIntent);
+                                    } else
+                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                     finish();
                                 }
                             }
