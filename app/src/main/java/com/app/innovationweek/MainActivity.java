@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         tabLayout.setupWithViewPager(mViewPager);
         getSupportLoaderManager().initLoader(0, null, this);
         //subscribe to topic for FCM notifications
-        Log.d(TAG, ": Subscribing to Topic questionTopic");
-        FirebaseMessaging.getInstance().subscribeToTopic("questionTopic");
+        Log.d(TAG, ": Subscribing to Topic defaultTopic");
+        FirebaseMessaging.getInstance().subscribeToTopic("defaultTopic");
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         showProgress(null);
