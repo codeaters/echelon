@@ -9,13 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.innovationweek.model.Event;
+import com.app.innovationweek.model.Phase;
+import com.app.innovationweek.model.Rule;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -47,7 +49,9 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     @BindView(R.id.desc)
     TextView description;
     @BindView(R.id.rules)
-    TextView rules;
+    LinearLayout rules;
+    @BindView(R.id.phases)
+    LinearLayout phases;
     @BindView(R.id.start_date)
     TextView startDate;
     @BindView(R.id.event_icon)
@@ -61,6 +65,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
      * The event model being displayed in this Fragment
      */
     private Event event;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM");
 
     public EventFragment() {
     }
@@ -89,18 +94,53 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
         name.setText(event.getName());
         description.setText(event.getDescription());
-        rules.setText(event.getRules().toString());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM");
         startDate.setText(getString(R.string.event_date, dateFormat.format(new Date(event.getStartDate()))));
-        if(event.getImageUrl()!= null)
-        Picasso.with(getActivity().getApplicationContext()).load(event.getImageUrl()).placeholder
-                (ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event)).into(icon);
+        if (event.getImageUrl() != null)
+            Picasso.with(getActivity().getApplicationContext()).load(event.getImageUrl()).placeholder
+                    (ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event)).into(icon);
         else
-        icon.setImageDrawable(ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event));
-        if (event.getId().equals("event_id3"))
+            icon.setImageDrawable(ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.event));
+        if (event.getPhases() != null && event.getPhases().size() > 0) {
+            //hide rules show phases
+            rules.setVisibility(View.GONE);
+            startDate.setVisibility(View.GONE);
+            for (Phase phase : event.getPhases()) {
+                LinearLayout phaseView = (LinearLayout) inflater.inflate(R.layout.phase, phases, false);
+                ((TextView) phaseView.findViewById(R.id.phase_title)).setText(phase.getName());
+                /*
+                 * TODO: have a phase name and sort order, atleast name is required order might be
+                 * maintained
+                 */
+                ((TextView) phaseView.findViewById(R.id.start_date)).setText(getString(R.string
+                                .event_date,
+                        dateFormat.format
+                                (new Date(phase.getStartDate()))));
+                if (phase.getRules() != null && phase.getRules().size() > 0) {
+                    LinearLayout rules = (LinearLayout) phaseView.findViewById(R.id.rules);
+                    for (Rule rule : phase.getRules()) {
+                        TextView ruleView = (TextView) inflater.inflate(R.layout.rule, phaseView,
+                                false);
+                        ruleView.setText(rule.getRule());
+                        rules.addView(ruleView);
+                    }
+                }
+                phases.addView(phaseView);
+            }
+        } else if (event.getRules() != null && event.getRules().size() > 0) {
+            //rules present simple event
+            phases.setVisibility(View.GONE);
+            for (Rule rule : event.getRules()) {
+                TextView ruleView = (TextView) inflater.inflate(R.layout.rule, rules, false);
+                ruleView.setText(rule.getRule());
+                rules.addView(ruleView);
+            }
+        }
+
+        if (event.getId().equals("event_id1"))
             gotoEvent.setVisibility(View.VISIBLE);
         else
             gotoEvent.setVisibility(View.GONE);
+
         gotoEvent.setOnClickListener(this);
         return rootView;
     }

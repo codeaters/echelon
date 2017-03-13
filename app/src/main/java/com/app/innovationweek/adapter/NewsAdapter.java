@@ -1,8 +1,6 @@
 package com.app.innovationweek.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,22 +20,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     private static final String TAG = NewsAdapter.class.getSimpleName();
     private List<News> newsList = new ArrayList<>();
-    private Context context;
 
-    public NewsAdapter(Context context, List<News> newsList) {
-        this.newsList = newsList;
-        this.context = context;
-    }
-
-    public void setNewsList(List<News> newsList) {
+    public NewsAdapter(List<News> newsList) {
         this.newsList = newsList;
     }
 
     @Override
     public NewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_news, parent, false);
-        Log.d(TAG, "Inflated Layout is: " + itemView.getClass());
+                .inflate(R.layout.item_news, parent, false);
         return new NewsHolder(itemView);
     }
 
@@ -54,5 +45,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     public List<News> getNewsList() {
         return newsList;
+    }
+
+    public void setNewsList(List<News> newsList) {
+        this.newsList = newsList;
+        notifyDataSetChanged();
     }
 }

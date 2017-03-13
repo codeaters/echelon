@@ -3,7 +3,19 @@ package com.app.innovationweek.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
+import com.app.innovationweek.model.Rule;
+import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.model.dao.PhaseDao;
+import com.app.innovationweek.model.firebase.Event;
+import com.app.innovationweek.model.firebase.Phase;
+import com.google.firebase.database.DataSnapshot;
+
+import java.lang.ref.WeakReference;
+import java.util.Map;
 
 /**
  * Created by zeeshan on 3/7/2017.

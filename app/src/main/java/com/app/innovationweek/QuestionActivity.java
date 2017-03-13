@@ -15,10 +15,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.app.innovationweek.model.LeaderboardItem;
+import com.app.innovationweek.model.firebase.LeaderboardItem;
 import com.app.innovationweek.model.Option;
 import com.app.innovationweek.model.Question;
-import com.app.innovationweek.model.Response;
+import com.app.innovationweek.model.firebase.Response;
 import com.app.innovationweek.util.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

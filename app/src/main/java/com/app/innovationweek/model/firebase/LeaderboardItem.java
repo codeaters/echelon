@@ -1,4 +1,4 @@
-package com.app.innovationweek.model;
+package com.app.innovationweek.model.firebase;
 
 import android.os.Parcel;
 import android.os.Parcelable;

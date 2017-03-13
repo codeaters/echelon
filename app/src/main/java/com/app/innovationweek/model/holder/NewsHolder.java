@@ -1,6 +1,8 @@
 package com.app.innovationweek.model.holder;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +24,8 @@ import butterknife.ButterKnife;
 public class NewsHolder extends RecyclerView.ViewHolder {
 
 
-    @BindView(R.id.imageView)
+    @Nullable
+    @BindView(R.id.image)
     public ImageView image;
     @BindView(R.id.content)
     public TextView content;
@@ -37,10 +40,9 @@ public class NewsHolder extends RecyclerView.ViewHolder {
     }
 
     public void setNews(News news) {
-        if (news.getImgUrl() != null)
+        if (news.getImgUrl() != null && !news.getImgUrl().isEmpty() && image != null)
             Picasso.with(image.getContext()).load(news.getImgUrl()).into(image);
-        else
-            image.setImageBitmap(null);
+
         content.setText(news.getContent());
         time.setText(simpleDateFormat.format(new Date(news.getTimestamp())));
     }

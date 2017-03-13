@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.EventDao;
+import com.app.innovationweek.model.dao.PhaseDao;
 import com.app.innovationweek.model.dao.RuleDao;
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -14,9 +15,7 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToMany;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -24,7 +23,7 @@ import java.util.Map;
  */
 @Entity
 @IgnoreExtraProperties
-public class Event implements Parcelable{
+public class Event implements Parcelable {
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -42,8 +41,11 @@ public class Event implements Parcelable{
     private String name;
     private String description;
     private long startDate;
+    private String quizId;
     @ToMany(referencedJoinProperty = "eventId")
     private List<Rule> rules;
+    @ToMany(referencedJoinProperty = "eventId")
+    private List<Phase> phases;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -51,26 +53,35 @@ public class Event implements Parcelable{
     @Generated(hash = 1542254534)
     private transient EventDao myDao;
 
+
     protected Event(Parcel in) {
         id = in.readString();
         imageUrl = in.readString();
         name = in.readString();
         description = in.readString();
         startDate = in.readLong();
+        quizId = in.readString();
         in.readTypedList(rules, Rule.CREATOR);
+        in.readTypedList(phases, Phase.CREATOR);
     }
-    @Generated(hash = 1670786169)
+
+
+    @Generated(hash = 1633919326)
     public Event(String id, String imageUrl, String name, String description,
-            long startDate) {
+            long startDate, String quizId) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
+        this.quizId = quizId;
     }
+
+
     @Generated(hash = 344677835)
     public Event() {
     }
+
 
     @Override
     public int describeContents() {
@@ -84,48 +95,71 @@ public class Event implements Parcelable{
         dest.writeString(name);
         dest.writeString(description);
         dest.writeLong(startDate);
+        dest.writeString(quizId);
         dest.writeTypedList(rules);
+        dest.writeTypedList(phases);
     }
+
 
     public String getId() {
         return this.id;
     }
 
+
     public void setId(String id) {
         this.id = id;
     }
+
 
     public String getImageUrl() {
         return this.imageUrl;
     }
 
+
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 
     public String getName() {
         return this.name;
     }
 
+
     public void setName(String name) {
         this.name = name;
     }
+
 
     public String getDescription() {
         return this.description;
     }
 
+
     public void setDescription(String description) {
         this.description = description;
     }
+
 
     public long getStartDate() {
         return this.startDate;
     }
 
+
     public void setStartDate(long startDate) {
         this.startDate = startDate;
     }
+
+
+    public String getQuizId() {
+        return this.quizId;
+    }
+
+
+    public void setQuizId(String quizId) {
+        this.quizId = quizId;
+    }
+
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -149,21 +183,43 @@ public class Event implements Parcelable{
         return rules;
     }
 
-    public void setRules(Map<String, Rule> rules) {
-        this.rules = new ArrayList<>();
-        for (Map.Entry<String, Rule> ruleEntry : rules.entrySet()) {
-            String id = ruleEntry.getKey();
-            Rule rule = ruleEntry.getValue();
-            rule.setId(id);
-            this.rules.add(rule);
-        }
-    }
 
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
         rules = null;
     }
+
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 389475517)
+    public List<Phase> getPhases() {
+        if (phases == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            PhaseDao targetDao = daoSession.getPhaseDao();
+            List<Phase> phasesNew = targetDao._queryEvent_Phases(id);
+            synchronized (this) {
+                if (phases == null) {
+                    phases = phasesNew;
+                }
+            }
+        }
+        return phases;
+    }
+
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 199272319)
+    public synchronized void resetPhases() {
+        phases = null;
+    }
+
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -177,6 +233,7 @@ public class Event implements Parcelable{
         myDao.delete(this);
     }
 
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -189,6 +246,7 @@ public class Event implements Parcelable{
         myDao.refresh(this);
     }
 
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
      * Entity must attached to an entity context.
@@ -200,6 +258,7 @@ public class Event implements Parcelable{
         }
         myDao.update(this);
     }
+
 
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1459865304)

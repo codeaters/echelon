@@ -15,6 +15,8 @@ import java.util.List;
  */
 
 public class NewsAsyncTaskLoader extends AsyncTaskLoader<List<News>> {
+    private List<News> news;
+
     public NewsAsyncTaskLoader(Context applicationContext) {
         super(applicationContext);
     }
@@ -24,5 +26,15 @@ public class NewsAsyncTaskLoader extends AsyncTaskLoader<List<News>> {
         List<News> news = ((EchelonApplication) getContext().getApplicationContext()).getDaoSession().getNewsDao().loadAll();
         Collections.sort(news);
         return news;
+    }
+
+    @Override
+    protected void onStartLoading() {
+        if (news != null) {
+            deliverResult(news);
+        } else {
+            // We have no data, so kick off loading it
+            forceLoad();
+        }
     }
 }

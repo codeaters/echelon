@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:padding="16dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -46,21 +47,29 @@
             android:text="This is IEEE paper presentation beware of dogs!!"
             android:textAppearance="?android:textAppearanceListItem"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Rules"
-            android:textAppearance="?android:textAppearanceSmall"/>
-
-        <TextView
+        <LinearLayout
             android:id="@+id/rules"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="Only original idea \nNo Cheating"
-            android:textAppearance="?android:textAppearanceListItem"/>
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Rules"
+                android:textAppearance="?android:textAppearanceSmall"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/phases"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/goto_event"

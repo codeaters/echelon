@@ -15,9 +15,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
-import com.app.innovationweek.model.dao.EventDao;
+import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.util.EventInsertTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Event>>, View.OnClickListener {
+        .LoaderCallbacks<List<Event>>, View.OnClickListener, DaoOperationComplete {
     public static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -61,20 +63,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      */
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private DatabaseReference eventsRef;
-    private ChildEventListener eventListener;
+    private ChildEventListener eventChildListener;
 
-    private EventDao eventDao;
+    private DaoSession daoSession;
 
     {
-        eventListener = new ChildEventListener() {
+        eventChildListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event added" + dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    event.setId(dataSnapshot.getKey());
-                    eventDao.insertOrReplace(event);
-                    MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+                    new EventInsertTask(dataSnapshot, daoSession, MainActivity.this).execute();
                 }
             }
 
@@ -82,10 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event changed" + dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    event.setId(dataSnapshot.getKey());
-                    eventDao.insertOrReplace(event);
-                    MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+                    new EventInsertTask(dataSnapshot, daoSession, MainActivity.this).execute();
                 }
             }
 
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_events);
+        setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         retry.setOnClickListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -128,11 +124,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         Log.d(TAG, ": Subscribing to Topic questionTopic");
         FirebaseMessaging.getInstance().subscribeToTopic("questionTopic");
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
-        eventDao = ((EchelonApplication) getApplication()).getDaoSession().getEventDao();
+        daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         showProgress(null);
-        eventsRef.addChildEventListener(eventListener);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        eventsRef.addChildEventListener(eventChildListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        eventsRef.removeEventListener(eventChildListener);
+    }
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
@@ -187,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    @Override
+    public void onDaoOperationComplete() {
+        MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -205,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             // getItem is called to instantiate the fragment for the given page.
             // The first fragment must be a What's new fragment, which lists all the small events
             if (position == 0)
-                return NewsFragment.newInstance("!", "2");
+                return NewsFragment.newInstance();
             else
                 return EventFragment.newInstance(pages.get(position - 1));
         }
