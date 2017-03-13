@@ -15,12 +15,15 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app.innovationweek.model.LeaderboardItem;
 import com.app.innovationweek.model.Option;
 import com.app.innovationweek.model.Question;
 import com.app.innovationweek.model.Response;
 import com.app.innovationweek.util.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,8 +70,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.error_msg)
     TextView errorMsg;
 
+
     private CountDownTimer countDownTimer;
-    private DatabaseReference dbRef, questionRef, responseRef;
+    private DatabaseReference dbRef, questionRef, responseRef, leaderBoardRef;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
     private String quizId, questionId, Uid;
     private ValueEventListener questionListener, responseListener;
     private long startTime;
@@ -106,7 +112,10 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     responseRef.child("startTime").setValue(ServerValue.TIMESTAMP);
                     Toast.makeText(getApplicationContext(), "Start Time Recorded", Toast.LENGTH_LONG).show();
                 } else {
-                    if (dataSnapshot.hasChild("startTime")) {
+
+                    if (dataSnapshot.hasChild("endTime")) {
+                        Toast.makeText(getApplicationContext(), "You have already answered this question.", Toast.LENGTH_LONG).show();
+                        QuestionActivity.this.finish();
                     } else {
                         Log.d(TAG, "no startTime");
                     }
@@ -146,6 +155,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         }
         questionRef = dbRef.child(quizId).child(questionId);
         responseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
+        leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         questionRef.addListenerForSingleValueEvent(questionListener);
     }
 
@@ -189,7 +199,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         textViewQuestionStatement.setTag(question.getQuestionId());
         textViewQuestionStatement.setText(question.getStatement());
         // set the options if options are present
-        if (question.getOptions() == null && question.getOptions().size() == 0) {
+        if (question.getOptions() == null || question.getOptions().size() == 0) {
             // this is an fib question, so hide the options
             optionRadioGroup.setVisibility(View.GONE);
             // and prepare the view for fib
@@ -307,8 +317,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     responseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            Response response = dataSnapshot.getValue(Response.class);
-                            int difference = (int) (response.getEndTime() - response.getStartTime());
+                            final Response response = dataSnapshot.getValue(Response.class);
+                            long difference = response.getEndTime() - response.getStartTime();
 
                             System.out.println(TAG + " Difference is: " + difference);
 
@@ -330,6 +340,30 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Toast.makeText(getApplicationContext(), "Your response has been saved.", Toast.LENGTH_LONG).show();
+                                    //response is saved, update leaderboard
+                                    leaderBoardRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            LeaderboardItem leaderboardItem;
+                                            if (dataSnapshot.getValue(LeaderboardItem.class) != null)
+                                                leaderboardItem = dataSnapshot.getValue(LeaderboardItem.class);
+                                            else
+                                                leaderboardItem = new LeaderboardItem();
+                                            System.out.println(TAG + "LeaderboardItem is: " + leaderboardItem);
+                                            leaderboardItem.setDisplayName(user.getDisplayName());
+                                            leaderboardItem.setImgUrl(user.getPhotoUrl().toString());
+                                            leaderboardItem.setUid(dataSnapshot.getKey());
+                                            leaderboardItem.setUsername(user.getEmail().split("@")[0]);
+                                            leaderboardItem.setTotalScore(leaderboardItem.getTotalScore() + response.getScore());
+                                            leaderboardItem.setTotalTime(leaderboardItem.getTotalTime() + response.getDuration());
+                                            leaderBoardRef.setValue(leaderboardItem);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
                                     QuestionActivity.this.finish();
                                 }
                             });

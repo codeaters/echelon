@@ -27,7 +27,7 @@ public class Response implements Parcelable {
     private Long startTime;
     private Long endTime;
     private Boolean limitExceeded = false;
-    private int duration;
+    private Long duration;
     private Integer score;
     private String response;
 
@@ -45,11 +45,11 @@ public class Response implements Parcelable {
         this.limitExceeded = limitExceeded;
     }
 
-    public int getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
