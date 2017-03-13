@@ -275,7 +275,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent newIntent = new Intent(this, MainActivity.class);
                 startActivity(newIntent);
                 finish();
-            }else{
+            } else {
                 //the function checkIntentForNotificationLaunch already called finish() on this
                 // activity
             }

@@ -1,14 +1,15 @@
 package com.app.innovationweek.model;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
 import com.app.innovationweek.model.dao.DaoSession;
-import com.app.innovationweek.model.dao.UserDao;
 import com.app.innovationweek.model.dao.LeaderboardDao;
 import com.app.innovationweek.model.dao.LeaderboardEntryDao;
+import com.app.innovationweek.model.dao.UserDao;
+
+import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.ToOne;
 
 /**
  * Created by 1036870 on 3/10/2017.
@@ -29,58 +30,79 @@ public class LeaderboardEntry {
     private float score;
     private long totalTime;
 
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
 
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 683445952)
     private transient LeaderboardEntryDao myDao;
+    @Generated(hash = 734411914)
+    private transient String leaderboard__resolvedKey;
+    @Generated(hash = 1867105156)
+    private transient String user__resolvedKey;
+
     @Generated(hash = 1051142370)
     public LeaderboardEntry(long id, String leaderboardId, String userId,
-            float score, long totalTime) {
+                            float score, long totalTime) {
         this.id = id;
         this.leaderboardId = leaderboardId;
         this.userId = userId;
         this.score = score;
         this.totalTime = totalTime;
     }
+
     @Generated(hash = 1799948941)
     public LeaderboardEntry() {
     }
+
     public long getId() {
         return this.id;
     }
+
     public void setId(long id) {
         this.id = id;
     }
+
     public String getLeaderboardId() {
         return this.leaderboardId;
     }
+
     public void setLeaderboardId(String leaderboardId) {
         this.leaderboardId = leaderboardId;
     }
+
     public String getUserId() {
         return this.userId;
     }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
     public float getScore() {
         return this.score;
     }
+
     public void setScore(float score) {
         this.score = score;
     }
+
     public long getTotalTime() {
         return this.totalTime;
     }
+
     public void setTotalTime(long totalTime) {
         this.totalTime = totalTime;
     }
-    @Generated(hash = 734411914)
-    private transient String leaderboard__resolvedKey;
-    /** To-one relationship, resolved on first access. */
+
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 1047939175)
     public Leaderboard getLeaderboard() {
         String __key = this.leaderboardId;
@@ -98,7 +120,10 @@ public class LeaderboardEntry {
         }
         return leaderboard;
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1670934944)
     public void setLeaderboard(Leaderboard leaderboard) {
         synchronized (this) {
@@ -107,9 +132,10 @@ public class LeaderboardEntry {
             leaderboard__resolvedKey = leaderboardId;
         }
     }
-    @Generated(hash = 1867105156)
-    private transient String user__resolvedKey;
-    /** To-one relationship, resolved on first access. */
+
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 538271798)
     public User getUser() {
         String __key = this.userId;
@@ -127,7 +153,10 @@ public class LeaderboardEntry {
         }
         return user;
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1065606912)
     public void setUser(User user) {
         synchronized (this) {
@@ -136,6 +165,7 @@ public class LeaderboardEntry {
             user__resolvedKey = userId;
         }
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
      * Entity must attached to an entity context.
@@ -147,6 +177,7 @@ public class LeaderboardEntry {
         }
         myDao.delete(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -158,6 +189,7 @@ public class LeaderboardEntry {
         }
         myDao.refresh(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
      * Entity must attached to an entity context.
@@ -169,7 +201,10 @@ public class LeaderboardEntry {
         }
         myDao.update(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1144773576)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

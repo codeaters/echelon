@@ -13,14 +13,26 @@ import java.util.List;
  */
 
 public class EventAsyncTaskLoader extends AsyncTaskLoader<List<Event>> {
+    private List<Event> events;
+
     public EventAsyncTaskLoader(Context context) {
         super(context);
     }
 
     @Override
     public List<Event> loadInBackground() {
-        List<Event> events = ((EchelonApplication) getContext().getApplicationContext()).getDaoSession()
+        events = ((EchelonApplication) getContext().getApplicationContext()).getDaoSession()
                 .getEventDao().loadAll();
         return events;
+    }
+
+    @Override
+    protected void onStartLoading() {
+        if (events != null) {
+            deliverResult(events);
+        } else {
+            // We have no data, so kick off loading it
+            forceLoad();
+        }
     }
 }

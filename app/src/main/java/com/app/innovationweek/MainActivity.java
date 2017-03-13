@@ -123,13 +123,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+        getSupportLoaderManager().initLoader(0, null, this);
         //subscribe to topic for FCM notifications
-        System.out.println(TAG + ": Subscribing to Topic questionTopic");
+        Log.d(TAG, ": Subscribing to Topic questionTopic");
         FirebaseMessaging.getInstance().subscribeToTopic("questionTopic");
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
         eventDao = ((EchelonApplication) getApplication()).getDaoSession().getEventDao();
         showProgress(null);
+        eventsRef.addChildEventListener(eventListener);
     }
 
 
@@ -145,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         Log.d(TAG, "loading finished" + (data == null ? 0 : data.size()));
         mSectionsPagerAdapter.setPages(data);
         hideProgress(false, null);
-        eventsRef.addChildEventListener(eventListener);
     }
 
     @Override

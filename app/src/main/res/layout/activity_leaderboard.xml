@@ -34,11 +34,12 @@
             app:tabMode="fixed"/>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/leaderboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_leaderboard"/>
 
 </android.support.design.widget.CoordinatorLayout>
