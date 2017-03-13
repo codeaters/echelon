@@ -3,7 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_marginTop="16dp"
+              android:layout_marginTop="8dp"
               android:orientation="vertical">
 
     <TextView
@@ -18,14 +18,14 @@
         android:id="@+id/start_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         tools:text="23, May 2017"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="Rules"
         android:textAppearance="?android:textAppearanceSmall"/>
@@ -34,7 +34,6 @@
         android:id="@+id/rules"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:orientation="vertical">
 
     </LinearLayout>

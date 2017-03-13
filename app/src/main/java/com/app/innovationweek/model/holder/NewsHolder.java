@@ -32,7 +32,6 @@ public class NewsHolder extends RecyclerView.ViewHolder {
     public TextView content;
     @BindView(R.id.time)
     public TextView time;
-    String colors[] = {"", "", "", "", "", ""};
     private CardView rootView;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd");
 
