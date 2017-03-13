@@ -23,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
         getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+        //subscribe to topic for FCM notifications
+        System.out.println(TAG + ": Subscribing to Topic questionTopic");
+        FirebaseMessaging.getInstance().subscribeToTopic("questionTopic");
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
         eventDao = ((EchelonApplication) getApplication()).getDaoSession().getEventDao();
         showProgress(null);

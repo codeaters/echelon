@@ -1,7 +1,6 @@
 package com.app.innovationweek;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.app.innovationweek.model.Option;
 import com.app.innovationweek.model.Question;
+import com.app.innovationweek.model.Response;
 import com.app.innovationweek.util.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -68,11 +68,10 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     TextView errorMsg;
 
     private CountDownTimer countDownTimer;
-    private DatabaseReference dbRef, questionRef, resonseRef;
+    private DatabaseReference dbRef, questionRef, responseRef;
     private String quizId, questionId, Uid;
     private ValueEventListener questionListener, responseListener;
     private long startTime;
-
     /**
      * The question this activity is showing
      *
@@ -88,7 +87,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
                 question = dataSnapshot.getValue(Question.class);
 
-                resonseRef.addListenerForSingleValueEvent(responseListener);
+                responseRef.addListenerForSingleValueEvent(responseListener);
 
             }
 
@@ -103,41 +102,16 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "response datasnbap:" + dataSnapshot);
                 if (dataSnapshot.getValue() == null) {
-                    //TODO: show progress
-                    resonseRef.child("startTime").setValue(ServerValue.TIMESTAMP)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        resonseRef.child("startTime")
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                        if (dataSnapshot == null)
-                                                            return;
-                                                        startTime = dataSnapshot.getValue(Long.class);
-                                                        resonseRef.child("endTime").setValue
-                                                                (startTime + question.getMaxTime()
-                                                                        * 60000);
-                                                        calculateTime(startTime);
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                    }
-                                                });
-                                    }
-                                }
-                            });
+                    // Record start time
+                    responseRef.child("startTime").setValue(ServerValue.TIMESTAMP);
+                    Toast.makeText(getApplicationContext(), "Start Time Recorded", Toast.LENGTH_LONG).show();
                 } else {
                     if (dataSnapshot.hasChild("startTime")) {
-                        startTime = dataSnapshot.child("startTime").getValue(Long.class);
-                        calculateTime(startTime);
                     } else {
                         Log.d(TAG, "no startTime");
                     }
                 }
+                calculateTime();
             }
 
             @Override
@@ -171,7 +145,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             questionId = savedInstanceState.getString("question_id");
         }
         questionRef = dbRef.child(quizId).child(questionId);
-        resonseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
+        responseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
         questionRef.addListenerForSingleValueEvent(questionListener);
     }
 
@@ -196,7 +170,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-
     public void onRadioButtonOptionClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
@@ -209,6 +182,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
      * Question id is set as tag in the question Statement text view
      * Option ids are set as tag in the option radio button
      * The optionId of the correct Option is stored as tag in the radioGroup
+     * The correct fib response is stored as tag in fib edit text
      */
     private void setQuestion() {
 
@@ -220,6 +194,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             optionRadioGroup.setVisibility(View.GONE);
             // and prepare the view for fib
             editTextFIB.setVisibility(View.VISIBLE);
+            // and save the correct response as tag
+            editTextFIB.setTag(question.getFibAnswer());
             // and hide the radio group
             optionRadioGroup.setVisibility(View.GONE);
         } else {
@@ -262,19 +238,20 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         } else {
             questionImageView.setVisibility(View.GONE);
         }
+        hideProgress(false, null);
     }
-
 
     // 10 minutes = 1000 * 60 * 10 milliseconds
     // check if the timer had already started by Fetching remaining seconds from firebase RTD for that user
     // if yes, start the countdown timer with those milli seconds
     //if no start the timer with initial  value 10 minutes and System.currentTimeMillis. persist the states in RDB
     //if yes, start the timer with the remaining seconds and persist the data base
-    private void calculateTime(long startTime) {
+    private void calculateTime() {
         //max time is 15 minutes hard coded
-        hideProgress(false, null);
-        final long elapsedSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        countDownTimer = new CountDownTimer(question.getMaxTime() * 60000, 1000) {
+
+        final long elapsedSeconds = (System.currentTimeMillis() - question.getStartTime()) / 1000;
+        System.out.println(TAG + ": Elapsed seconds are:" + elapsedSeconds);
+        countDownTimer = new CountDownTimer((question.getMaxTime() * 60 - elapsedSeconds) * 1000, 1000) {
             long minLeft, secLeft;
 
             @Override
@@ -307,46 +284,67 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.submit:
                 showProgress(getString(R.string.saving_response));
-                View markedOption = findViewById(optionRadioGroup.getCheckedRadioButtonId());
-                if (markedOption != null)
-                    saveResponse((String) markedOption.getTag());
-                else
-                    saveResponse(null);
+                //this was a mcq
+                if (question.getOptions() != null && question.getOptions().size() != 0) {
+                    String answer = (String) findViewById(optionRadioGroup.getCheckedRadioButtonId()).getTag();
+                    int score = optionRadioGroup.getTag().toString().equals(answer) ? 1 : 0;
+                    saveResponse(answer, score);
+                } else /*This was an fib*/ {
+                    String answer = editTextFIB.getText().toString();
+                    int score = editTextFIB.getTag().toString().equals(answer) ? 1 : 0;
+                    saveResponse(answer, score);
+                }
                 break;
         }
     }
 
-    private void saveResponse(final String checkedOptionKey) {
-        //TODO save Response for now simulating network request
-        new AsyncTask<Void, Void, Void>() {
+    private void saveResponse(final String answer, final int score) {
+        responseRef.child("endTime").setValue(ServerValue.TIMESTAMP).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    for (int i = 0; i < 5; i++) {
-                        Thread.sleep(500);
-                    }
-                } catch (InterruptedException ex) {
-                    Log.d(TAG, "thread sleep interrupted");
-                }
-                return null;
-            }
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    //start and end time recorded. Now get values, compare time difference and save score
+                    responseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Response response = dataSnapshot.getValue(Response.class);
+                            int difference = (int) (response.getEndTime() - response.getStartTime());
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                String msg;
-                if (checkedOptionKey != null && !checkedOptionKey.isEmpty()) {
-                    if (optionRadioGroup.getTag().equals(checkedOptionKey)) {
-                        msg = "You marked the RIGHT answer";
-                    } else {
-                        msg = "You marked the WRONG answer";
-                    }
-                } else {
-                    msg = "no options marked";
+                            System.out.println(TAG + " Difference is: " + difference);
+
+
+                            if (question.getStartTime() > response.getEndTime() || question.getEndTime() < response.getEndTime()) {
+                                Toast.makeText(getApplicationContext(), "You exceeded the time limit. Your response is invalid.", Toast.LENGTH_LONG).show();
+                                response.setScore(0);
+                                response.setResponse(answer);
+                                response.setDuration(difference);
+                                response.setLimitExceeded(true);
+                            } else {
+                                //update score and time duration for that response, although duration is redundant
+                                response.setScore(score);
+                                response.setResponse(answer);
+                                response.setDuration(difference);
+                                response.setLimitExceeded(false);
+                            }
+                            responseRef.setValue(response).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(getApplicationContext(), "Your response has been saved.", Toast.LENGTH_LONG).show();
+                                    QuestionActivity.this.finish();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
-                Toast.makeText(getApplicationContext(), msg, Toast
-                        .LENGTH_LONG).show();
-                finish();
             }
-        }.execute();
+        });
     }
+
+    private enum QuestionType {FIB, MCQ}
 }

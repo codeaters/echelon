@@ -82,7 +82,7 @@ public class NewsFragment extends Fragment implements LoaderManager
                 if (index > -1) {
                     newsAdapter.getNewsList().remove(index);
                     newsAdapter.getNewsList().add(index, news);
-                    newsAdapter.notifyItemInserted(index);
+                    newsAdapter.notifyDataSetChanged();
                     newsDao.insertOrReplace(news);
                 } else
                     Log.w(TAG, "News Item Changed but not updated in the RecyclerView");
