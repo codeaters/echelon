@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
                     Event event = dataSnapshot.getValue(Event.class);
                     event.setId(dataSnapshot.getKey());
                     eventDao.insertOrReplace(event);
-                    MainActivity.this.getSupportLoaderManager().restartLoader(0, null,
-                            MainActivity.this);
+                    MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
                 }
             }
 
@@ -86,8 +85,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
                     Event event = dataSnapshot.getValue(Event.class);
                     event.setId(dataSnapshot.getKey());
                     eventDao.insertOrReplace(event);
-                    MainActivity.this.getSupportLoaderManager().restartLoader(0, null,
-                            MainActivity.this);
+                    MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
                 }
             }
 
@@ -144,9 +142,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        Log.d(TAG, "loading finished");
+        Log.d(TAG, "loading finished" + (data == null ? 0 : data.size()));
         mSectionsPagerAdapter.setPages(data);
-        mSectionsPagerAdapter.notifyDataSetChanged();
         hideProgress(false, null);
         eventsRef.addChildEventListener(eventListener);
     }
@@ -223,11 +220,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         public CharSequence getPageTitle(int position) {
             if (position == 0)
                 return "News";
-            return pages.get(position-1).getName();
+            return pages.get(position - 1).getName();
         }
 
         public void setPages(List<Event> pages) {
             this.pages = pages;
+            notifyDataSetChanged();
         }
     }
 }
