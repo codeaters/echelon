@@ -48,6 +48,7 @@ public class UpdateUsersTask extends AsyncTask<Void, Void, Void> {
             user = new User();
             user.setId(userDs.getKey());
             user.setName(userDs.child("name").getValue(String.class));
+            user.setUsername(userDs.child("username").getValue(String.class));
             user.setTeam(team);
             daoSessionWeakReference.get().getUserDao().insertOrReplace(user);
         }

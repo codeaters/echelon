@@ -10,7 +10,9 @@ import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.app.innovationweek.LeaderboardActivity;
 import com.app.innovationweek.LoginActivity;
+import com.app.innovationweek.MainActivity;
 import com.app.innovationweek.QuestionActivity;
 import com.app.innovationweek.R;
 import com.app.innovationweek.util.Utils;
@@ -61,10 +63,9 @@ public class MessagingService extends FirebaseMessagingService {
 
         System.out.println(TAG + ": From: " + remoteMessage.getFrom());
         Map<String, String> data = remoteMessage.getData();
-        if (data.containsKey("notificationType") && data.get("notificationType").equals("new_question")) {
+        if (data.containsKey("notificationType") && data.get("notificationType").equals(NEW_QUESTION)) {
             String messageTitle = "Question " + data.get("question_count") + " of " + data.get("quiz_name") + " is here.";
             String messageBody = data.get("question_statement");
-            String notificationAction = Utils.isLoggedIn(getApplicationContext()) ? QuestionActivity.class.getName() : LoginActivity.class.getName();
             Intent intent = new Intent(getApplicationContext(), Utils.isLoggedIn(getApplicationContext()) ? QuestionActivity.class : LoginActivity.class);
             intent.putExtra("quiz_id", data.get("quiz_id"));
             intent.putExtra("question_id", data.get("question_id"));
@@ -72,8 +73,19 @@ public class MessagingService extends FirebaseMessagingService {
             intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
             sendNotification(messageBody, messageTitle, intent);
         }
-
-        //TODO: Other notification handling tasks
+        if (data.containsKey("notificationType") && data.get("notificationType").equals(NEWS_UPDATE)) {
+            String messageTitle = data.get("contentTitle");
+            String messageBody = data.get("contentText");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            sendNotification(messageBody, messageTitle, intent);
+        }
+        if (data.containsKey("notificationType") && data.get("notificationType").equals(LB_UPDATE)) {
+            String messageTitle = data.get("contentTitle");
+            String messageBody = data.get("contentText");
+            Intent intent = new Intent(getApplicationContext(), LeaderboardActivity.class);
+            intent.putExtra("quiz_id", data.get("quiz_id"));
+            sendNotification(messageBody, messageTitle, intent);
+        }
     }
 
     private void sendNotification(String messageBody, String messageTitle, Intent intent) {

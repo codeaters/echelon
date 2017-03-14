@@ -99,7 +99,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>());
         recyclerView.setAdapter(leaderboardAdapter);
         if (savedInstanceState == null) {
-            if (getIntent() != null) {
+            if (getIntent() != null && getIntent().hasExtra("quiz_id")) {
                 quizId = getIntent().getStringExtra("quiz_id");
             }
         } else {
