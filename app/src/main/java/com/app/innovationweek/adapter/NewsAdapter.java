@@ -27,8 +27,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     @Override
     public NewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_news, parent, false);
+        View itemView;
+        switch (viewType) {
+            case 1:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_imagenews, parent, false);
+                break;
+            default:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_news, parent, false);
+        }
         return new NewsHolder(itemView);
     }
 
@@ -36,6 +44,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
     public void onBindViewHolder(NewsHolder holder, int position) {
         News news = newsList.get(position);
         holder.setNews(news);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return newsList.get(position).getImgUrl() == null || newsList.get(position).getImgUrl()
+                .isEmpty() ? 0 : 1;
     }
 
     @Override

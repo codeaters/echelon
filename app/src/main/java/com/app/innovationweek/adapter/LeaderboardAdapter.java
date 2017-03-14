@@ -36,4 +36,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
     public int getItemCount() {
         return leaderboardEntryList == null ? 0 : leaderboardEntryList.size();
     }
+
+    public void setLeaderboardEntryList(List<LeaderboardEntry> leaderboardEntryList) {
+        this.leaderboardEntryList = leaderboardEntryList;
+        notifyDataSetChanged();
+    }
 }

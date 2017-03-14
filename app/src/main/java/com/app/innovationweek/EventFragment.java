@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +29,8 @@ import butterknife.ButterKnife;
  */
 
 public class EventFragment extends Fragment implements View.OnClickListener {
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    public static final String TAG = EventFragment.class.getSimpleName();
 
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_EVENT_NAME = "event_name";
-    private static final String ARG_EVENT_DESC = "event_desc";
-    private static final String ARG_EVENT_RULES = "event_rules";
-    private static final String ARG_EVENT_START_DATE = "event_date";
-    private static final String ARG_EVENT_ID = "event_id";
-    private static final String ARG_EVENT_ICON_ULR = "icon_url";
     private static final String ARG_EVENT = "event";
 
     @BindView(R.id.name)
@@ -107,10 +96,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             for (Phase phase : event.getPhases()) {
                 LinearLayout phaseView = (LinearLayout) inflater.inflate(R.layout.phase, phases, false);
                 ((TextView) phaseView.findViewById(R.id.phase_title)).setText(phase.getName());
-                /*
-                 * TODO: have a phase name and sort order, atleast name is required order might be
-                 * maintained
-                 */
                 ((TextView) phaseView.findViewById(R.id.start_date)).setText(getString(R.string
                                 .event_date,
                         dateFormat.format
@@ -142,6 +127,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             gotoEvent.setVisibility(View.GONE);
 
         gotoEvent.setOnClickListener(this);
+        leaderboard.setOnClickListener(this);
         return rootView;
     }
 
@@ -153,13 +139,23 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.goto_event:
-                Intent intent = new Intent(getActivity(), QuestionActivity.class);
+                intent = new Intent(getActivity(), QuestionActivity.class);
                 intent.putExtra("quiz_id", "questions");
                 intent.putExtra("question_id", "qid1");
                 startActivity(intent);
                 break;
+            case R.id.leaderboard:
+                intent = new Intent(getActivity().getApplicationContext(),
+                        LeaderboardActivity.class);
+                intent.putExtra("quiz_id", event.getQuizId());
+                Log.d(TAG, "starting leaderboard " + event.getQuizId());
+                startActivity(intent);
+                break;
+            default:
+                Log.d(TAG, "click not implemented");
         }
     }
 }
