@@ -27,6 +27,18 @@ public class MessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MessagingService.class.getSimpleName();
 
+    // launch question activity
+    private static final String NEW_QUESTION = "new_question";
+
+    //launch apt leaderboard
+    private static final String LB_UPDATE = "leaderboard_update";
+
+    //winner declared or event starting
+    private static final String NEWS_UPDATE = "news_update";
+
+
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
@@ -60,6 +72,8 @@ public class MessagingService extends FirebaseMessagingService {
             intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
             sendNotification(messageBody, messageTitle, intent);
         }
+
+        //TODO: Other notification handling tasks
     }
 
     private void sendNotification(String messageBody, String messageTitle, Intent intent) {
