@@ -29,7 +29,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     @Override
     public void onBindViewHolder(LeaderboardEntryHolder holder, int position) {
-        holder.setLeaderboardEntry(leaderboardEntryList.get(position));
+        holder.setLeaderboardEntry(position,leaderboardEntryList.get(position));
     }
 
     @Override

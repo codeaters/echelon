@@ -42,4 +42,5 @@ public class Utils {
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
 
     }
+
 }

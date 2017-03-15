@@ -35,4 +35,10 @@ public class EventAsyncTaskLoader extends AsyncTaskLoader<List<Event>> {
             forceLoad();
         }
     }
+
+    @Override
+    public void deliverResult(List<Event> data) {
+        events = data;
+        super.deliverResult(data);
+    }
 }

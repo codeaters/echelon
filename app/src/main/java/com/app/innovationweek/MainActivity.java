@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onDaoOperationComplete() {
-        MainActivity.this.getSupportLoaderManager().getLoader(0).forceLoad();
+        getSupportLoaderManager().getLoader(0).onContentChanged();
     }
 
     /**

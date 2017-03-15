@@ -1,8 +1,12 @@
 package com.app.innovationweek;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.PersistableBundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,7 +42,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class QuestionActivity extends AppCompatActivity implements View.OnClickListener {
+public class QuestionActivity extends AppCompatActivity implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "QuestionActivity";
 
@@ -69,7 +73,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     Button retry;
     @BindView(R.id.error_msg)
     TextView errorMsg;
-
+    @BindView(R.id.status)
+    TextView status;
 
     private CountDownTimer countDownTimer;
     private DatabaseReference dbRef, questionRef, responseRef, leaderBoardRef;
@@ -78,9 +83,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     private String quizId, questionId, Uid;
     private ValueEventListener questionListener, responseListener;
     private long startTime;
+
+    private enum QuestionType {FIB, MCQ}
+
     /**
      * The question this activity is showing
-     *
      */
     private Question question;
 
@@ -147,16 +154,44 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 Bundle bundle = launchIntent.getExtras();
                 quizId = bundle.getString("quiz_id");
                 questionId = bundle.getString("question_id");
-                Log.d(TAG, "Question ID is:" + questionId + " " + quizId);
             }//TODO: show messages aleady answered or yet to appear
         } else {
             quizId = savedInstanceState.getString("quiz_id");
             questionId = savedInstanceState.getString("question_id");
+            question=savedInstanceState.getParcelable("question");
         }
+        Log.d(TAG, "Question ID is:" + questionId + " " + quizId);
         questionRef = dbRef.child(quizId).child(questionId);
         responseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         questionRef.addListenerForSingleValueEvent(questionListener);
+    }
+
+    @Override
+    protected void onPause() {
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Utils.isInternetConnected(getApplicationContext())) {
+            status.setVisibility(View.GONE);
+            submit.setEnabled(true);
+        } else {
+            status.setVisibility(View.VISIBLE);
+            submit.setEnabled(false);
+        }
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putString("quiz_id",quizId);
+        outState.putString("question_id",questionId);
+        outState.putParcelable("question",question);
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     private void showProgress(String message) {
@@ -380,5 +415,18 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    private enum QuestionType {FIB, MCQ}
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("is_internet_connected")) {
+            if (sharedPreferences.getBoolean("is_internet_connected", false)) {
+                //remove status text and enable submit button
+                status.setVisibility(View.GONE);
+                submit.setEnabled(true);
+            } else {
+                //make status text visible and disable submit button
+                submit.setEnabled(false);
+                status.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 }

@@ -68,7 +68,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         Bundle args = new Bundle();
         args.putParcelable(ARG_EVENT, event);
         fragment.setArguments(args);
-        //TODO: fetch this info in fragment and populate the data accordingly
         return fragment;
     }
 

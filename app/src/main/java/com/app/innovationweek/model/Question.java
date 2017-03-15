@@ -1,46 +1,56 @@
 package com.app.innovationweek.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by Madeyedexter on 08-03-2017.
  */
 
-@Entity
-public class Question {
-    @Id
+public class Question implements Parcelable{
+    public static final Creator<Question> CREATOR = new Creator<Question>() {
+        @Override
+        public Question createFromParcel(Parcel in) {
+            return new Question(in);
+        }
+
+        @Override
+        public Question[] newArray(int size) {
+            return new Question[size];
+        }
+    };
+
     private String questionId;
     private String statement;
-    @Transient
-    private Map<String, Option> options;
     private String fibAnswer;
     private String imgUri;
     private long maxTime;
     private Long startTime;
     private Long endTime;
+    private Map<String, Option> options;
     private boolean expired;
 
-    @Generated(hash = 1212470564)
-    public Question(String questionId, String statement, String fibAnswer,
-                    String imgUri, long maxTime, Long startTime, Long endTime,
-                    boolean expired) {
-        this.questionId = questionId;
-        this.statement = statement;
-        this.fibAnswer = fibAnswer;
-        this.imgUri = imgUri;
-        this.maxTime = maxTime;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.expired = expired;
-    }
-
-    @Generated(hash = 1868476517)
-    public Question() {
+    public Question(Parcel in){
+        questionId=in.readString();
+        statement=in.readString();
+        fibAnswer=in.readString();
+        imgUri=in.readString();
+        maxTime=in.readLong();
+        startTime=in.readLong();
+        endTime=in.readLong();
+        options=new HashMap<>();
+        in.readMap(options,Option.class.getClassLoader());
+        boolean[] tmp=new boolean[1];
+        in.readBooleanArray(tmp);
+        expired=tmp[0];
     }
 
     public Long getStartTime() {
@@ -113,5 +123,23 @@ public class Question {
 
     public void setExpired(boolean expired) {
         this.expired = expired;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(questionId);
+        parcel.writeString(statement);
+        parcel.writeString(fibAnswer);
+        parcel.writeString(imgUri);
+        parcel.writeLong(maxTime);
+        parcel.writeLong(startTime);
+        parcel.writeLong(endTime);
+        parcel.writeMap(options);
+        parcel.writeBooleanArray(new boolean[]{expired});
     }
 }
