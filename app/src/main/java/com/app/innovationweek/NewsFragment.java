@@ -62,7 +62,7 @@ public class NewsFragment extends Fragment implements LoaderManager
     private boolean allNewsFetched;
 
     {
-        dataSnapshots=new ArrayList<>();
+        dataSnapshots = new ArrayList<>();
         newsListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -108,7 +108,7 @@ public class NewsFragment extends Fragment implements LoaderManager
                 //this is garenteed to be called last so we collect datanapshots in ChildEventListener and insert them here giving a less fluctuating UI
                 new NewsInsertTask(daoSession, NewsFragment.this).execute(dataSnapshots.toArray(new DataSnapshot[dataSnapshots.size()]));
                 allNewsFetched = true;
-                dataSnapshots.clear();
+
                 hideProgress();
             }
 
@@ -217,16 +217,20 @@ public class NewsFragment extends Fragment implements LoaderManager
     @Override
     public void onDaoOperationComplete(Object object) {
         //new news item here from db
+        if (object == null) {
+            return;
+        }
         News news = (News) object;
         int index = newsAdapter.getNewsList().indexOf(news);
         if (index > -1) {
             newsAdapter.getNewsList().remove(index);
             newsAdapter.getNewsList().add(index, news);
             newsAdapter.notifyItemChanged(index);
-        }else{
+        } else {
             //new news item, add it to top
             newsAdapter.getNewsList().add(0, news);
             newsAdapter.notifyItemInserted(0);
         }
+
     }
 }

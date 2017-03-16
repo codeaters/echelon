@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
                 //this callback is garanteed to be called last so we collect datasnapshots in ChildEventListnere and start inserting them here
                 new EventInsertTask(daoSession, MainActivity.this).execute(eventSnapShots.toArray(new DataSnapshot[eventSnapShots.size()]));
                 allEventsFeched = true;
-                eventSnapShots.clear();
+
             }
 
             @Override
@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onDaoOperationComplete(Object object) {
         getSupportLoaderManager().getLoader(0).forceLoad();
+        eventSnapShots.clear();
     }
 
     /**

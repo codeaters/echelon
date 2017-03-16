@@ -24,7 +24,7 @@ public class NewsInsertTask extends AsyncTask<DataSnapshot, Void, News> {
 
     @Override
     protected News doInBackground(DataSnapshot... dataSnapshots) {
-        News news;
+        News news=null;
         for (DataSnapshot dataSnapshot : dataSnapshots) {
             if (dataSnapshot.getValue() != null) {
                 news = dataSnapshot.getValue(News.class);
@@ -33,7 +33,7 @@ public class NewsInsertTask extends AsyncTask<DataSnapshot, Void, News> {
                     daoSessionWeakReference.get().getNewsDao().insertOrReplace(news);
             }
         }
-        return null;
+        return dataSnapshots.length>1?null:news;
     }
 
     @Override
