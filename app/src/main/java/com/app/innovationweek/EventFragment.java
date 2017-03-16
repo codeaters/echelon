@@ -12,10 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.innovationweek.model.Event;
 import com.app.innovationweek.model.Phase;
 import com.app.innovationweek.model.Rule;
+import com.app.innovationweek.util.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +57,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
      */
     private Event event;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM");
+
 
     public EventFragment() {
     }
@@ -120,7 +123,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        if (event.getId().equals("event_id1"))
+        if (event.getId().equals("event_id1") || event.getId().equals("event_id0"))
             gotoEvent.setVisibility(View.VISIBLE);
         else
             gotoEvent.setVisibility(View.GONE);
@@ -141,16 +144,28 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         Intent intent;
         switch (view.getId()) {
             case R.id.goto_event:
+                if (Utils.isLoggedIn(getActivity().getApplicationContext())) {
                 intent = new Intent(getActivity(), QuestionActivity.class);
-                intent.putExtra("quiz_id", "questions");
-                intent.putExtra("question_id", "qid1");
-                startActivity(intent);
+                    // Just pass the quiz_id, question_id will be retrieved from currentQuestion node
+                    intent.putExtra("quiz_id", event.getQuizId());
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.putExtra("quiz_id", event.getQuizId());
+                    intent.putExtra("loginMessage", getResources().getString(R.string.loginMessage));
+                    intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
+                    startActivity(intent);
+                }
                 break;
             case R.id.leaderboard:
                 intent = new Intent(getActivity().getApplicationContext(),
                         LeaderboardActivity.class);
+                if (event.getQuizId() == null) {
+                    Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards for event are not available yet.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 intent.putExtra("quiz_id", event.getQuizId());
-                Log.d(TAG, "starting leaderboard " + event.getQuizId());
+                Log.d(TAG, "Starting leaderboard " + event.getQuizId());
                 startActivity(intent);
                 break;
             default:

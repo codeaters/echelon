@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.PersistableBundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -19,9 +18,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.app.innovationweek.model.firebase.LeaderboardItem;
 import com.app.innovationweek.model.Option;
 import com.app.innovationweek.model.Question;
+import com.app.innovationweek.model.firebase.LeaderboardItem;
 import com.app.innovationweek.model.firebase.Response;
 import com.app.innovationweek.util.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,29 +76,46 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     TextView status;
 
     private CountDownTimer countDownTimer;
-    private DatabaseReference dbRef, questionRef, responseRef, leaderBoardRef;
+    private DatabaseReference dbRef, questionRef, responseRef, leaderBoardRef, currentQuestionRef;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private String quizId, questionId, Uid;
-    private ValueEventListener questionListener, responseListener;
+    private ValueEventListener questionListener, responseListener, currentQuestionListener;
     private long startTime;
-
-    private enum QuestionType {FIB, MCQ}
-
     /**
      * The question this activity is showing
      */
     private Question question;
 
     {
+        currentQuestionListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue(String.class) != null) {
+                    questionId = dataSnapshot.getValue(String.class);
+                    questionRef = dbRef.child(quizId).child(questionId);
+                    responseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
+                    questionRef.addValueEventListener(questionListener);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No question active right now for this quiz!", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                Log.d(TAG, "Current Question Id is: " + questionId);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "No Questions Present");
+
+            }
+        };
         questionListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Log.d(TAG, "datasnap after fetching: " + dataSnapshot.toString());
-
                 question = dataSnapshot.getValue(Question.class);
-
                 responseRef.addListenerForSingleValueEvent(responseListener);
 
             }
@@ -108,6 +124,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "Question Listener", databaseError.toException());
+                Toast.makeText(getApplicationContext(), "There was an error retrieving the qustion. Please contact the admins.", Toast.LENGTH_LONG).show();
             }
         };
         responseListener = new ValueEventListener() {
@@ -154,17 +171,16 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 Bundle bundle = launchIntent.getExtras();
                 quizId = bundle.getString("quiz_id");
                 questionId = bundle.getString("question_id");
-            }//TODO: show messages aleady answered or yet to appear
+            }
         } else {
             quizId = savedInstanceState.getString("quiz_id");
             questionId = savedInstanceState.getString("question_id");
             question=savedInstanceState.getParcelable("question");
         }
         Log.d(TAG, "Question ID is:" + questionId + " " + quizId);
-        questionRef = dbRef.child(quizId).child(questionId);
-        responseRef = dbRef.child("response").child(quizId).child(Uid).child(questionId);
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
-        questionRef.addListenerForSingleValueEvent(questionListener);
+        currentQuestionRef = dbRef.child("currentQuestion").child(quizId);
+        currentQuestionRef.addListenerForSingleValueEvent(currentQuestionListener);
     }
 
     @Override
@@ -218,8 +234,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     public void onRadioButtonOptionClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
-
-        // TODO: 08-03-2017 Some things
     }
 
     /**
@@ -429,4 +443,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
+
+    private enum QuestionType {FIB, MCQ}
 }

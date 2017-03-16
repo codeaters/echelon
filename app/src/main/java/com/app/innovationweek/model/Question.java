@@ -3,11 +3,6 @@ package com.app.innovationweek.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Transient;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +22,6 @@ public class Question implements Parcelable{
             return new Question[size];
         }
     };
-
     private String questionId;
     private String statement;
     private String fibAnswer;
@@ -37,6 +31,10 @@ public class Question implements Parcelable{
     private Long endTime;
     private Map<String, Option> options;
     private boolean expired;
+
+    public Question() {
+
+    }
 
     public Question(Parcel in){
         questionId=in.readString();
@@ -52,6 +50,7 @@ public class Question implements Parcelable{
         in.readBooleanArray(tmp);
         expired=tmp[0];
     }
+
 
     public Long getStartTime() {
         return startTime;

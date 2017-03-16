@@ -68,7 +68,7 @@ public class MessagingService extends FirebaseMessagingService {
             String messageBody = data.get("question_statement");
             Intent intent = new Intent(getApplicationContext(), Utils.isLoggedIn(getApplicationContext()) ? QuestionActivity.class : LoginActivity.class);
             intent.putExtra("quiz_id", data.get("quiz_id"));
-            intent.putExtra("question_id", data.get("question_id"));
+            //intent.putExtra("question_id", data.get("question_id"));
             intent.putExtra("loginMessage", getResources().getString(R.string.loginMessage));
             intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
             sendNotification(messageBody, messageTitle, intent);

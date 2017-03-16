@@ -29,6 +29,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,9 +66,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     private DatabaseReference eventsRef;
     private ChildEventListener eventChildListener;
 
+    private Map<String, String> currentQuestions;
+
+
     private DaoSession daoSession;
 
     {
+
         eventChildListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
