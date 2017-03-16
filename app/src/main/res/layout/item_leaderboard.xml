@@ -30,7 +30,7 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/rank"
         tools:text="Zeeshan Khan"
-        tools:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceListItem" />
 
 
     <TextView
@@ -43,7 +43,7 @@
         android:drawableStart="@drawable/ic_stars_grey_500_18dp"
         android:gravity="center"
         tools:text="34 |"
-        tools:textAppearance="?android:textAppearanceMedium" />
+         />
 
     <TextView
         android:id="@+id/time"
@@ -55,7 +55,7 @@
         android:layout_toEndOf="@+id/score"
         android:drawableStart="@drawable/ic_access_time_grey_500_18dp"
         tools:text=" 1 Min 34 Sec |"
-        tools:textAppearance="?android:textAppearanceMedium" />
+         />
 
     <TextView
         android:id="@+id/team"
@@ -67,13 +67,14 @@
         android:layout_toEndOf="@+id/time"
         android:drawableStart="@drawable/ic_group_grey_500_18dp"
         tools:text=" GL"
-        tools:textAppearance="?android:textAppearanceMedium" />
+         />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_alignParentEnd="true"
+        android:visibility="gone"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="16dp"
         android:src="@drawable/ic_account_circle_blue_grey_700_36dp" />

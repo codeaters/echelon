@@ -1,6 +1,7 @@
 package com.app.innovationweek.util;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.model.Team;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 
 public class UpdateUsersTask extends AsyncTask<Void, Void, Void> {
+    public static String TAG = UpdateUsersTask.class.getSimpleName();
     private WeakReference<DaoSession> daoSessionWeakReference;
     private DataSnapshot usersDataSnapshot;
     private WeakReference<DaoOperationComplete> daoOperationCompleteWeakReference;
@@ -26,14 +28,16 @@ public class UpdateUsersTask extends AsyncTask<Void, Void, Void> {
         daoSessionWeakReference = new WeakReference<DaoSession>(daoSession);
         this.usersDataSnapshot = usersDataSnapshot;
         if (daoOperationComplete != null)
-            this.daoOperationCompleteWeakReference = new WeakReference<DaoOperationComplete>
+            this.daoOperationCompleteWeakReference = new WeakReference<>
                     (daoOperationComplete);
+        Log.d(TAG, "created userUpdateTask");
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
         User user;
         Team team;
+        Log.d(TAG, "parsing userDataSnapshot: " + usersDataSnapshot);
         for (DataSnapshot userDs : usersDataSnapshot.getChildren()) {
             String teamName = userDs.child("team").getValue(String.class);
             List<Team> teams = daoSessionWeakReference.get().getTeamDao().queryBuilder().where(TeamDao
@@ -51,6 +55,7 @@ public class UpdateUsersTask extends AsyncTask<Void, Void, Void> {
             user.setUsername(userDs.child("username").getValue(String.class));
             user.setTeam(team);
             daoSessionWeakReference.get().getUserDao().insertOrReplace(user);
+            Log.d(TAG,"updatedUser:"+user.getName());
         }
         return null;
     }

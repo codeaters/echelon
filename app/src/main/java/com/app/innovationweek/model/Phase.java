@@ -39,6 +39,7 @@ public class Phase implements Parcelable {
     private long startDate;
     private String eventId;
     private String name;
+    private String leaderboardId;
     private int sortOrder;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -51,17 +52,20 @@ public class Phase implements Parcelable {
         id = in.readLong();
         startDate = in.readLong();
         eventId = in.readString();
+        leaderboardId = in.readString();
         in.readTypedList(rules, Rule.CREATOR);
     }
 
 
 
-    @Generated(hash = 755188526)
-    public Phase(Long id, long startDate, String eventId, String name, int sortOrder) {
+    @Generated(hash = 580159146)
+    public Phase(Long id, long startDate, String eventId, String name, String leaderboardId,
+            int sortOrder) {
         this.id = id;
         this.startDate = startDate;
         this.eventId = eventId;
         this.name = name;
+        this.leaderboardId = leaderboardId;
         this.sortOrder = sortOrder;
     }
 
@@ -83,6 +87,7 @@ public class Phase implements Parcelable {
         parcel.writeLong(id);
         parcel.writeLong(startDate);
         parcel.writeString(eventId);
+        parcel.writeString(leaderboardId);
         parcel.writeTypedList(rules);
     }
 
@@ -215,5 +220,17 @@ public class Phase implements Parcelable {
 
     public void setSortOrder(int sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+
+
+    public String getLeaderboardId() {
+        return this.leaderboardId;
+    }
+
+
+
+    public void setLeaderboardId(String leaderboardId) {
+        this.leaderboardId = leaderboardId;
     }
 }

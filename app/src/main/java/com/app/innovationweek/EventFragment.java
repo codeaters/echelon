@@ -110,6 +110,14 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         ruleView.setText(rule.getRule());
                         rules.addView(ruleView);
                     }
+                    Button leaderboard=ButterKnife.findById(phaseView,R.id.phase_leaderboard);
+                    leaderboard.setOnClickListener(this);
+                    if(phase.getLeaderboardId()==null || phase.getLeaderboardId().isEmpty())
+                        leaderboard.setVisibility(View.GONE);
+                    else {
+                        leaderboard.setVisibility(View.VISIBLE);
+                        leaderboard.setTag(phase.getLeaderboardId());
+                    }
                 }
                 phases.addView(phaseView);
             }
@@ -130,13 +138,16 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
         gotoEvent.setOnClickListener(this);
         leaderboard.setOnClickListener(this);
+        if (event.getQuizId() == null || event.getQuizId().isEmpty())
+            leaderboard.setVisibility(View.GONE);
+        else
+            leaderboard.setVisibility(View.VISIBLE);
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -145,7 +156,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.goto_event:
                 if (Utils.isLoggedIn(getActivity().getApplicationContext())) {
-                intent = new Intent(getActivity(), QuestionActivity.class);
+                    intent = new Intent(getActivity(), QuestionActivity.class);
                     // Just pass the quiz_id, question_id will be retrieved from currentQuestion node
                     intent.putExtra("quiz_id", event.getQuizId());
                     startActivity(intent);

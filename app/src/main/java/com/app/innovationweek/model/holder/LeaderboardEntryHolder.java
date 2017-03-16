@@ -42,8 +42,8 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
         name.setText(leaderboardEntry.getUser().getName());
-        score.setText(String.valueOf(leaderboardEntry.getScore()));
-        team.setText(leaderboardEntry.getUser().getTeam().getName());
+        score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
+        team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
         rank.setText(String.valueOf(position + 1));
         time.setText(getTimeString(leaderboardEntry.getTotalTime()));
     }

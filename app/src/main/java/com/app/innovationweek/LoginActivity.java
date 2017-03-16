@@ -169,6 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            username=username.concat("@iw.com");
             mAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -224,7 +225,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isUsernameValid(String username) {
-        return username.length() > 2 && username.contains(".");
+        return !username.isEmpty();
     }
 
     private boolean isPasswordValid(String password) {
