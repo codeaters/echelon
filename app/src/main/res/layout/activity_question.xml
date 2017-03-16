@@ -13,10 +13,10 @@
         android:padding="8dp"
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
-        android:visibility="gone"
+        android:text="@string/no_internet"
         android:textAppearance="?android:textAppearanceSmall"
-        android:textColor="#fff"
-        tools:text="No internet connection!! Turn on the internet to submit answer." />
+        android:textColor="#f00"
+        android:visibility="gone" />
 
 
     <LinearLayout

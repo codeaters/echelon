@@ -37,5 +37,6 @@
 
     <string name="time_seconds"> %1$d Sec |</string>
     <string name="time_minutes_seconds"> %1$d Min %2$d Sec |</string>
+    <string name="no_internet">No internet connection!! Turn on the internet to submit answer.</string>
 
 </resources>

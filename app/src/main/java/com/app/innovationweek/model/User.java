@@ -1,19 +1,22 @@
 package com.app.innovationweek.model;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.TeamDao;
-import org.greenrobot.greendao.annotation.NotNull;
 import com.app.innovationweek.model.dao.UserDao;
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.NotNull;
+import org.greenrobot.greendao.annotation.ToOne;
 
 /**
  * Created by zeeshan on 3/7/2017.
  */
 @Entity
+@IgnoreExtraProperties
 public class User {
     @Id
     private String id;
@@ -28,6 +31,8 @@ public class User {
     /** Used for active entity operations. */
     @Generated(hash = 1507654846)
     private transient UserDao myDao;
+    @Generated(hash = 1834174654)
+    private transient Long team__resolvedKey;
     @Generated(hash = 175564657)
     public User(String id, String username, String name, long teamId) {
         this.id = id;
@@ -38,32 +43,39 @@ public class User {
     @Generated(hash = 586692638)
     public User() {
     }
+
     public String getId() {
         return this.id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public String getUsername() {
         return this.username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public String getName() {
         return this.name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public long getTeamId() {
         return this.teamId;
     }
+
     public void setTeamId(long teamId) {
         this.teamId = teamId;
     }
-    @Generated(hash = 1834174654)
-    private transient Long team__resolvedKey;
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 1193690988)
     public Team getTeam() {

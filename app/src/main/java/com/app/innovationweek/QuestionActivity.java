@@ -399,10 +399,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                                             else
                                                 leaderboardItem = new LeaderboardItem();
                                             System.out.println(TAG + "LeaderboardItem is: " + leaderboardItem);
-                                            leaderboardItem.setDisplayName(user.getDisplayName());
-                                            leaderboardItem.setImgUrl(user.getPhotoUrl().toString());
-                                            leaderboardItem.setUid(dataSnapshot.getKey());
-                                            leaderboardItem.setUsername(user.getEmail().split("@")[0]);
+
                                             leaderboardItem.setTotalScore(leaderboardItem.getTotalScore() + response.getScore());
                                             leaderboardItem.setTotalTime(leaderboardItem.getTotalTime() + response.getDuration());
                                             leaderBoardRef.setValue(leaderboardItem);
