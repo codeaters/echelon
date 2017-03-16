@@ -29,6 +29,8 @@
     <string name="timer_expire">Time expired for this question</string>
     <string name="loading_question">Hold on !! loading the question for you..</string>
     <string name="loading_event">Hold on !! loading events for you..</string>
+    <string name="loading_news">Hold on !! loading news for you..</string>
+    <string name="loading_login">Hold on !! trying to log you in..</string>
     <string name="internet_unavailable">You need working internet connection for this</string>
     <string name="loading">loading please wait..</string>
     <string name="saving_response">submitting your response, please wait..</string>

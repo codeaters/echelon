@@ -173,10 +173,25 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         LeaderboardActivity.class);
                 if (event.getQuizId() == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards for event are not available yet.", Toast.LENGTH_LONG).show();
-                    return;
+                    break;
                 }
                 intent.putExtra("quiz_id", event.getQuizId());
+                intent.putExtra("quiz_name", event.getName());
                 Log.d(TAG, "Starting leaderboard " + event.getQuizId());
+                startActivity(intent);
+                break;
+            case R.id.phase_leaderboard:
+                //get leaderboard Id from tag
+                intent = new Intent(getActivity().getApplicationContext(),
+                        LeaderboardActivity.class);
+                if (view.getTag() == null) {
+                    Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards for event are not available yet.", Toast.LENGTH_LONG).show();
+                    break;
+                }
+                String leaderboardId=(String)view.getTag();
+                intent.putExtra("quiz_id", leaderboardId);
+                intent.putExtra("quiz_name", event.getName());
+                Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);
                 break;
             default:

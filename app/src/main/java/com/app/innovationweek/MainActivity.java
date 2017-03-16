@@ -18,13 +18,17 @@ import android.widget.TextView;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
+import com.app.innovationweek.model.LeaderboardEntry;
 import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.model.dao.EventDao;
 import com.app.innovationweek.util.EventInsertTask;
+import com.app.innovationweek.util.UpdateUsersTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
@@ -63,22 +67,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
-    private DatabaseReference eventsRef;
+    private DatabaseReference eventsRef, userRef;
     private ChildEventListener eventChildListener;
-
+    private ValueEventListener eventValueEventListener, userValueListener;
     private Map<String, String> currentQuestions;
-
-
+    private List<DataSnapshot> eventSnapShots;
     private DaoSession daoSession;
+    private boolean allEventsFeched;
 
     {
-
+        eventSnapShots = new ArrayList<>();
         eventChildListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event added" + dataSnapshot);
+                if (allEventsFeched) {
+                    new EventInsertTask(daoSession, MainActivity.this).execute(dataSnapshot);
+                    return;
+                }
                 if (dataSnapshot.getValue() != null) {
-                    new EventInsertTask(dataSnapshot, daoSession, MainActivity.this).execute();
+                    eventSnapShots.add(dataSnapshot);
                 }
             }
 
@@ -86,13 +94,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event changed" + dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
-                    new EventInsertTask(dataSnapshot, daoSession, MainActivity.this).execute();
+                    new EventInsertTask(daoSession, MainActivity.this).execute(dataSnapshot);
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                if (dataSnapshot != null)
+                    daoSession.getEventDao().queryBuilder()
+                            .where(EventDao.Properties.Id.eq(dataSnapshot.getKey()))
+                            .buildDelete()
+                            .executeDeleteWithoutDetachingEntities();
             }
 
             @Override
@@ -105,7 +117,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
             }
         };
+        eventValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //this callback is garanteed to be called last so we collect datasnapshots in ChildEventListnere and start inserting them here
+                new EventInsertTask(daoSession, MainActivity.this).execute(eventSnapShots.toArray(new DataSnapshot[eventSnapShots.size()]));
+                allEventsFeched = true;
+                eventSnapShots.clear();
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        userValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                new UpdateUsersTask(daoSession, dataSnapshot, MainActivity.this).execute();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -128,8 +164,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         //subscribe to topic for FCM notifications
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
         FirebaseMessaging.getInstance().subscribeToTopic("defaultTopic");
-        eventsRef = FirebaseDatabase.getInstance().getReference("events");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        eventsRef = dbRef.child("events");
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
+        userRef = dbRef.child("users");
+        userRef.addListenerForSingleValueEvent(userValueListener);
         showProgress(null);
     }
 
@@ -137,12 +176,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     protected void onStart() {
         super.onStart();
         eventsRef.addChildEventListener(eventChildListener);
+        eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
         eventsRef.removeEventListener(eventChildListener);
+        super.onStop();
     }
 
     @Override
@@ -164,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         Log.d(TAG, "loader reset");
     }
 
-    private void showProgress(String msg) {
+    public void showProgress(String msg) {
         if (progressMsg != null)
             progressMsg.setText(msg == null || msg.isEmpty() ? getString(R.string.loading_event) : msg);
         mViewPager.setVisibility(View.GONE);
@@ -172,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     }
 
-    private void hideProgress(boolean showError, String errorMsg) {
+    public void hideProgress(boolean showError, String errorMsg) {
         if (showError) {
             if (error != null) error.setVisibility(View.VISIBLE);
             if (mViewPager != null) mViewPager.setVisibility(View.GONE);
@@ -199,8 +239,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     }
 
     @Override
-    public void onDaoOperationComplete() {
-        getSupportLoaderManager().getLoader(0).onContentChanged();
+    public void onDaoOperationComplete(Object object) {
+        getSupportLoaderManager().getLoader(0).forceLoad();
     }
 
     /**
@@ -244,4 +284,5 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             notifyDataSetChanged();
         }
     }
+
 }

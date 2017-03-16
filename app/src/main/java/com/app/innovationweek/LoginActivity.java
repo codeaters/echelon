@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     AutoCompleteTextView mUsernameView;
     @BindView(R.id.password)
     EditText mPasswordView;
-    @BindView(R.id.login_progress)
+    @BindView(R.id.progress)
     View mProgressView;
     @BindView(R.id.login_form)
     View mLoginFormView;

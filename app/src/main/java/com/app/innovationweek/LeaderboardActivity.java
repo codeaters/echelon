@@ -16,6 +16,7 @@ import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.LeaderboardEntryTaskLoader;
 import com.app.innovationweek.model.LeaderboardEntry;
+import com.app.innovationweek.model.User;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.util.LeaderboardEntryUpdateTask;
 import com.app.innovationweek.util.UpdateUsersTask;
@@ -38,29 +39,36 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     @BindView(R.id.leaderboard)
     RecyclerView recyclerView;
     private LeaderboardAdapter leaderboardAdapter;
-    private String quizId;
+    private String quizId, quizName;
     private DatabaseReference leaderboardRef, userRef;
     private ChildEventListener leaderboardEntryChildEventListener;
-    private ValueEventListener userValueListener;
+    private ValueEventListener leaderboardEntryValueEventListener;
     private DaoSession daoSession;
+    private boolean allLeaderboardItemloaded;
+    private List<DataSnapshot> dataSnapshots;
 
     {
+        dataSnapshots = new ArrayList<>();
         leaderboardEntryChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                new LeaderboardEntryUpdateTask(daoSession, quizId, dataSnapshot, LeaderboardActivity
-                        .this).execute();
+                if (allLeaderboardItemloaded) {
+                    new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                            .this).execute(dataSnapshot);
+                    return;
+                }
+                dataSnapshots.add(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                new LeaderboardEntryUpdateTask(daoSession, quizId, dataSnapshot, LeaderboardActivity
-                        .this).execute();
+                new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                        .this).execute(dataSnapshot);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                //TODO: delete leaderboard entry
             }
 
             @Override
@@ -73,10 +81,13 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             }
         };
-        userValueListener = new ValueEventListener() {
+        leaderboardEntryValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                new UpdateUsersTask(daoSession, dataSnapshot, LeaderboardActivity.this).execute();
+                //all ileaderboard item loaded insert them in to database
+                new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                        .this).execute(dataSnapshots.toArray(new DataSnapshot[dataSnapshots.size()]));
+                allLeaderboardItemloaded = true;
             }
 
             @Override
@@ -84,6 +95,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             }
         };
+
     }
 
     @Override
@@ -99,43 +111,46 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>());
         recyclerView.setAdapter(leaderboardAdapter);
         if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().hasExtra("quiz_id")) {
-                quizId = getIntent().getStringExtra("quiz_id");
+            if (getIntent() != null) {
+                if (getIntent().hasExtra("quiz_id")) quizId = getIntent().getStringExtra("quiz_id");
+                if (getIntent().hasExtra("quiz_name")) quizName = getIntent().getStringExtra("quiz_name");
             }
         } else {
             quizId = savedInstanceState.getString("quiz_id", "generalQuiz");
+            quizName = savedInstanceState.getString("quiz_name", "Quizzer");
         }
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         leaderboardRef = dbRef.child("leaderboard").child(quizId);
-        userRef = dbRef.child("users");
+//        userRef = dbRef.child("users");
+//        userRef.addListenerForSingleValueEvent(userValueListener);
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
-        userRef.addListenerForSingleValueEvent(userValueListener);
         getSupportLoaderManager().initLoader(0, null, this);
-        setTitle(quizId);
+        leaderboardRef.addListenerForSingleValueEvent(leaderboardEntryValueEventListener);
+        setTitle(quizName);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         outState.getString("quiz_id", quizId);
+        outState.getString("quiz_name", quizName);
         super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
     protected void onStart() {
-        super.onStart();
         leaderboardRef.addChildEventListener(leaderboardEntryChildEventListener);
+        super.onStart();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
         leaderboardRef.removeEventListener(leaderboardEntryChildEventListener);
+        super.onStop();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_leaderboard, menu);
         return true;
     }
 
@@ -155,8 +170,15 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     }
 
     @Override
-    public void onDaoOperationComplete() {
-        getSupportLoaderManager().getLoader(0).forceLoad();
+    public void onDaoOperationComplete(Object object) {
+        if (object != null && object instanceof LeaderboardEntry) {
+            //logic to update specific leaderboard entity
+            leaderboardAdapter.updateLeaderboardEntry((LeaderboardEntry) object);
+        } else {
+            //leaderboard entities bulk update or1
+            //users bulk update
+            getSupportLoaderManager().getLoader(0).forceLoad();
+        }
     }
 
     @Override

@@ -5,5 +5,5 @@ package com.app.innovationweek.callbacks;
  */
 
 public interface DaoOperationComplete {
-    void onDaoOperationComplete();
+    void onDaoOperationComplete(Object object);
 }

@@ -10,17 +10,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.innovationweek.adapter.NewsAdapter;
+import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.NewsAsyncTaskLoader;
 import com.app.innovationweek.model.News;
+import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.NewsDao;
+import com.app.innovationweek.util.NewsInsertTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,55 +41,48 @@ import butterknife.ButterKnife;
  * create an instance of this fragment.
  */
 public class NewsFragment extends Fragment implements LoaderManager
-        .LoaderCallbacks<List<News>> {
+        .LoaderCallbacks<List<News>>, DaoOperationComplete {
 
     private static final String TAG = NewsFragment.class.getSimpleName();
 
     @BindView(R.id.recycler_view_news)
-    RecyclerView recyclerView;
+    RecyclerView newsList;
+    @BindView(R.id.progress)
+    View progress;
+    @BindView(R.id.progress_msg)
+    TextView progressMsg;
 
     //Firebase variables
     private DatabaseReference mDatabaseReference;
     private ChildEventListener newsListener;
+    private ValueEventListener newsValueEventListener;
     private NewsAdapter newsAdapter;
-    private NewsDao newsDao;
+    private DaoSession daoSession;
+    private List<DataSnapshot> dataSnapshots;
+    private boolean allNewsFetched;
 
     {
+        dataSnapshots=new ArrayList<>();
         newsListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 // A new comment has been added, add it to the displayed list
-                News news = dataSnapshot.getValue(News.class);
-                news.setNewsId(dataSnapshot.getKey());
-                NewsAdapter newsAdapter = ((NewsAdapter) recyclerView.getAdapter());
-                if (!newsAdapter.getNewsList().contains(news)) {
-                    newsAdapter.getNewsList().add(0, news);
-                    newsAdapter.notifyItemInserted(0);
-                    newsDao.insertOrReplace(news);
+                if (allNewsFetched) {
+                    new NewsInsertTask(daoSession, NewsFragment.this).execute(dataSnapshot);
+                    return;
                 }
 
-                Log.d(TAG, news.toString());
+                if (dataSnapshot.getValue() != null) {
+                    dataSnapshots.add(dataSnapshot);
+                }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-                News news = dataSnapshot.getValue(News.class);
-                news.setNewsId(dataSnapshot.getKey());
-                NewsAdapter newsAdapter = ((NewsAdapter) recyclerView.getAdapter());
-                int index = newsAdapter.getNewsList().indexOf(news);
-                if (index > -1) {
-                    newsAdapter.getNewsList().remove(index);
-                    newsAdapter.getNewsList().add(index, news);
-                    newsAdapter.notifyDataSetChanged();
-                    newsDao.insertOrReplace(news);
-                } else
-                    Log.w(TAG, "News Item Changed but not updated in the RecyclerView");
-
-                Log.d(TAG, news.toString());
-
+                new NewsInsertTask(daoSession, NewsFragment.this).execute(dataSnapshot);
             }
 
             @Override
@@ -102,6 +100,21 @@ public class NewsFragment extends Fragment implements LoaderManager
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
                 Toast.makeText(getActivity().getApplicationContext(), "Failed to load news.",
                         Toast.LENGTH_SHORT).show();
+            }
+        };
+        newsValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //this is garenteed to be called last so we collect datanapshots in ChildEventListener and insert them here giving a less fluctuating UI
+                new NewsInsertTask(daoSession, NewsFragment.this).execute(dataSnapshots.toArray(new DataSnapshot[dataSnapshots.size()]));
+                allNewsFetched = true;
+                dataSnapshots.clear();
+                hideProgress();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         };
     }
@@ -125,7 +138,7 @@ public class NewsFragment extends Fragment implements LoaderManager
 
         }
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("news/");
-        newsDao = ((EchelonApplication) getActivity().getApplication()).getDaoSession().getNewsDao();
+        daoSession = ((EchelonApplication) getActivity().getApplication()).getDaoSession();
     }
 
     @Override
@@ -137,9 +150,10 @@ public class NewsFragment extends Fragment implements LoaderManager
 
         newsAdapter = new NewsAdapter(new ArrayList<News>());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(newsAdapter);
+        newsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        newsList.setAdapter(newsAdapter);
         getActivity().getSupportLoaderManager().initLoader(1, null, this);
+        showProgress(null);
         return rootView;
     }
 
@@ -150,9 +164,9 @@ public class NewsFragment extends Fragment implements LoaderManager
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
         mDatabaseReference.removeEventListener(newsListener);
+        super.onStop();
     }
 
     /**
@@ -186,5 +200,33 @@ public class NewsFragment extends Fragment implements LoaderManager
     @Override
     public void onLoaderReset(Loader<List<News>> loader) {
         Log.w(TAG, "Loader has been reset");
+    }
+
+    private void showProgress(String msg) {
+        if (progressMsg != null)
+            progressMsg.setText(msg == null || msg.isEmpty() ? getString(R.string.loading_news) : msg);
+        if (progress != null) progress.setVisibility(View.VISIBLE);
+        if (newsList != null) newsList.setVisibility(View.GONE);
+    }
+
+    private void hideProgress() {
+        if (progress != null) progress.setVisibility(View.GONE);
+        if (newsList != null) newsList.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDaoOperationComplete(Object object) {
+        //new news item here from db
+        News news = (News) object;
+        int index = newsAdapter.getNewsList().indexOf(news);
+        if (index > -1) {
+            newsAdapter.getNewsList().remove(index);
+            newsAdapter.getNewsList().add(index, news);
+            newsAdapter.notifyItemChanged(index);
+        }else{
+            //new news item, add it to top
+            newsAdapter.getNewsList().add(0, news);
+            newsAdapter.notifyItemInserted(0);
+        }
     }
 }

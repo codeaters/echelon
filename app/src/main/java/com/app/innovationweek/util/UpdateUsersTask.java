@@ -64,7 +64,7 @@ public class UpdateUsersTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         if (daoOperationCompleteWeakReference != null && daoOperationCompleteWeakReference.get()
                 != null)
-            daoOperationCompleteWeakReference.get().onDaoOperationComplete();
+            daoOperationCompleteWeakReference.get().onDaoOperationComplete(new User());
         super.onPostExecute(aVoid);
     }
 }
