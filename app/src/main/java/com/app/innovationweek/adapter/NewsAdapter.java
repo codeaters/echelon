@@ -1,5 +1,6 @@
 package com.app.innovationweek.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +11,7 @@ import com.app.innovationweek.model.News;
 import com.app.innovationweek.model.holder.EmptyHolder;
 import com.app.innovationweek.model.holder.NewsHolder;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 
 /**
@@ -22,7 +21,7 @@ import java.util.ListIterator;
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = NewsAdapter.class.getSimpleName();
-    private List<News> newsList = new ArrayList<>();
+    private List<News> newsList;
 
     public NewsAdapter(List<News> newsList) {
         this.newsList = newsList;
@@ -73,8 +72,20 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        int size = newsList.size();
-        return size > 0 ? size : 1;
+        int size = newsList == null ? 0 : newsList.size();
+        if (size == 0)
+            size++; //for empty item
+        return size;
+    }
+
+    public void addNewsAtTop(@NonNull News news) {
+        if (newsList != null) {
+            newsList.add(0, news);
+            if (newsList.size() == 1)
+                notifyItemChanged(0);
+            else
+                notifyItemInserted(0);
+        }
     }
 
     public List<News> getNewsList() {
@@ -82,11 +93,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setNewsList(List<News> newsList) {
-        ListIterator<News> itr = newsList.listIterator();
-        while (itr.hasNext()) {
-            if (itr.next() == null)
-                itr.remove();
-        }
         this.newsList = newsList;
         notifyDataSetChanged();
     }

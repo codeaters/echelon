@@ -8,50 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1012409695617:android:067b8bec02841072",
-        "android_client_info": {
-          "package_name": "com.privateapp.tw.technoweekapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1012409695617-urc4kr6v5hdm4dcdvm36p9avut2fel3a.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.privateapp.tw.technoweekapp",
-            "certificate_hash": "7c8cfbc2f8d206e8555dfcadde07c565c07f7d85"
-          }
-        },
-        {
-          "client_id": "1012409695617-ueuh3m1fkiskp1o2nvb1obh6qjtiplbj.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAD_S88CSVTWr96HkiEYJIDSeyIpmOSvKI"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1012409695617-ueuh3m1fkiskp1o2nvb1obh6qjtiplbj.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:1012409695617:android:9507f6bdb591c1c6",
         "android_client_info": {
           "package_name": "com.app.innovationweek"

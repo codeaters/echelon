@@ -219,19 +219,22 @@ public class NewsFragment extends Fragment implements LoaderManager
     @Override
     public void onDaoOperationComplete(Object object) {
         //new news item here from db
-        if (object == null && isAdded()) {
-            getActivity().getSupportLoaderManager().getLoader(1).forceLoad();
-            return;
-        }
-        News news = (News) object;
-        int index = newsAdapter.getNewsList().indexOf(news);
-        if (index > -1) {
-            newsAdapter.getNewsList().set(index, news);
-            newsAdapter.notifyItemChanged(index);
-        } else {
-            //new news item, add it to top
-            newsAdapter.getNewsList().add(0, news);
-            newsAdapter.notifyItemInserted(0);
+        if (isAdded()) {
+            if (object == null) {
+                getActivity().getSupportLoaderManager().getLoader(1).forceLoad();
+                return;
+            }
+            News news = (News) object;
+            int index = newsAdapter.getNewsList().indexOf(news);
+            if (index > -1) {
+                Log.d(TAG,"old news at"+index);
+                newsAdapter.getNewsList().set(index, news);
+                newsAdapter.notifyItemChanged(index);
+            } else {
+                //new news item, add it to top
+                Log.d(TAG,"new news inserting");
+                newsAdapter.addNewsAtTop(news);
+            }
         }
     }
 }
