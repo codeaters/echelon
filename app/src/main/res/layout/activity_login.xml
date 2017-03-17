@@ -98,24 +98,6 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:text="OR"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/skip_to_leaderboard"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_skip_to_leaderboard"
-                android:textStyle="bold" />
-
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
