@@ -18,6 +18,7 @@ import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.NewsAsyncTaskLoader;
 import com.app.innovationweek.model.News;
 import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.model.dao.NewsDao;
 import com.app.innovationweek.util.NewsInsertTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -87,6 +88,8 @@ public class NewsFragment extends Fragment implements LoaderManager
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                daoSession.getNewsDao().queryBuilder().where(NewsDao.Properties.NewsId.eq
+                        (dataSnapshot.getKey())).buildDelete().executeDeleteWithoutDetachingEntities();
             }
 
             @Override
@@ -106,7 +109,7 @@ public class NewsFragment extends Fragment implements LoaderManager
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //this is garenteed to be called las1t so we collect datanapshots in
                 // ChildEventListener and insert them here giving a less fluctuating UI
-                Log.d(TAG,"inserting news "+dataSnapshots.size());
+                Log.d(TAG, "inserting news " + dataSnapshots.size());
                 new NewsInsertTask(daoSession, NewsFragment.this).execute(dataSnapshots.toArray(new DataSnapshot[dataSnapshots.size()]));
                 allNewsFetched = true;
             }
@@ -185,7 +188,7 @@ public class NewsFragment extends Fragment implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> list) {
-        Log.d(TAG, "News loaded "+list.size());
+        Log.d(TAG, "News loaded " + list.size());
         newsAdapter.setNewsList(list);
     }
 

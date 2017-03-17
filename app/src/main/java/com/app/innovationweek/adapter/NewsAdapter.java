@@ -53,7 +53,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case Type.EMPTY:
-                ((EmptyHolder)holder).set(R.string.empty_news,R.drawable.photograph);
+                ((EmptyHolder) holder).set(R.string.empty_news, R.drawable.photograph);
                 break;
             case Type.IMAGE_NEWS:
             case Type.NORMAL_NEWS:
@@ -73,7 +73,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return newsList.size();
+        int size = newsList.size();
+        return size > 0 ? size : 1;
     }
 
     public List<News> getNewsList() {
