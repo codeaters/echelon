@@ -34,7 +34,7 @@ public class NewsHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.time)
     public TextView time;
     private CardView rootView;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd, hh:mm a");
 
     public NewsHolder(View itemView) {
         super(itemView);

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="8dp">
@@ -16,7 +18,7 @@
         android:background="@drawable/circle_primary_dark"
         android:gravity="center"
         android:textColor="#fff"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:text="12" />
 
@@ -26,11 +28,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/rank"
-        tools:text="Zeeshan Khan"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceMedium"
+        tools:text="Zeeshan Khan" />
 
 
     <TextView
@@ -39,9 +41,11 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/name"
         android:layout_below="@+id/name"
+
         android:layout_marginTop="4dp"
         android:drawableStart="@drawable/ic_stars_grey_500_18dp"
         android:gravity="center"
+        android:textSize="12sp"
         tools:text="34 |"
          />
 
@@ -54,18 +58,29 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/score"
         android:drawableStart="@drawable/ic_access_time_grey_500_18dp"
+        android:gravity="center"
+        android:textSize="12sp"
         tools:text=" 1 Min 34 Sec |"
          />
 
     <TextView
         android:id="@+id/team"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/time"
-        android:drawableStart="@drawable/ic_group_grey_500_18dp"
+        android:drawableStart="@drawable/ic_group_grey_18dp"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="1"
+        android:textAlignment="gravity"
+        android:textSize="12sp"
         tools:text=" GL"
          />
 
@@ -74,8 +89,8 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_alignParentEnd="true"
-        android:visibility="gone"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="16dp"
-        android:src="@drawable/ic_account_circle_blue_grey_700_36dp" />
+        android:src="@drawable/ic_account_circle_blue_grey_700_36dp"
+        android:visibility="gone" />
 </RelativeLayout>

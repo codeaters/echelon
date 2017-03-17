@@ -3,8 +3,8 @@ package com.app.innovationweek.model.holder;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.innovationweek.R;
@@ -38,12 +38,17 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         super(itemView);
         ButterKnife.bind(this, itemView);
         context = itemView.getContext();
+        team.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        team.setSingleLine(true);
+        team.setMarqueeRepeatLimit(5);
+        team.setSelected(true);
     }
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
         name.setText(leaderboardEntry.getUser().getName());
         score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
         team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
+
         rank.setText(String.valueOf(position + 1));
         time.setText(getTimeString(leaderboardEntry.getTotalTime()));
     }
