@@ -58,9 +58,9 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
             if (userList != null && userList.size() > 0) {
                 user = userList.get(0);
             } else {
-                //fetch and insert the user
-                Log.d(TAG, "invalid user found");
-                return null;
+                //try to fetch that user in
+                Log.d(TAG, "invalid user found ");
+                continue;
             }
 
             leaderboardEntryList = daoSessionWeakReference.get()

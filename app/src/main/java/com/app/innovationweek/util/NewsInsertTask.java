@@ -1,6 +1,7 @@
 package com.app.innovationweek.util;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.model.News;
@@ -14,6 +15,7 @@ import java.lang.ref.WeakReference;
  */
 
 public class NewsInsertTask extends AsyncTask<DataSnapshot, Void, News> {
+    public static String TAG = NewsInsertTask.class.getSimpleName();
     private WeakReference<DaoOperationComplete> daoOperationCompleteWeakReference;
     private WeakReference<DaoSession> daoSessionWeakReference;
 
@@ -24,7 +26,8 @@ public class NewsInsertTask extends AsyncTask<DataSnapshot, Void, News> {
 
     @Override
     protected News doInBackground(DataSnapshot... dataSnapshots) {
-        News news=null;
+        News news = null;
+        Log.d(TAG, "inserting " + dataSnapshots.length);
         for (DataSnapshot dataSnapshot : dataSnapshots) {
             if (dataSnapshot.getValue() != null) {
                 news = dataSnapshot.getValue(News.class);
@@ -33,7 +36,7 @@ public class NewsInsertTask extends AsyncTask<DataSnapshot, Void, News> {
                     daoSessionWeakReference.get().getNewsDao().insertOrReplace(news);
             }
         }
-        return dataSnapshots.length>1?null:news;
+        return dataSnapshots.length > 1 ? null : news;
     }
 
     @Override

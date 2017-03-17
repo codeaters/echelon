@@ -5,6 +5,7 @@ import android.app.Application;
 import com.app.innovationweek.model.dao.DaoMaster;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -19,10 +20,10 @@ public class EchelonApplication extends Application {
     public void onCreate() {
         super.onCreate();
         FirebaseDatabase.getInstance();
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "notes-db");
+        FirebaseMessaging.getInstance().subscribeToTopic("defaultTopic");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "echelon-db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
-
     }
 
     public DaoSession getDaoSession() {

@@ -159,6 +159,6 @@ public class News implements Parcelable, Comparable<News> {
      */
     @Override
     public int compareTo(@NonNull News o) {
-        return (int) (o.timestamp - this.timestamp);
+        return o.newsId.compareTo(this.newsId);
     }
 }

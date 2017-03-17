@@ -42,5 +42,9 @@ public class Utils {
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
 
     }
+    public static boolean isUsersFetched(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("is_users_fetched",
+                false);
+    }
 
 }

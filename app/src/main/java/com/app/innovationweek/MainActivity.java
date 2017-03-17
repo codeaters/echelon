@@ -1,6 +1,7 @@
 package com.app.innovationweek;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,18 +19,19 @@ import android.widget.TextView;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
-import com.app.innovationweek.model.LeaderboardEntry;
+import com.app.innovationweek.model.User;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.EventDao;
+import com.app.innovationweek.service.UserFetchService;
 import com.app.innovationweek.util.EventInsertTask;
-import com.app.innovationweek.util.UpdateUsersTask;
+import com.app.innovationweek.util.EventUpdateTask;
+import com.app.innovationweek.util.Utils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,11 +71,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private DatabaseReference eventsRef, userRef;
     private ChildEventListener eventChildListener;
-    private ValueEventListener eventValueEventListener, userValueListener;
+    private ValueEventListener eventValueEventListener;
     private Map<String, String> currentQuestions;
     private List<DataSnapshot> eventSnapShots;
     private DaoSession daoSession;
-    private boolean allEventsFeched;
+    private boolean allEventsFetched;
 
     {
         eventSnapShots = new ArrayList<>();
@@ -81,20 +83,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event added" + dataSnapshot);
-                if (allEventsFeched) {
-                    new EventInsertTask(daoSession, MainActivity.this).execute(dataSnapshot);
+                if (allEventsFetched) {
+                    new EventUpdateTask(daoSession, MainActivity.this).execute(dataSnapshot);
                     return;
                 }
-                if (dataSnapshot.getValue() != null) {
-                    eventSnapShots.add(dataSnapshot);
-                }
+                eventSnapShots.add(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "event changed" + dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
-                    new EventInsertTask(daoSession, MainActivity.this).execute(dataSnapshot);
+                    //dont update using this task it will delete all and insert this one
+                    new EventUpdateTask(daoSession, MainActivity.this).execute(dataSnapshot);
                 }
             }
 
@@ -114,34 +115,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG, databaseError.toString());
             }
         };
         eventValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //this callback is garanteed to be called last so we collect datasnapshots in ChildEventListnere and start inserting them here
-                new EventInsertTask(daoSession, MainActivity.this).execute(eventSnapShots.toArray(new DataSnapshot[eventSnapShots.size()]));
-                allEventsFeched = true;
-
+                if (eventSnapShots.size() > 0) {
+                    Log.d(TAG, "inserting events " + eventSnapShots.size());
+                    new EventInsertTask(daoSession, MainActivity.this).execute(eventSnapShots.toArray(new DataSnapshot[eventSnapShots.size()]));
+                    allEventsFetched = true;
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG, databaseError.toString());
             }
         };
-        userValueListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                new UpdateUsersTask(daoSession, dataSnapshot, MainActivity.this).execute();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
     }
 
     @Override
@@ -160,41 +153,45 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-        getSupportLoaderManager().initLoader(0, null, this);
+
         //subscribe to topic for FCM notifications
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
-        FirebaseMessaging.getInstance().subscribeToTopic("defaultTopic");
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        eventsRef = dbRef.child("events");
+        eventsRef = FirebaseDatabase.getInstance().getReference("events");
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         userRef = dbRef.child("users");
-        userRef.addListenerForSingleValueEvent(userValueListener);
-        showProgress(null);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     protected void onStart() {
-        super.onStart();
+        Log.d(TAG, "fetching events");
+        if (!Utils.isUsersFetched(getApplicationContext())) {
+            Log.d(TAG, "fetching users");
+            UserFetchService.startFetchingUser(getApplicationContext());
+        }
         eventsRef.addChildEventListener(eventChildListener);
         eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
+        super.onStart();
     }
 
     @Override
     protected void onStop() {
         eventsRef.removeEventListener(eventChildListener);
+        allEventsFetched = false;
         super.onStop();
     }
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         EventAsyncTaskLoader loader = new EventAsyncTaskLoader(getApplicationContext());
-        Log.d(TAG, "loader created");
+        Log.d(TAG, "event loader created");
         return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        Log.d(TAG, "loading finished" + (data == null ? 0 : data.size()));
+        Log.d(TAG, "event laded " + (data == null ? 0 : data.size()));
         mSectionsPagerAdapter.setPages(data);
         hideProgress(false, null);
     }
@@ -240,8 +237,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onDaoOperationComplete(Object object) {
-        getSupportLoaderManager().getLoader(0).forceLoad();
-        eventSnapShots.clear();
+        /*
+        * saving users fetched state in sharedpreferences so that we don't retreive same data
+        * multiple times.
+         */
+        if (object == null) {
+            getSupportLoaderManager().getLoader(0).forceLoad();
+            eventSnapShots.clear();
+            return;
+        }
     }
 
     /**

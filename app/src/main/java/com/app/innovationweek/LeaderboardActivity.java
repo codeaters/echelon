@@ -16,10 +16,8 @@ import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.LeaderboardEntryTaskLoader;
 import com.app.innovationweek.model.LeaderboardEntry;
-import com.app.innovationweek.model.User;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.util.LeaderboardEntryUpdateTask;
-import com.app.innovationweek.util.UpdateUsersTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +50,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         leaderboardEntryChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "childAdded " + dataSnapshot);
                 if (allLeaderboardItemloaded) {
                     new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
                             .this).execute(dataSnapshot);
@@ -62,6 +61,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "childUpdated " + dataSnapshot);
                 new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
                         .this).execute(dataSnapshot);
             }
@@ -113,11 +113,14 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         if (savedInstanceState == null) {
             if (getIntent() != null) {
                 if (getIntent().hasExtra("quiz_id")) quizId = getIntent().getStringExtra("quiz_id");
-                if (getIntent().hasExtra("quiz_name")) quizName = getIntent().getStringExtra("quiz_name");
+                if (getIntent().hasExtra("quiz_name"))
+                    quizName = getIntent().getStringExtra("quiz_name");
             }
         } else {
             quizId = savedInstanceState.getString("quiz_id", "generalQuiz");
             quizName = savedInstanceState.getString("quiz_name", "Quizzer");
+            allLeaderboardItemloaded = savedInstanceState.getBoolean("allLeaderboardItemloaded",
+                    false);
         }
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         leaderboardRef = dbRef.child("leaderboard").child(quizId);
@@ -131,8 +134,9 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.getString("quiz_id", quizId);
-        outState.getString("quiz_name", quizName);
+        outState.putString("quiz_id", quizId);
+        outState.putString("quiz_name", quizName);
+        outState.putBoolean("allLeaderboardItemloaded", allLeaderboardItemloaded);
         super.onSaveInstanceState(outState, outPersistentState);
     }
 
@@ -169,11 +173,13 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     public void onDaoOperationComplete(Object object) {
         if (object != null && object instanceof LeaderboardEntry) {
             //logic to update specific leaderboard entity
+            Log.d(TAG, "updated/inserted: " + object.toString());
             leaderboardAdapter.updateLeaderboardEntry((LeaderboardEntry) object);
         } else {
             //leaderboard entities bulk update or1
             //users bulk update
             getSupportLoaderManager().getLoader(0).forceLoad();
+            dataSnapshots.clear();
         }
     }
 

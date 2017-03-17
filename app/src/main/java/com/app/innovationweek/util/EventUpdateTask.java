@@ -19,12 +19,12 @@ import java.util.Map;
  * Created by zeeshan on 3/13/2017.
  */
 
-public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innovationweek.model.Event> {
-    public static String TAG = EventInsertTask.class.getSimpleName();
+public class EventUpdateTask extends AsyncTask<DataSnapshot, Void, com.app.innovationweek.model.Event> {
+    public static String TAG = EventUpdateTask.class.getSimpleName();
     private WeakReference<DaoSession> daoSessionWeakReference;
     private WeakReference<DaoOperationComplete> daoOperationCompleteWeakReference;
 
-    public EventInsertTask(DaoSession daoSession, DaoOperationComplete
+    public EventUpdateTask(DaoSession daoSession, DaoOperationComplete
             daoOperationComplete) {
         daoSessionWeakReference = new WeakReference<DaoSession>(daoSession);
         daoOperationCompleteWeakReference = new WeakReference<DaoOperationComplete>
@@ -34,20 +34,18 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
 
     @Override
     protected com.app.innovationweek.model.Event doInBackground(DataSnapshot... dataSnapshots) {
-        Log.d(TAG, "inserting events" + dataSnapshots.length);
+        Log.d(TAG, "updating events" + dataSnapshots[0]);
         com.app.innovationweek.model.Event daoEvent = null;
-        if (dataSnapshots.length > 0) //delete only if we have data to insert
-            daoSessionWeakReference.get().getEventDao().queryBuilder().buildDelete().executeDeleteWithoutDetachingEntities();
-        for (DataSnapshot dataSnapshot : dataSnapshots) {
+
+        DataSnapshot dataSnapshot =dataSnapshots[0];
             if (dataSnapshot.getValue() != null) {
                 //delete all events so that any event removed while the listeners are not active also gets removed.
 
                 PhaseDao phaseDao = daoSessionWeakReference.get().getPhaseDao();
                 Event event = dataSnapshot.getValue(Event.class);
                 event.setId(dataSnapshot.getKey());
-                Log.d("Utils", "inserting event" + event.toString());
-                daoEvent = new com.app.innovationweek.model.Event();
 
+                daoEvent = new com.app.innovationweek.model.Event();
                 daoEvent.setId(event.getId());
                 daoEvent.setDescription(event.getDescription());
                 daoEvent.setName(event.getName());
@@ -71,14 +69,14 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase.setStartDate(phase.getStartDate());
                         daoPhase.setName(phase.getName());
                         daoPhase.setEventId(daoEvent.getId());
-                        daoSessionWeakReference.get().getPhaseDao().insertOrReplace(daoPhase);
+                        daoSessionWeakReference.get().getPhaseDao().insert(daoPhase);
                         if (phase.getRules() != null && phase.getRules().size() > 0) {
                             for (Map.Entry<String, String> rme : phase.getRules().entrySet()) {
                                 daoRule = new Rule();
                                 daoRule.setRule(rme.getValue());
                                 daoRule.setPhaseId(daoPhase.getId());
                                 daoRule.setEventId(daoEvent.getId());
-                                daoSessionWeakReference.get().getRuleDao().insertOrReplace(daoRule);
+                                daoSessionWeakReference.get().getRuleDao().insert(daoRule);
                             }
                         }
                     }
@@ -88,12 +86,11 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoRule = new Rule();
                         daoRule.setRule(rme.getValue());
                         daoRule.setEventId(daoEvent.getId());
-                        daoSessionWeakReference.get().getRuleDao().insertOrReplace(daoRule);
+                        daoSessionWeakReference.get().getRuleDao().insert(daoRule);
                     }
                 }
-            }
         }
-        return dataSnapshots.length > 1 ? null : daoEvent;
+        return daoEvent;
     }
 
     @Override

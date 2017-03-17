@@ -7,5 +7,5 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
     android:gravity="center"
-    android:textAppearance="?android:textAppearanceSmall"
+    android:textAppearance="?android:textAppearanceListItem"
     tools:text="This is a rule"/>

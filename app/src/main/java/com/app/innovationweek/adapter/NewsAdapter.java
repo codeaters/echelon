@@ -7,16 +7,19 @@ import android.view.ViewGroup;
 
 import com.app.innovationweek.R;
 import com.app.innovationweek.model.News;
+import com.app.innovationweek.model.holder.EmptyHolder;
 import com.app.innovationweek.model.holder.NewsHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
+
 
 /**
  * Created by n188851 on 10-03-2017.
  */
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = NewsAdapter.class.getSimpleName();
     private List<News> newsList = new ArrayList<>();
@@ -26,30 +29,46 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
     }
 
     @Override
-    public NewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
         switch (viewType) {
-            case 1:
+            case Type.IMAGE_NEWS:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_imagenews, parent, false);
-                break;
-            default:
+                return new NewsHolder(itemView);
+            case Type.NORMAL_NEWS:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_news, parent, false);
+                return new NewsHolder(itemView);
+            default:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_empty, parent, false);
+                return new EmptyHolder(itemView);
+
         }
-        return new NewsHolder(itemView);
+
     }
 
     @Override
-    public void onBindViewHolder(NewsHolder holder, int position) {
-        News news = newsList.get(position);
-        holder.setNews(news);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        switch (getItemViewType(position)) {
+            case Type.EMPTY:
+                ((EmptyHolder)holder).set(R.string.empty_news,R.drawable.photograph);
+                break;
+            case Type.IMAGE_NEWS:
+            case Type.NORMAL_NEWS:
+                News news = newsList.get(position);
+                ((NewsHolder) holder).setNews(news);
+                break;
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        return newsList.get(position).getImgUrl() == null || newsList.get(position).getImgUrl()
-                .isEmpty() ? 0 : 1;
+        if (newsList == null || newsList.size() == 0) return Type.EMPTY;
+        else if (newsList.get(position).getImgUrl() == null
+                || newsList.get(position).getImgUrl().isEmpty()) return Type.NORMAL_NEWS;
+        return Type.IMAGE_NEWS;
     }
 
     @Override
@@ -62,7 +81,18 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
     }
 
     public void setNewsList(List<News> newsList) {
+        ListIterator<News> itr = newsList.listIterator();
+        while (itr.hasNext()) {
+            if (itr.next() == null)
+                itr.remove();
+        }
         this.newsList = newsList;
         notifyDataSetChanged();
+    }
+
+    public interface Type {
+        int EMPTY = 2;
+        int NORMAL_NEWS = 0;
+        int IMAGE_NEWS = 1;
     }
 }

@@ -2,6 +2,7 @@ package com.app.innovationweek.model.holder;
 
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -45,7 +46,7 @@ public class NewsHolder extends RecyclerView.ViewHolder {
         if (news.getImgUrl() != null && !news.getImgUrl().isEmpty() && image != null)
             Picasso.with(image.getContext()).load(news.getImgUrl()).into(image);
         else {
-            int color = Color.parseColor("#B3E5FC");
+            int color = ContextCompat.getColor(rootView.getContext(),R.color.colorPrimary);
             try {
                 color = Color.parseColor(news.getColor());
             } catch (Exception ex) {

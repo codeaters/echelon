@@ -201,5 +201,16 @@ public class LeaderboardEntry {
         myDao = daoSession != null ? daoSession.getLeaderboardEntryDao() : null;
     }
 
-   
+    @Override
+    public String toString() {
+        return "LeaderboardEntry{" +
+                "id=" + id +
+                ", leaderboardId='" + leaderboardId + '\'' +
+                ", leaderboard=" + leaderboard +
+                ", userId='" + userId + '\'' +
+                ", user=" + user +
+                ", score=" + score +
+                ", totalTime=" + totalTime +
+                '}';
+    }
 }

@@ -23,6 +23,8 @@
     <string name="event_date">Starts on %1$s</string>
 
     <string name="error_general">operation failed! retry</string>
+    <string name="empty_general">Nothing in here!!</string>
+    <string name="empty_news">Uh oh!! No news item found</string>
 
     <string name="timer_msg">You have %1$d minutes %2$d seconds to answer this question</string>
     <string name="timer_msg_sec">You have %1$d seconds to answer this question</string>

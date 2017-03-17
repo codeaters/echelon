@@ -30,7 +30,7 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/rank"
         tools:text="Zeeshan Khan"
-        android:textAppearance="?android:textAppearanceListItem" />
+        android:textAppearance="?android:textAppearanceLarge" />
 
 
     <TextView
