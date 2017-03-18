@@ -155,6 +155,10 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         Intent intent;
         switch (view.getId()) {
             case R.id.goto_event:
+                if (event.getQuizId() == null) {
+                    Toast.makeText(getActivity().getApplicationContext(), "The Quiz is not active yet. Please come back later.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (Utils.isLoggedIn(getActivity().getApplicationContext())) {
                     intent = new Intent(getActivity(), QuestionActivity.class);
                     // Just pass the quiz_id, question_id will be retrieved from currentQuestion node

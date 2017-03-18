@@ -46,7 +46,9 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     private List<DataSnapshot> dataSnapshots;
 
     {
+
         dataSnapshots = new ArrayList<>();
+        Log.d(TAG, "Instance initializer initializing Listeners.");
         leaderboardEntryChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -96,6 +98,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             }
         };
 
+        Log.d(TAG, "Instance initializer initialized Listeners.");
+
     }
 
     @Override
@@ -142,7 +146,10 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
     @Override
     protected void onStart() {
+        Log.d(TAG, "Attaching Leaderboard Listener");
+        Log.d(TAG, "Listener is: " + leaderboardEntryChildEventListener);
         leaderboardRef.addChildEventListener(leaderboardEntryChildEventListener);
+        Log.d(TAG, "Leaderboard Listener attached");
         super.onStart();
     }
 

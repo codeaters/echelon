@@ -379,6 +379,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                             System.out.println(TAG + " Difference is: " + difference);
 
 
+
                             if (question.getStartTime() > response.getEndTime() || question.getEndTime() < response.getEndTime()) {
                                 Toast.makeText(getApplicationContext(), "You exceeded the time limit. Your response is invalid.", Toast.LENGTH_LONG).show();
                                 response.setScore(0);
@@ -401,20 +402,25 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             LeaderboardItem leaderboardItem;
+                                            //if the user is answering for the first time
                                             if (dataSnapshot.getValue(LeaderboardItem.class) != null)
                                                 leaderboardItem = dataSnapshot.getValue(LeaderboardItem.class);
                                             else
+                                            //if the user has answered below
                                                 leaderboardItem = new LeaderboardItem();
                                             System.out.println(TAG + "LeaderboardItem is: " + leaderboardItem);
 
                                             leaderboardItem.setTotalScore(leaderboardItem.getTotalScore() + response.getScore());
                                             leaderboardItem.setTotalTime(leaderboardItem.getTotalTime() + response.getDuration());
+                                            if(response.getScore()>0)
+                                            leaderboardItem.setCorrect(leaderboardItem.getCorrect() + 1);
+                                            else
+                                            leaderboardItem.setIncorrect(leaderboardItem.getIncorrect() + 1);
                                             leaderBoardRef.setValue(leaderboardItem);
                                         }
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
-
                                         }
                                     });
                                     QuestionActivity.this.finish();
