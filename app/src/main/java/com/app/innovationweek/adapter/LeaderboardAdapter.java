@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.app.innovationweek.R;
 import com.app.innovationweek.model.LeaderboardEntry;
@@ -16,7 +18,8 @@ import java.util.List;
  * Created by zeeshan on 3/11/2017.
  */
 
-public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHolder> {
+public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHolder> implements
+        View.OnClickListener {
     public static final String TAG = LeaderboardAdapter.class.getSimpleName();
     private List<LeaderboardEntry> leaderboardEntryList;
 
@@ -27,7 +30,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
     @Override
     public LeaderboardEntryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
-                .layout.item_leaderboard, parent, false));
+                .layout.item_leaderboard, parent, false), this);
     }
 
     @Override
@@ -83,13 +86,26 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         Log.d(TAG, "OldIndex=" + oldIndex + ", index=" + index);
         if (!found) {
             notifyItemInserted(index);
-            notifyItemRangeChanged(index, getItemCount()-index);
+            notifyItemRangeChanged(index, getItemCount() - index);
         } else if (oldIndex == index)
             notifyItemChanged(oldIndex);
         else {
             notifyItemMoved(oldIndex, index);
-            notifyItemRangeChanged(index<oldIndex?index:oldIndex,Math.abs(oldIndex-index+1));
+            notifyItemRangeChanged(index < oldIndex ? index : oldIndex, Math.abs(oldIndex - index + 1));
         }
         Log.d(TAG, "list:" + leaderboardEntryList.toString());
+    }
+
+    @Override
+    public void onClick(View view) {
+        String msg;
+        switch (view.getId()) {
+            case R.id.team:
+                msg = "This is team name";
+                break;
+            default:
+                msg = "Click not implmented";
+        }
+        Toast.makeText(view.getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }
