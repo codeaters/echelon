@@ -42,9 +42,6 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.2.0'
 
 
-
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-
     //Butterknife for cutting some code :D
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
