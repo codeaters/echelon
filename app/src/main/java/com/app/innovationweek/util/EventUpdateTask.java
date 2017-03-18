@@ -52,6 +52,7 @@ public class EventUpdateTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                 daoEvent.setImageUrl(event.getImageUrl());
                 daoEvent.setStartDate(event.getStartDate());
                 daoEvent.setQuizId(event.getQuizId());
+
                 daoSessionWeakReference.get().getEventDao().insertOrReplace(daoEvent);
                 //delete phases and rules for this event skipping this will create multiple phases
                 // and rules
@@ -69,6 +70,8 @@ public class EventUpdateTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase.setStartDate(phase.getStartDate());
                         daoPhase.setName(phase.getName());
                         daoPhase.setEventId(daoEvent.getId());
+                        daoPhase.setSortOrder(phase.getSortOrder());
+                        daoPhase.setLeaderboardId(phase.getLeaderboardId());
                         daoSessionWeakReference.get().getPhaseDao().insert(daoPhase);
                         if (phase.getRules() != null && phase.getRules().size() > 0) {
                             for (Map.Entry<String, String> rme : phase.getRules().entrySet()) {

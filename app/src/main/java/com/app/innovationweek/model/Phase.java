@@ -2,25 +2,27 @@ package com.app.innovationweek.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.model.dao.PhaseDao;
+import com.app.innovationweek.model.dao.RuleDao;
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.List;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
-import com.app.innovationweek.model.dao.DaoSession;
-import com.app.innovationweek.model.dao.RuleDao;
-import com.app.innovationweek.model.dao.PhaseDao;
-import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
  * Created by zeeshan on 3/13/2017.
  */
 @Entity
 @IgnoreExtraProperties
-public class Phase implements Parcelable {
+public class Phase implements Parcelable, Comparable<Phase> {
     public static final Creator<Phase> CREATOR = new Creator<Phase>() {
         @Override
         public Phase createFromParcel(Parcel in) {
@@ -232,5 +234,10 @@ public class Phase implements Parcelable {
 
     public void setLeaderboardId(String leaderboardId) {
         this.leaderboardId = leaderboardId;
+    }
+
+    @Override
+    public int compareTo(@NonNull Phase o) {
+        return this.sortOrder - o.sortOrder;
     }
 }

@@ -71,6 +71,8 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase.setStartDate(phase.getStartDate());
                         daoPhase.setName(phase.getName());
                         daoPhase.setEventId(daoEvent.getId());
+                        daoPhase.setLeaderboardId(phase.getLeaderboardId());
+                        daoPhase.setSortOrder(phase.getSortOrder());
                         daoSessionWeakReference.get().getPhaseDao().insertOrReplace(daoPhase);
                         if (phase.getRules() != null && phase.getRules().size() > 0) {
                             for (Map.Entry<String, String> rme : phase.getRules().entrySet()) {

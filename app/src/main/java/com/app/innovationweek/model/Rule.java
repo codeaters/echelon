@@ -6,8 +6,8 @@ import android.os.Parcelable;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * Created by n188851 on 10-03-2017.
@@ -109,5 +109,6 @@ public class Rule implements Parcelable {
     public void setPhaseId(long phaseId) {
         this.phaseId = phaseId;
     }
+
 
 }
