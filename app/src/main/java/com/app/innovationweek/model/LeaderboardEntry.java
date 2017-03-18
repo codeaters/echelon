@@ -30,6 +30,11 @@ public class LeaderboardEntry {
     private float score;
     private long totalTime;
 
+
+    private int correct;
+
+    private int incorrect;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -37,28 +42,26 @@ public class LeaderboardEntry {
     /** Used for active entity operations. */
     @Generated(hash = 683445952)
     private transient LeaderboardEntryDao myDao;
+    @Generated(hash = 734411914)
+    private transient String leaderboard__resolvedKey;
+    @Generated(hash = 1867105156)
+    private transient String user__resolvedKey;
 
-
-    @Generated(hash = 12620018)
+    @Generated(hash = 1232690436)
     public LeaderboardEntry(Long id, String leaderboardId, String userId,
-            float score, long totalTime) {
+                            float score, long totalTime, int correct, int incorrect) {
         this.id = id;
         this.leaderboardId = leaderboardId;
         this.userId = userId;
         this.score = score;
         this.totalTime = totalTime;
+        this.correct = correct;
+        this.incorrect = incorrect;
     }
 
     @Generated(hash = 1799948941)
     public LeaderboardEntry() {
     }
-
-    @Generated(hash = 734411914)
-    private transient String leaderboard__resolvedKey;
-
-    @Generated(hash = 1867105156)
-    private transient String user__resolvedKey;
-
 
     public Long getId() {
         return this.id;
@@ -98,6 +101,22 @@ public class LeaderboardEntry {
 
     public void setTotalTime(long totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public int getCorrect() {
+        return this.correct;
+    }
+
+    public void setCorrect(int correct) {
+        this.correct = correct;
+    }
+
+    public int getIncorrect() {
+        return this.incorrect;
+    }
+
+    public void setIncorrect(int incorrect) {
+        this.incorrect = incorrect;
     }
 
     /** To-one relationship, resolved on first access. */
@@ -201,16 +220,4 @@ public class LeaderboardEntry {
         myDao = daoSession != null ? daoSession.getLeaderboardEntryDao() : null;
     }
 
-    @Override
-    public String toString() {
-        return "LeaderboardEntry{" +
-                "id=" + id +
-                ", leaderboardId='" + leaderboardId + '\'' +
-                ", leaderboard=" + leaderboard +
-                ", userId='" + userId + '\'' +
-                ", user=" + user +
-                ", score=" + score +
-                ", totalTime=" + totalTime +
-                '}';
-    }
 }

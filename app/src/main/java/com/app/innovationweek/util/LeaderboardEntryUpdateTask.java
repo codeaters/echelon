@@ -72,6 +72,8 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
                 leaderboardEntry = leaderboardEntryList.get(0);
                 leaderboardEntry.setScore(entrySnapshot.child("totalScore").getValue(Float.class));
                 leaderboardEntry.setTotalTime(entrySnapshot.child("totalTime").getValue(Long.class));
+                leaderboardEntry.setCorrect(entrySnapshot.hasChild("correct") ? entrySnapshot.child("correct").getValue(Integer.class) : 0);
+                leaderboardEntry.setIncorrect(entrySnapshot.hasChild("incorrect") ? entrySnapshot.child("incorrect").getValue(Integer.class) : 0);
                 leaderboardEntry.update();
             } else {
                 //insert
@@ -80,6 +82,8 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
                 leaderboardEntry.setUser(user);
                 leaderboardEntry.setScore(entrySnapshot.child("totalScore").getValue(Float.class));
                 leaderboardEntry.setTotalTime(entrySnapshot.child("totalTime").getValue(Long.class));
+                leaderboardEntry.setCorrect(entrySnapshot.hasChild("correct") ? entrySnapshot.child("correct").getValue(Integer.class) : 0);
+                leaderboardEntry.setIncorrect(entrySnapshot.hasChild("incorrect") ? entrySnapshot.child("incorrect").getValue(Integer.class) : 0);
                 daoSessionWeakReference.get().getLeaderboardEntryDao().insert(leaderboardEntry);
             }
         }

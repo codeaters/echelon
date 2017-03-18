@@ -14,15 +14,15 @@
         android:layout_width="54dp"
         android:layout_height="54dp"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
         android:background="@drawable/circle_primary_dark"
         android:gravity="center"
+
         android:textColor="#fff"
         android:textSize="20sp"
         android:textStyle="bold"
+
         tools:text="12" />
-
-
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
@@ -32,65 +32,88 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/rank"
         android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/black"
         tools:text="Zeeshan Khan" />
 
-
-    <TextView
-        android:id="@+id/score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/name"
-        android:layout_below="@+id/name"
-
-        android:layout_marginTop="4dp"
-        android:drawableStart="@drawable/ic_stars_grey_500_18dp"
-        android:gravity="center"
-        android:textSize="12sp"
-        tools:text="34 |"
-         />
-
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_toEndOf="@+id/score"
-        android:drawableStart="@drawable/ic_access_time_grey_500_18dp"
-        android:gravity="center"
-        android:textSize="12sp"
-        tools:text=" 1 Min 34 Sec |"
-         />
-
-    <TextView
-        android:id="@+id/team"
+    <LinearLayout
+        android:id="@+id/user_response_total"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="4dp"
-        android:layout_toEndOf="@+id/time"
-        android:drawableStart="@drawable/ic_group_grey_18dp"
-        android:ellipsize="marquee"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center_vertical"
-        android:lines="1"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:maxLines="1"
-        android:textAlignment="gravity"
-        android:textSize="12sp"
-        tools:text=" GL"
-         />
+        android:layout_toEndOf="@id/rank"
+        android:orientation="horizontal">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="16dp"
-        android:src="@drawable/ic_account_circle_blue_grey_700_36dp"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_stars_amber_500_18dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            tools:text=" 34" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:drawableStart="@drawable/ic_access_time_light_blue_500_18dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            tools:text=" 1 Min 34 Sec"
+
+            />
+
+        <TextView
+            android:id="@+id/team"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:drawableStart="@drawable/ic_group_grey_18dp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:textAlignment="gravity"
+            android:textSize="12sp"
+            tools:text=" GL" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/response_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_response_total"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/rank"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/correct_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_done_green_18dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            tools:text=" 3" />
+
+        <TextView
+            android:id="@+id/incorrect_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:drawableStart="@drawable/ic_highlight_off_red_600_18dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            tools:text=" 3" />
+    </LinearLayout>
+
+
 </RelativeLayout>

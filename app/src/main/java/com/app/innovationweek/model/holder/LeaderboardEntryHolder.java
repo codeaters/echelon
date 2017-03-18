@@ -12,15 +12,16 @@ import com.app.innovationweek.model.LeaderboardEntry;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by zeeshan on 3/11/2017.
  */
 
 public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
-    @BindView(R.id.image)
-    CircleImageView image;
+    @BindView(R.id.correct_count)
+    TextView correct;
+    @BindView(R.id.incorrect_count)
+    TextView incorrect;
     @BindView(R.id.name)
     TextView name;
     @BindView(R.id.score)
@@ -48,20 +49,21 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         name.setText(leaderboardEntry.getUser().getName());
         score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
         team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
-
+        correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
+        incorrect.setText(correct.getContext().getString(R.string.incorrect, leaderboardEntry.getIncorrect()));
         rank.setText(String.valueOf(position + 1));
         time.setText(getTimeString(leaderboardEntry.getTotalTime()));
     }
 
     private String getTimeString(long totalTime) {
-        long seconds = totalTime / 1000;
-        long minutes = seconds / 60;
-        seconds = seconds % 60;
+        long minutes = totalTime / 60000;
+        //total minutes * 60 * 1000 milliseconds
+        double secondsMillis = ((double) (totalTime - minutes * 60 * 1000)) / 1000;
         String msg;
         if (minutes == 0)
-            msg = context.getString(R.string.time_seconds, seconds);
+            msg = context.getString(R.string.time_seconds, secondsMillis);
         else
-            msg = context.getString(R.string.time_minutes_seconds, minutes, seconds);
+            msg = context.getString(R.string.time_minutes_seconds, minutes, secondsMillis);
         return msg;
     }
 }

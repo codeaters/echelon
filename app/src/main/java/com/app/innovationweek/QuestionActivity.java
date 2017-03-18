@@ -7,6 +7,7 @@ import android.os.CountDownTimer;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +44,7 @@ import butterknife.ButterKnife;
 
 public class QuestionActivity extends AppCompatActivity implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "QuestionActivity";
+    private static final String TAG = QuestionActivity.class.getSimpleName();
 
     @BindView(R.id.radio_group_options)
     RadioGroup optionRadioGroup;
@@ -100,13 +101,14 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(getApplicationContext(), "No question active right now for this quiz!", Toast.LENGTH_LONG).show();
                     finish();
                 }
-
                 Log.d(TAG, "Current Question Id is: " + questionId);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, "No Questions Present");
+                Toast.makeText(getApplicationContext(), "No Question active right now!", Toast.LENGTH_LONG).show();
+                QuestionActivity.this.finish();
 
             }
         };
@@ -177,7 +179,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             questionId = savedInstanceState.getString("question_id");
             question=savedInstanceState.getParcelable("question");
         }
-        Log.d(TAG, "Question ID is:" + questionId + " " + quizId);
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         currentQuestionRef = dbRef.child("currentQuestion").child(quizId);
         currentQuestionRef.addListenerForSingleValueEvent(currentQuestionListener);
@@ -316,6 +317,10 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onTick(long millisecondsLeft) {
                 secLeft = millisecondsLeft / 1000;
+                if (secLeft <= 300)
+                    timer.setTextColor(ContextCompat.getColor(QuestionActivity.this, R.color.colorPrimary));
+                else
+                    timer.setTextColor(ContextCompat.getColor(QuestionActivity.this, R.color.black));
                 if (secLeft > 60) {
                     minLeft = secLeft / 60;
                     secLeft = secLeft % 60;
@@ -323,12 +328,14 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     timer.setText(getString(R.string.timer_msg_sec, secLeft));
                 }
+
             }
 
             @Override
             public void onFinish() {
                 timer.setText(getString(R.string.timer_expire));
                 submit.setEnabled(false);
+                countDownTimer.cancel();
             }
         };
         countDownTimer.start();
@@ -346,11 +353,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 //this was a mcq
                 if (question.getOptions() != null && question.getOptions().size() != 0) {
                     String answer = (String) findViewById(optionRadioGroup.getCheckedRadioButtonId()).getTag();
-                    int score = optionRadioGroup.getTag().toString().equals(answer) ? 1 : 0;
+                    int score = optionRadioGroup.getTag().toString().equals(answer) ? 5 : 0;
                     saveResponse(answer, score);
                 } else /*This was an fib*/ {
                     String answer = editTextFIB.getText().toString();
-                    int score = editTextFIB.getTag().toString().equals(answer) ? 1 : 0;
+                    int score = editTextFIB.getTag().toString().equals(answer) ? 5 : 0;
                     saveResponse(answer, score);
                 }
                 break;

@@ -39,10 +39,13 @@
 
     <string name="loginMessage">You must be logged in to answer questions</string>
 
-    <string name="time_seconds"> %1$d Sec |</string>
-    <string name="time_minutes_seconds"> %1$d Min %2$d Sec |</string>
+    <string name="time_seconds"> %1$.3f Sec</string>
+    <string name="time_minutes_seconds"> %1$d Min %2$.3f Sec</string>
     <string name="team"> %1$s</string>
-    <string name="score"> %1$.2f |</string>
+    <string name="score"> %1$.2f</string>
+    <string name="correct"> %1$d</string>
+    <string name="incorrect"> %1$d</string>
+
     <string name="no_internet">No internet connection!! Turn on the internet to submit answer.</string>
 
 </resources>

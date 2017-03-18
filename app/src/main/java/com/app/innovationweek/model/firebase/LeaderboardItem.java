@@ -12,7 +12,6 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class LeaderboardItem implements Parcelable {
 
-
     public static final Creator<LeaderboardItem> CREATOR = new Creator<LeaderboardItem>() {
         @Override
         public LeaderboardItem createFromParcel(Parcel in) {
@@ -27,6 +26,8 @@ public class LeaderboardItem implements Parcelable {
     private String username;
     private long totalScore = 0;
     private long totalTime = 0;
+    private int correct = 0;
+    private int incorrect = 0;
     private String uid;
     private String imgUrl;
     private String displayName;
@@ -35,8 +36,11 @@ public class LeaderboardItem implements Parcelable {
     }
 
     protected LeaderboardItem(Parcel in) {
+        username = in.readString();
         totalScore = in.readLong();
         totalTime = in.readLong();
+        correct = in.readInt();
+        incorrect = in.readInt();
         uid = in.readString();
         imgUrl = in.readString();
         displayName = in.readString();
@@ -66,6 +70,22 @@ public class LeaderboardItem implements Parcelable {
         this.totalTime = totalTime;
     }
 
+    public int getCorrect() {
+        return correct;
+    }
+
+    public void setCorrect(int correct) {
+        this.correct = correct;
+    }
+
+    public int getIncorrect() {
+        return incorrect;
+    }
+
+    public void setIncorrect(int incorrect) {
+        this.incorrect = incorrect;
+    }
+
     public String getUid() {
         return uid;
     }
@@ -92,8 +112,11 @@ public class LeaderboardItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(username);
         dest.writeLong(totalScore);
         dest.writeLong(totalTime);
+        dest.writeInt(correct);
+        dest.writeInt(incorrect);
         dest.writeString(uid);
         dest.writeString(imgUrl);
         dest.writeString(displayName);
