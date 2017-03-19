@@ -201,13 +201,13 @@ public class LoginActivity extends AppCompatActivity {
                                     // authenticate with your backend server, if you have one. Use
                                     // FirebaseUser.getToken() instead.
                                     String uid = user.getUid();
-                                    String specialMessage = Utils.getSpecialMessage(uid);
                                     SharedPreferences spf = PreferenceManager
                                             .getDefaultSharedPreferences
                                                     (getApplicationContext());
                                     spf.edit().putBoolean
-                                            ("is_logged_in", true).putString("uid", user.getUid()).apply();
+                                            ("is_logged_in", true).putString("uid", uid).apply();
 
+                                    String specialMessage = Utils.getSpecialMessage(getApplicationContext());
                                     if (specialMessage != null)
                                         spf.edit().putString("special_message", specialMessage).apply();
 

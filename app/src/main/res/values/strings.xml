@@ -47,6 +47,8 @@
     <string name="correct"> %1$d</string>
     <string name="incorrect"> %1$d</string>
 
+    <string name="special_msg">Special Message</string>
+
     <string name="no_internet">No internet connection!! Turn on the internet to submit answer.</string>
 
 </resources>

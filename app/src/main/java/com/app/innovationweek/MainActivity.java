@@ -2,6 +2,7 @@ package com.app.innovationweek;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -179,6 +182,41 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         eventsRef.removeEventListener(eventChildListener);
         allEventsFetched = false;
         super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if (Utils.isSpecialUser(getApplicationContext())) {
+            getMenuInflater().inflate(R.menu.menu_activity, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.special:
+                String msg = Utils.getSpecialMessage(getApplicationContext());
+                if (msg != null)
+                    Snackbar.make(mViewPager, msg, Snackbar.LENGTH_INDEFINITE).setAction("OK",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                }
+                            }).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        //noinspection SimplifiableIfStatement
+
     }
 
     @Override

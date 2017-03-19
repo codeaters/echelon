@@ -36,16 +36,27 @@ public class Utils {
                 false);
     }
 
-    public static String getSpecialMessage(String uid) {
+    public static boolean isSpecialUser(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("special_message",
+                "").isEmpty();
+    }
+
+    public static String getSpecialMessage(Context context) {
+        String uid = PreferenceManager.getDefaultSharedPreferences(context).getString
+                ("uid", "");
         switch (uid) {
             case "1003473":
-                return "khusi";
+                return "Hi Khushbooo!!";
             case "1037647":
-                return "ambuj";
+                return "Navodaya wale launde bade harami hote hai :D";
             case "1028696":
-                return "somnath";
+                return "Ami banglaaaa !!";
             case "983348":
-                return "Ojha";
+                return "Hi mental ;)";
+            case "883789":
+                return "Bro Abd \\m/";
+            case "1036870":
+                return "m freaking awesome!!";
             default:
                 return null;
         }
