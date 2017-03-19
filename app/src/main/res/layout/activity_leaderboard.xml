@@ -35,27 +35,30 @@
             android:id="@+id/leaderboard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             tools:listitem="@layout/item_leaderboard" />
 
         <LinearLayout
-            android:id="@+id/progress"
+            android:id="@+id/empty_message"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp" />
-
-            <TextView
-                android:id="@+id/progress_msg"
+            <ImageView
+                android:id="@+id/quote_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                tools:text="Hold on! loading events.." />
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/quote_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="&quot;Quote&quot;"
+                android:textAlignment="center" />
         </LinearLayout>
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

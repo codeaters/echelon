@@ -46,9 +46,16 @@
     <string name="score"> %1$.2f</string>
     <string name="correct"> %1$d</string>
     <string name="incorrect"> %1$d</string>
-
     <string name="special_msg">Special Message</string>
-
     <string name="no_internet">No internet connection!! Turn on the internet to submit answer.</string>
+    <string name="q_patience">"Be patient, for the world is broad and wide."</string>
+    <string name="q_fault">"The fault, dear Brutus, is not in our stars, but in ourselves."</string>
+    <string name="q_fear">"Fear cuts deeper than swords."</string>
+    <string name="q_victory">"Victory has a thousand fathers. Defeat is an orphan."</string>
+    <string name="q_wisdom">“We can know only that we know nothing. And that is the highest degree of human wisdom.”</string>
+    <string name="q_thought">“I think, therefore I am.”</string>
+    <string name="q_freedom">“People demand freedom of speech as a compensation for the freedom of thought which they seldom use.”</string>
+    <string name="q_fast">"Fast is fine, but accuracy is everything."</string>
+
 
 </resources>

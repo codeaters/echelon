@@ -13,8 +13,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
@@ -42,6 +44,12 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     public static final String TAG = LeaderboardActivity.class.getSimpleName();
     @BindView(R.id.leaderboard)
     RecyclerView recyclerView;
+    @BindView(R.id.quote_image)
+    ImageView quoteImage;
+    @BindView(R.id.quote_text)
+    TextView quoteText;
+    @BindView(R.id.empty_message)
+    LinearLayout emptyMessageLayout;
     private LeaderboardAdapter leaderboardAdapter;
     private String quizId, quizName;
     private DatabaseReference leaderboardRef, userRef;
@@ -51,6 +59,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     private boolean allLeaderboardItemloaded;
     private List<DataSnapshot> dataSnapshots;
     private BroadcastReceiver localBroadcastReceiver;
+    private RecyclerView.OnChildAttachStateChangeListener onChildAttachStateChangeListener;
 
     {
 
@@ -89,6 +98,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             }
         };
+
         leaderboardEntryValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,6 +149,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             allLeaderboardItemloaded = savedInstanceState.getBoolean("allLeaderboardItemloaded",
                     false);
         }
+        setEmptyMessage();
+
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         leaderboardRef = dbRef.child("leaderboard").child(quizId);
 //        userRef = dbRef.child("users");
@@ -200,6 +212,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     public void onLoadFinished(Loader<List<LeaderboardEntry>> loader, List<LeaderboardEntry> data) {
         Log.d(TAG, "loading finish" + data.size());
         leaderboardAdapter.setLeaderboardEntryList(data);
+        setEmptyMessage();
     }
 
     @Override
@@ -210,6 +223,38 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     @Override
     public void onNewUser(String userId,String leaderboardId) {
         UserFetchService.startFetchingUserAndLeaderboardEntry(getApplicationContext(), userId,leaderboardId);
+    }
+
+    private String quoteFromQuizId() {
+        switch (quizId) {
+            case "quizzer":
+                return getResources().getString(R.string.q_patience);
+            case "thinkQuickPhase1":
+                return getResources().getString(R.string.q_fault);
+            case "thinkQuick":
+                return getResources().getString(R.string.q_fear);
+            case "thinkQuickPhase3":
+                return getResources().getString(R.string.q_thought);
+            case "panoply":
+                return getResources().getString(R.string.q_victory);
+            case "qd4c":
+                return getResources().getString(R.string.q_freedom);
+            case "kaizen":
+                return getResources().getString(R.string.q_fast);
+            default:
+                return "";
+        }
+    }
+
+    private void setEmptyMessage() {
+        if (leaderboardAdapter.getItemCount() == 0) {
+            recyclerView.setVisibility(View.GONE);
+            emptyMessageLayout.setVisibility(View.VISIBLE);
+            quoteText.setText(quoteFromQuizId());
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyMessageLayout.setVisibility(View.GONE);
+        }
     }
 
 }

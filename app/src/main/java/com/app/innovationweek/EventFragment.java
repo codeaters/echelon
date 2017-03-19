@@ -24,7 +24,6 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -197,7 +196,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 }
                 String leaderboardId = (String) view.getTag();
                 intent.putExtra("quiz_id", leaderboardId);
-                intent.putExtra("quiz_name", event.getName() + " : "+ button.getText().toString().split(" ")[1]);
+                intent.putExtra("quiz_name", event.getName() + " : Phase " + button.getText().toString().split(" ")[1]);
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);
                 break;
