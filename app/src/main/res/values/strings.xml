@@ -37,7 +37,8 @@
     <string name="loading">loading please wait..</string>
     <string name="saving_response">submitting your response, please wait..</string>
 
-    <string name="loginMessage">You must be logged in to answer questions</string>
+    <string name="login_message">You must be logged in to answer questions</string>
+    <string name="phase_leaderboard">%1$s leaderboard</string>
 
     <string name="time_seconds"> %1$.3f Sec</string>
     <string name="time_minutes_seconds"> %1$d Min %2$.3f Sec</string>

@@ -48,19 +48,19 @@ public class Phase implements Parcelable {
     @Generated(hash = 1887545964)
     private transient PhaseDao myDao;
 
+
     protected Phase(Parcel in) {
         id = in.readLong();
         startDate = in.readLong();
         eventId = in.readString();
         leaderboardId = in.readString();
+        sortOrder=in.readInt();
         in.readTypedList(rules, Rule.CREATOR);
     }
 
-
-
     @Generated(hash = 580159146)
-    public Phase(Long id, long startDate, String eventId, String name, String leaderboardId,
-            int sortOrder) {
+    public Phase(Long id, long startDate, String eventId, String name,
+            String leaderboardId, int sortOrder) {
         this.id = id;
         this.startDate = startDate;
         this.eventId = eventId;
@@ -69,13 +69,9 @@ public class Phase implements Parcelable {
         this.sortOrder = sortOrder;
     }
 
-
-
     @Generated(hash = 184327826)
     public Phase() {
     }
-    
-
 
     @Override
     public int describeContents() {
@@ -88,39 +84,57 @@ public class Phase implements Parcelable {
         parcel.writeLong(startDate);
         parcel.writeString(eventId);
         parcel.writeString(leaderboardId);
+        parcel.writeInt(sortOrder);
         parcel.writeTypedList(rules);
     }
-
 
     public Long getId() {
         return this.id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public long getStartDate() {
         return this.startDate;
     }
 
-
     public void setStartDate(long startDate) {
         this.startDate = startDate;
     }
-
 
     public String getEventId() {
         return this.eventId;
     }
 
-
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLeaderboardId() {
+        return this.leaderboardId;
+    }
+
+    public void setLeaderboardId(String leaderboardId) {
+        this.leaderboardId = leaderboardId;
+    }
+
+    public int getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -144,13 +158,11 @@ public class Phase implements Parcelable {
         return rules;
     }
 
-
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
         rules = null;
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -164,7 +176,6 @@ public class Phase implements Parcelable {
         myDao.delete(this);
     }
 
-
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -176,7 +187,6 @@ public class Phase implements Parcelable {
         }
         myDao.refresh(this);
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
@@ -190,47 +200,10 @@ public class Phase implements Parcelable {
         myDao.update(this);
     }
 
-
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1510019989)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPhaseDao() : null;
-    }
-
-
-
-    public String getName() {
-        return this.name;
-    }
-
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-
-    public int getSortOrder() {
-        return this.sortOrder;
-    }
-
-
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-
-
-    public String getLeaderboardId() {
-        return this.leaderboardId;
-    }
-
-
-
-    public void setLeaderboardId(String leaderboardId) {
-        this.leaderboardId = leaderboardId;
     }
 }

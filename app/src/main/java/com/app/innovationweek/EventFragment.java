@@ -122,6 +122,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     }
                     Button leaderboard = ButterKnife.findById(phaseView, R.id.phase_leaderboard);
                     leaderboard.setOnClickListener(this);
+                    leaderboard.setText(getString(R.string.phase_leaderboard, phase.getName()));
                     if (phase.getLeaderboardId() == null || phase.getLeaderboardId().isEmpty())
                         leaderboard.setVisibility(View.GONE);
                     else {
@@ -177,7 +178,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 } else {
                     intent = new Intent(getActivity(), LoginActivity.class);
                     intent.putExtra("quiz_id", event.getQuizId());
-                    intent.putExtra("loginMessage", getResources().getString(R.string.loginMessage));
+                    intent.putExtra("loginMessage", getResources().getString(R.string.login_message));
                     intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
                     startActivity(intent);
                 }
