@@ -196,9 +196,22 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     break;
                 }
                 String leaderboardId = (String) view.getTag();
+                String leaderboardType = null;
+                for (Phase phase : event.getPhases()) {
+                    if (phase.getLeaderboardId().equals(leaderboardId)) {
+                        leaderboardType = phase.getLeaderboardType();
+                        break;
+                    }
+                }
+                if (leaderboardType == null)
+                    if (view.getTag() == null) {
+                        Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards " +
+                                "for this phase is not available yet.", Toast.LENGTH_LONG).show();
+                        break;
+                    }
                 intent.putExtra("quiz_id", leaderboardId);
 //                intent.putExtra("quiz_name", event.getName() + " : " + button.getText().toString().split(" ")[1]);
-                intent.putExtra("leaderboard_type", event.getLeaderboardType());
+                intent.putExtra("leaderboard_type", leaderboardType);
                 intent.putExtra("quiz_name", event.getName() + " : Phase " + button.getText().toString().split(" ")[1]);
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);

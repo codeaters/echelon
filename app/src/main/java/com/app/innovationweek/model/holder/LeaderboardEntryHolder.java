@@ -58,18 +58,19 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         if (incorrect != null) incorrect.setOnClickListener(infoToaster);
         time.setOnClickListener(infoToaster);
         team.setOnClickListener(infoToaster);
-        switch (leaderboardType) {
-            case LeaderboardAdapter.LEADERBOARD_TYPE.RANK:
-                score.setVisibility(View.GONE);
-                time.setVisibility(View.GONE);
-                break;
-            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE:
-                time.setVisibility(View.GONE);
-                break;
-            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE_TIME:
-            default:
-                //nothing to hide
-        }
+        if (leaderboardType != null)
+            switch (leaderboardType) {
+                case LeaderboardAdapter.LEADERBOARD_TYPE.RANK:
+                    score.setVisibility(View.GONE);
+                    time.setVisibility(View.GONE);
+                    break;
+                case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE:
+                    time.setVisibility(View.GONE);
+                    break;
+                case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE_TIME:
+                default:
+                    //nothing to hide
+            }
     }
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {

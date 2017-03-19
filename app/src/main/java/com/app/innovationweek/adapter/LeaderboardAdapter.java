@@ -33,6 +33,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     @Override
     public LeaderboardEntryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(leaderboardType==null)
+            return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
+                    .layout.item_leaderboard, parent, false), this, leaderboardType);
         switch (leaderboardType) {
             case LEADERBOARD_TYPE.RANK:
             case LEADERBOARD_TYPE.SCORE:
