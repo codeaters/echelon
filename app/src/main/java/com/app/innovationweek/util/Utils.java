@@ -3,19 +3,7 @@ package com.app.innovationweek.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-
-import com.app.innovationweek.model.Rule;
-import com.app.innovationweek.model.dao.DaoSession;
-import com.app.innovationweek.model.dao.PhaseDao;
-import com.app.innovationweek.model.firebase.Event;
-import com.app.innovationweek.model.firebase.Phase;
-import com.google.firebase.database.DataSnapshot;
-
-import java.lang.ref.WeakReference;
-import java.util.Map;
 
 /**
  * Created by zeeshan on 3/7/2017.
@@ -42,9 +30,24 @@ public class Utils {
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
 
     }
-    public static boolean isUsersFetched(Context context){
+
+    public static boolean isUsersFetched(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("is_users_fetched",
                 false);
     }
 
+    public static String getSpecialMessage(String uid) {
+        switch (uid) {
+            case "1003473":
+                return "khusi";
+            case "1037647":
+                return "ambuj";
+            case "1028696":
+                return "somnath";
+            case "983348":
+                return "Ojha";
+            default:
+                return null;
+        }
+    }
 }

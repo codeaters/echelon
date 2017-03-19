@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.app.innovationweek.callbacks.DaoOperationComplete;
+import com.app.innovationweek.callbacks.OnNewUserFoundClbk;
 import com.app.innovationweek.model.Leaderboard;
 import com.app.innovationweek.model.LeaderboardEntry;
 import com.app.innovationweek.model.User;
@@ -20,16 +21,20 @@ import java.util.List;
  * Created by zeeshan on 3/14/2017.
  */
 
-public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, LeaderboardEntry> {
+public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, String, LeaderboardEntry> {
     public static final String TAG = LeaderboardEntryUpdateTask.class.getSimpleName();
     private WeakReference<DaoOperationComplete> daoOperationCompleteWeakReference;
     private WeakReference<DaoSession> daoSessionWeakReference;
+    private WeakReference<OnNewUserFoundClbk> newUserFoundClbkWeakReference;
     private String quizId;
 
     public LeaderboardEntryUpdateTask(DaoSession daoSession, String quizId, DaoOperationComplete
-                                              daoOperationComplete) {
-        daoOperationCompleteWeakReference = new WeakReference<>(daoOperationComplete);
+            daoOperationComplete, OnNewUserFoundClbk onNewUserFoundClbk) {
+        if (daoOperationComplete != null)
+            daoOperationCompleteWeakReference = new WeakReference<>(daoOperationComplete);
         daoSessionWeakReference = new WeakReference<>(daoSession);
+        if (onNewUserFoundClbk != null)
+            newUserFoundClbkWeakReference = new WeakReference<>(onNewUserFoundClbk);
         this.quizId = quizId;
     }
 
@@ -39,16 +44,17 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
         List<Leaderboard> leaderboardList;
         List<User> userList;
         String userId;
-        LeaderboardEntry leaderboardEntry=null;
+        LeaderboardEntry leaderboardEntry = null;
         List<LeaderboardEntry> leaderboardEntryList;
-        for(DataSnapshot entrySnapshot:dataSnapshots) {
+        for (DataSnapshot entrySnapshot : dataSnapshots) {
             leaderboardList = daoSessionWeakReference.get().getLeaderboardDao().queryBuilder().where(LeaderboardDao
                     .Properties.Id.eq(quizId)).list();
             if (leaderboardList != null && leaderboardList.size() > 0) {
                 leaderboard = leaderboardList.get(0);
             } else {
                 leaderboard = new Leaderboard(quizId);
-                if(daoSessionWeakReference.get()!=null) daoSessionWeakReference.get().getLeaderboardDao().insert(leaderboard);
+                if (daoSessionWeakReference.get() != null)
+                    daoSessionWeakReference.get().getLeaderboardDao().insert(leaderboard);
             }
             userId = entrySnapshot.getKey();//or entrySnapshot.child("userId").getValue(String
             // .class);
@@ -60,6 +66,7 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
             } else {
                 //try to fetch that user in
                 Log.d(TAG, "invalid user found ");
+                publishProgress(userId);
                 continue;
             }
 
@@ -87,7 +94,7 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
                 daoSessionWeakReference.get().getLeaderboardEntryDao().insert(leaderboardEntry);
             }
         }
-        return dataSnapshots.length>1?null:leaderboardEntry;
+        return dataSnapshots.length > 1 ? null : leaderboardEntry;
     }
 
     @Override
@@ -95,5 +102,12 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, Void, Le
         if (daoOperationCompleteWeakReference != null && daoOperationCompleteWeakReference.get() != null)
             daoOperationCompleteWeakReference.get().onDaoOperationComplete(leaderboardEntry);
         super.onPostExecute(leaderboardEntry);
+    }
+
+    @Override
+    protected void onProgressUpdate(String... userIds) {
+        if (newUserFoundClbkWeakReference != null && newUserFoundClbkWeakReference.get() != null)
+            newUserFoundClbkWeakReference.get().onNewUser(userIds[0], quizId);
+        super.onProgressUpdate(userIds);
     }
 }

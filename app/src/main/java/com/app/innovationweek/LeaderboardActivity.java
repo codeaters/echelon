@@ -1,9 +1,13 @@
 package com.app.innovationweek;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,9 +18,11 @@ import android.view.MenuItem;
 
 import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
+import com.app.innovationweek.callbacks.OnNewUserFoundClbk;
 import com.app.innovationweek.loader.LeaderboardEntryTaskLoader;
 import com.app.innovationweek.model.LeaderboardEntry;
 import com.app.innovationweek.model.dao.DaoSession;
+import com.app.innovationweek.service.UserFetchService;
 import com.app.innovationweek.util.LeaderboardEntryUpdateTask;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class LeaderboardActivity extends AppCompatActivity implements DaoOperationComplete,
-        LoaderManager.LoaderCallbacks<List<LeaderboardEntry>> {
+        LoaderManager.LoaderCallbacks<List<LeaderboardEntry>>, OnNewUserFoundClbk {
     public static final String TAG = LeaderboardActivity.class.getSimpleName();
     @BindView(R.id.leaderboard)
     RecyclerView recyclerView;
@@ -44,6 +50,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     private DaoSession daoSession;
     private boolean allLeaderboardItemloaded;
     private List<DataSnapshot> dataSnapshots;
+    private BroadcastReceiver localBroadcastReceiver;
 
     {
 
@@ -54,7 +61,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
                 Log.d(TAG, "childAdded " + dataSnapshot);
                 if (allLeaderboardItemloaded) {
                     new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
-                            .this).execute(dataSnapshot);
+                            .this, LeaderboardActivity.this).execute(dataSnapshot);
                     return;
                 }
                 dataSnapshots.add(dataSnapshot);
@@ -64,7 +71,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "childUpdated " + dataSnapshot);
                 new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
-                        .this).execute(dataSnapshot);
+                        .this, LeaderboardActivity.this).execute(dataSnapshot);
             }
 
             @Override
@@ -87,7 +94,9 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //all ileaderboard item loaded insert them in to database
                 new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
-                        .this).execute(dataSnapshots.toArray(new DataSnapshot[dataSnapshots.size()]));
+                        .this, LeaderboardActivity.this).execute(dataSnapshots.toArray(new
+                        DataSnapshot[dataSnapshots
+                        .size()]));
                 allLeaderboardItemloaded = true;
             }
 
@@ -96,7 +105,14 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             }
         };
-
+        localBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("leaderboard-updates-broadcasts")) {
+                    getSupportLoaderManager().getLoader(0).forceLoad();
+                }
+            }
+        };
     }
 
     @Override
@@ -131,7 +147,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         getSupportLoaderManager().initLoader(0, null, this);
         leaderboardRef.addListenerForSingleValueEvent(leaderboardEntryValueEventListener);
         setTitle(quizName);
-        Log.d(TAG,allLeaderboardItemloaded+":"+quizName+":"+quizId);
+        Log.d(TAG, allLeaderboardItemloaded + ":" + quizName + ":" + quizId);
     }
 
     @Override
@@ -145,6 +161,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     @Override
     protected void onStart() {
         leaderboardRef.addChildEventListener(leaderboardEntryChildEventListener);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver
+                (localBroadcastReceiver, new IntentFilter("leaderboard-updates-broadcasts"));
         super.onStart();
     }
 
@@ -152,6 +170,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     protected void onStop() {
         Log.d(TAG, "activity stopped, removing listeners");
         leaderboardRef.removeEventListener(leaderboardEntryChildEventListener);
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(localBroadcastReceiver);
         super.onStop();
     }
 
@@ -203,4 +222,10 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     public void onLoaderReset(Loader<List<LeaderboardEntry>> loader) {
         Log.d(TAG, "loading reset");
     }
+
+    @Override
+    public void onNewUser(String userId,String leaderboardId) {
+        UserFetchService.startFetchingUserAndLeaderboardEntry(getApplicationContext(), userId,leaderboardId);
+    }
+
 }

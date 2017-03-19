@@ -169,7 +169,8 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 } else {
                     intent = new Intent(getActivity(), LoginActivity.class);
                     intent.putExtra("quiz_id", event.getQuizId());
-                    intent.putExtra("loginMessage", getResources().getString(R.string.loginMessage));
+                    intent.putExtra("loginMessage", getResources().getString(R.string
+                            .login_message));
                     intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
                     startActivity(intent);
                 }

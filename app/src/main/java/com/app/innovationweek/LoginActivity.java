@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -169,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            username=username.concat("@iw.com");
+            username = username.concat("@iw.com");
             mAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -200,10 +201,15 @@ public class LoginActivity extends AppCompatActivity {
                                     // authenticate with your backend server, if you have one. Use
                                     // FirebaseUser.getToken() instead.
                                     String uid = user.getUid();
-                                    PreferenceManager.getDefaultSharedPreferences
-                                            (getApplicationContext()).edit().putBoolean
-                                            ("is_logged_in", true).putString("uid", user.getUid())
-                                            .apply();
+                                    String specialMessage = Utils.getSpecialMessage(uid);
+                                    SharedPreferences spf = PreferenceManager
+                                            .getDefaultSharedPreferences
+                                                    (getApplicationContext());
+                                    spf.edit().putBoolean
+                                            ("is_logged_in", true).putString("uid", user.getUid()).apply();
+
+                                    if (specialMessage != null)
+                                        spf.edit().putString("special_message", specialMessage).apply();
 
                                     System.out.println(TAG + ": Activity to Launch: " + QuestionActivity.class.getSimpleName());
                                     if (getIntent().getStringExtra("launchNext").equals(QuestionActivity.class.getSimpleName())) {
