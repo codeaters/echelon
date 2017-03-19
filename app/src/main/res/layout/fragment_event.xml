@@ -9,9 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/event_icon"
@@ -31,8 +31,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textAppearance="?android:textAppearanceListItem"
-            android:text="Starts on Wed, 23 Mar"/>
+            android:text="Starts on Wed, 23 Mar"
+            android:textAppearance="?android:textAppearanceListItem" />
+
+        <Button
+            android:id="@+id/goto_event"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Answer the Question Now" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -73,13 +81,6 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/goto_event"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Answer the Question Now"/>
 
         <Button
             android:id="@+id/leaderboard"

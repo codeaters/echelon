@@ -65,7 +65,6 @@ public class Event implements Parcelable {
         in.readTypedList(phases, Phase.CREATOR);
     }
 
-
     @Generated(hash = 1633919326)
     public Event(String id, String imageUrl, String name, String description,
             long startDate, String quizId) {
@@ -77,11 +76,9 @@ public class Event implements Parcelable {
         this.quizId = quizId;
     }
 
-
     @Generated(hash = 344677835)
     public Event() {
     }
-
 
     @Override
     public int describeContents() {
@@ -100,66 +97,53 @@ public class Event implements Parcelable {
         dest.writeTypedList(phases);
     }
 
-
     public String getId() {
         return this.id;
     }
-
 
     public void setId(String id) {
         this.id = id;
     }
 
-
     public String getImageUrl() {
         return this.imageUrl;
     }
-
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-
     public String getName() {
         return this.name;
     }
-
 
     public void setName(String name) {
         this.name = name;
     }
 
-
     public String getDescription() {
         return this.description;
     }
-
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-
     public long getStartDate() {
         return this.startDate;
     }
-
 
     public void setStartDate(long startDate) {
         this.startDate = startDate;
     }
 
-
     public String getQuizId() {
         return this.quizId;
     }
 
-
     public void setQuizId(String quizId) {
         this.quizId = quizId;
     }
-
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -183,13 +167,11 @@ public class Event implements Parcelable {
         return rules;
     }
 
-
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
         rules = null;
     }
-
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -213,13 +195,11 @@ public class Event implements Parcelable {
         return phases;
     }
 
-
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 199272319)
     public synchronized void resetPhases() {
         phases = null;
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -233,7 +213,6 @@ public class Event implements Parcelable {
         myDao.delete(this);
     }
 
-
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -245,7 +224,6 @@ public class Event implements Parcelable {
         }
         myDao.refresh(this);
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
@@ -259,11 +237,12 @@ public class Event implements Parcelable {
         myDao.update(this);
     }
 
-
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1459865304)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getEventDao() : null;
     }
+
+
 }

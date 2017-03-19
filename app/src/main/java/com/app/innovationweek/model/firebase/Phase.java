@@ -10,8 +10,24 @@ public class Phase {
     Map<String, String> rules;
     Long startDate;
     String name;
-    int sortOrder;
     String leaderboardId;
+    int sortOrder;
+
+    public String getLeaderboardId() {
+        return leaderboardId;
+    }
+
+    public void setLeaderboardId(String leaderboardId) {
+        this.leaderboardId = leaderboardId;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 
     public Map<String, String> getRules() {
         return rules;
@@ -35,22 +51,6 @@ public class Phase {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public String getLeaderboardId() {
-        return leaderboardId;
-    }
-
-    public void setLeaderboardId(String leaderboardId) {
-        this.leaderboardId = leaderboardId;
     }
 
     @Override

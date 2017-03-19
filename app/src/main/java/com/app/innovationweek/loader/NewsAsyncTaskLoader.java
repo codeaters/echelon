@@ -6,8 +6,8 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.app.innovationweek.EchelonApplication;
 import com.app.innovationweek.model.News;
+import com.app.innovationweek.model.dao.NewsDao;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,8 +23,7 @@ public class NewsAsyncTaskLoader extends AsyncTaskLoader<List<News>> {
 
     @Override
     public List<News> loadInBackground() {
-        List<News> news = ((EchelonApplication) getContext().getApplicationContext()).getDaoSession().getNewsDao().loadAll();
-        Collections.sort(news);
+        List<News> news = ((EchelonApplication) getContext().getApplicationContext()).getDaoSession().getNewsDao().queryBuilder().orderDesc(NewsDao.Properties.Timestamp).list();
         return news;
     }
 
