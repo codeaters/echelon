@@ -21,7 +21,7 @@ android {
     }
 }
 greendao {
-    schemaVersion 8
+    schemaVersion 9
     daoPackage 'com.app.innovationweek.model.dao'
 }
 dependencies {

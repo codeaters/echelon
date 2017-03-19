@@ -54,8 +54,8 @@ public class Utils {
                 return "Hi mental ;)";
             case "883789":
                 return "Bro Abd \\m/";
-            case "1036870":
-                return "m freaking awesome!!";
+            case "834619":
+                return "you are freaking awesome!!";
             default:
                 return null;
         }

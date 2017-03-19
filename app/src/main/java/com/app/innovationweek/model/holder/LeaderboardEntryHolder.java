@@ -2,6 +2,7 @@ package com.app.innovationweek.model.holder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.app.innovationweek.R;
+import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.model.LeaderboardEntry;
 
 import butterknife.BindView;
@@ -19,8 +21,10 @@ import butterknife.ButterKnife;
  */
 
 public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
+    @Nullable
     @BindView(R.id.correct_count)
     TextView correct;
+    @Nullable
     @BindView(R.id.incorrect_count)
     TextView incorrect;
     @BindView(R.id.name)
@@ -36,7 +40,8 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster) {
+    public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster, String
+            leaderboardType) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         context = itemView.getContext();
@@ -49,18 +54,32 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         name.setMarqueeRepeatLimit(5);
         name.setSelected(true);
         score.setOnClickListener(infoToaster);
-        correct.setOnClickListener(infoToaster);
-        incorrect.setOnClickListener(infoToaster);
+        if (correct != null) correct.setOnClickListener(infoToaster);
+        if (incorrect != null) incorrect.setOnClickListener(infoToaster);
         time.setOnClickListener(infoToaster);
         team.setOnClickListener(infoToaster);
+        switch (leaderboardType) {
+            case LeaderboardAdapter.LEADERBOARD_TYPE.RANK:
+                score.setVisibility(View.GONE);
+                time.setVisibility(View.GONE);
+                break;
+            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE:
+                time.setVisibility(View.GONE);
+                break;
+            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE_TIME:
+            default:
+                //nothing to hide
+        }
     }
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
         name.setText(leaderboardEntry.getUser().getName());
         score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
         team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
-        correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
-        incorrect.setText(correct.getContext().getString(R.string.incorrect, leaderboardEntry.getIncorrect()));
+        if (correct != null)
+            correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
+        if (incorrect != null) incorrect.setText(correct.getContext().getString(R.string.incorrect,
+                leaderboardEntry.getIncorrect()));
         rank.setText(String.valueOf(position + 1));
         switch (position + 1) {
             case 1:

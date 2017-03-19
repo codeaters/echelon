@@ -131,15 +131,23 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
 
     void saveSingleLeaderboardEntry(DataSnapshot leaderboardEntry) {
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
-        new LeaderboardEntryUpdateTask(daoSession, leaderboardId, this, null).execute(leaderboardEntry);
+        new LeaderboardEntryUpdateTask(daoSession, leaderboardId,null, this, null).execute
+                (leaderboardEntry); //leaderboardType passed as null because the leaderboard can
+        // be identifies by its id only.
     }
 
-    private void saveUser(DataSnapshot usersDataSnapshot) {
-        for (DataSnapshot userDs : usersDataSnapshot.getChildren()) {
-            saveSingleUser(userDs);
-        }
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
-                .putBoolean("is_users_fetched", true).apply();
+    private void saveUser(final DataSnapshot usersDataSnapshot) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (DataSnapshot userDs : usersDataSnapshot.getChildren()) {
+                    saveSingleUser(userDs);
+                }
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putBoolean("is_users_fetched", true).apply();
+            }
+        }).start();
+
     }
 
     @Override

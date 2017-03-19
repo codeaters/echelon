@@ -12,6 +12,7 @@ import com.app.innovationweek.R;
 import com.app.innovationweek.model.LeaderboardEntry;
 import com.app.innovationweek.model.holder.LeaderboardEntryHolder;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,15 +23,26 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         View.OnClickListener {
     public static final String TAG = LeaderboardAdapter.class.getSimpleName();
     private List<LeaderboardEntry> leaderboardEntryList;
+    private String leaderboardType;
 
-    public LeaderboardAdapter(List<LeaderboardEntry> leaderboardEntries) {
+    public LeaderboardAdapter(List<LeaderboardEntry> leaderboardEntries, String leaderboardType) {
         this.leaderboardEntryList = leaderboardEntries;
+        this.leaderboardType = leaderboardType;
+        sort();
     }
 
     @Override
     public LeaderboardEntryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
-                .layout.item_leaderboard, parent, false), this);
+        switch (leaderboardType) {
+            case LEADERBOARD_TYPE.RANK:
+            case LEADERBOARD_TYPE.SCORE:
+            case LEADERBOARD_TYPE.SCORE_TIME:
+                return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
+                        .layout.item_leaderboard_static, parent, false), this, leaderboardType);
+            default:
+                return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
+                        .layout.item_leaderboard, parent, false), this, leaderboardType);
+        }
     }
 
     @Override
@@ -45,10 +57,45 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     public void setLeaderboardEntryList(List<LeaderboardEntry> leaderboardEntryList) {
         this.leaderboardEntryList = leaderboardEntryList;
+        if (leaderboardType != null)
+            sort();
         notifyDataSetChanged();
     }
 
     public void updateLeaderboardEntry(@NonNull LeaderboardEntry leaderboardEntry) {
+        if (leaderboardType == null)
+            updateBySortTime(leaderboardEntry);
+        else
+            switch (leaderboardType) {
+                case LEADERBOARD_TYPE.RANK:
+                case LEADERBOARD_TYPE.SCORE:
+                    updateAndSort(leaderboardEntry);
+                    sort();
+                    break;
+                case LEADERBOARD_TYPE.SCORE_TIME:
+                default:
+                    updateBySortTime(leaderboardEntry);
+            }
+    }
+
+    private void updateAndSort(LeaderboardEntry leaderboardEntry) {
+        int index = 0;
+        boolean found = false;
+        for (LeaderboardEntry le : leaderboardEntryList) {
+            if (le.getUserId().equals(leaderboardEntry.getUserId())) {
+                found = true;
+                break;
+            }
+            index++;
+        }
+        if (found) {
+            leaderboardEntryList.set(index, leaderboardEntry);
+        } else {
+            leaderboardEntryList.add(leaderboardEntry);
+        }
+    }
+
+    private void updateBySortTime(LeaderboardEntry leaderboardEntry) {
         int index = 0;
         int oldIndex = 0;
         boolean found = false;
@@ -121,4 +168,30 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         }
         Toast.makeText(view.getContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
+    private void sort() {
+        if (leaderboardType == null) {
+            notifyDataSetChanged();
+            return;
+        }
+        switch (leaderboardType) {
+            case LEADERBOARD_TYPE.SCORE:
+                Collections.sort(leaderboardEntryList, LeaderboardEntry.SCORE_DEC);
+                break;
+            case LEADERBOARD_TYPE.RANK:
+                Collections.sort(leaderboardEntryList, LeaderboardEntry.RANK);
+                break;
+            case LEADERBOARD_TYPE.SCORE_TIME:
+            default:
+                Collections.sort(leaderboardEntryList, LeaderboardEntry.SCORE_DEC_TIME_ASC);
+        }
+        notifyDataSetChanged();
+    }
+
+    public interface LEADERBOARD_TYPE {
+        String SCORE = "score";
+        String RANK = "rank";
+        String SCORE_TIME = "score_time";
+    }
+
 }

@@ -12,6 +12,7 @@ public class Event {
     String description;
     String imageUrl;
     String quizId;
+    String leaderboardType;
     long startDate;
     Map<String, Phase> phases;
     Map<String, String> rules;
@@ -80,6 +81,14 @@ public class Event {
         this.rules = rules;
     }
 
+    public String getLeaderboardType() {
+        return leaderboardType;
+    }
+
+    public void setLeaderboardType(String leaderboardType) {
+        this.leaderboardType = leaderboardType;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -88,6 +97,7 @@ public class Event {
                 ", description='" + description + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", quizId='" + quizId + '\'' +
+                ", leaderboardType='" + leaderboardType + '\'' +
                 ", startDate=" + startDate +
                 ", phases=" + phases +
                 ", rules=" + rules +

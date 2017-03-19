@@ -53,6 +53,7 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                 daoEvent.setName(event.getName());
                 daoEvent.setImageUrl(event.getImageUrl());
                 daoEvent.setStartDate(event.getStartDate());
+                daoEvent.setLeaderboardType(event.getLeaderboardType());
                 daoEvent.setQuizId(event.getQuizId());
                 daoSessionWeakReference.get().getEventDao().insertOrReplace(daoEvent);
                 //delete phases and rules for this event skipping this will create multiple phases
@@ -74,6 +75,7 @@ public class EventInsertTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase.setLeaderboardId(phase.getLeaderboardId());
                         daoPhase.setEventId(daoEvent.getId());
                         daoPhase.setLeaderboardId(phase.getLeaderboardId());
+                        daoPhase.setLeaderboardType(phase.getLeaderboardType());
                         daoPhase.setSortOrder(phase.getSortOrder());
                         daoSessionWeakReference.get().getPhaseDao().insertOrReplace(daoPhase);
                         if (phase.getRules() != null && phase.getRules().size() > 0) {

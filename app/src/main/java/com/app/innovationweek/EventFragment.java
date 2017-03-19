@@ -114,10 +114,10 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         ruleView.setText(HtmlCompat.fromHtml(rule.getRule()));
                         rules.addView(ruleView);
                     }
-                    Button leaderboard=ButterKnife.findById(phaseView,R.id.phase_leaderboard);
+                    Button leaderboard = ButterKnife.findById(phaseView, R.id.phase_leaderboard);
                     leaderboard.setText(phase.getName() + " Leaderboard");
                     leaderboard.setOnClickListener(this);
-                    if(phase.getLeaderboardId()==null || phase.getLeaderboardId().isEmpty())
+                    if (phase.getLeaderboardId() == null || phase.getLeaderboardId().isEmpty())
                         leaderboard.setVisibility(View.GONE);
                     else {
                         leaderboard.setVisibility(View.VISIBLE);
@@ -182,12 +182,13 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 }
                 intent.putExtra("quiz_id", event.getQuizId());
                 intent.putExtra("quiz_name", event.getName());
+                intent.putExtra("leaderboard_type", event.getLeaderboardType());
                 Log.d(TAG, "Starting leaderboard " + event.getQuizId());
                 startActivity(intent);
                 break;
             case R.id.phase_leaderboard:
                 //get leaderboard Id from tag
-                Button button = (Button)view;
+                Button button = (Button) view;
                 intent = new Intent(getActivity().getApplicationContext(),
                         LeaderboardActivity.class);
                 if (view.getTag() == null) {
@@ -196,6 +197,8 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 }
                 String leaderboardId = (String) view.getTag();
                 intent.putExtra("quiz_id", leaderboardId);
+//                intent.putExtra("quiz_name", event.getName() + " : " + button.getText().toString().split(" ")[1]);
+                intent.putExtra("leaderboard_type", event.getLeaderboardType());
                 intent.putExtra("quiz_name", event.getName() + " : Phase " + button.getText().toString().split(" ")[1]);
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);

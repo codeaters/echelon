@@ -41,41 +41,48 @@ public class Phase implements Parcelable, Comparable<Phase> {
     private long startDate;
     private String eventId;
     private String name;
-    private String leaderboardId;
+    private String leaderboardId; //merely eventId
+    private String leaderboardType;
     private int sortOrder;
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 1887545964)
     private transient PhaseDao myDao;
+
 
     protected Phase(Parcel in) {
         id = in.readLong();
         startDate = in.readLong();
         eventId = in.readString();
         leaderboardId = in.readString();
-        sortOrder=in.readInt();
+        leaderboardType = in.readString();
+        sortOrder = in.readInt();
         in.readTypedList(rules, Rule.CREATOR);
     }
 
-    @Generated(hash = 580159146)
-    public Phase(Long id, long startDate, String eventId, String name, String leaderboardId,
-            int sortOrder) {
+
+    @Generated(hash = 123237717)
+    public Phase(Long id, long startDate, String eventId, String name,
+                 String leaderboardId, String leaderboardType, int sortOrder) {
         this.id = id;
         this.startDate = startDate;
         this.eventId = eventId;
         this.name = name;
         this.leaderboardId = leaderboardId;
+        this.leaderboardType = leaderboardType;
         this.sortOrder = sortOrder;
     }
-
 
 
     @Generated(hash = 184327826)
     public Phase() {
     }
-    
 
 
     @Override
@@ -89,8 +96,14 @@ public class Phase implements Parcelable, Comparable<Phase> {
         parcel.writeLong(startDate);
         parcel.writeString(eventId);
         parcel.writeString(leaderboardId);
+        parcel.writeString(leaderboardType);
         parcel.writeInt(sortOrder);
         parcel.writeTypedList(rules);
+    }
+
+    @Override
+    public int compareTo(@NonNull Phase o) {
+        return this.sortOrder - o.sortOrder;
     }
 
 
@@ -124,6 +137,46 @@ public class Phase implements Parcelable, Comparable<Phase> {
     }
 
 
+    public String getName() {
+        return this.name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public String getLeaderboardId() {
+        return this.leaderboardId;
+    }
+
+
+    public void setLeaderboardId(String leaderboardId) {
+        this.leaderboardId = leaderboardId;
+    }
+
+
+    public String getLeaderboardType() {
+        return this.leaderboardType;
+    }
+
+
+    public void setLeaderboardType(String leaderboardType) {
+        this.leaderboardType = leaderboardType;
+    }
+
+
+    public int getSortOrder() {
+        return this.sortOrder;
+    }
+
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+
     /**
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
@@ -147,7 +200,9 @@ public class Phase implements Parcelable, Comparable<Phase> {
     }
 
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
         rules = null;
@@ -193,51 +248,13 @@ public class Phase implements Parcelable, Comparable<Phase> {
     }
 
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1510019989)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPhaseDao() : null;
     }
 
-
-
-    public String getName() {
-        return this.name;
-    }
-
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-
-    public int getSortOrder() {
-        return this.sortOrder;
-    }
-
-
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-
-
-    public String getLeaderboardId() {
-        return this.leaderboardId;
-    }
-
-
-
-    public void setLeaderboardId(String leaderboardId) {
-        this.leaderboardId = leaderboardId;
-    }
-
-    @Override
-    public int compareTo(@NonNull Phase o) {
-        return this.sortOrder - o.sortOrder;
-    }
 }
