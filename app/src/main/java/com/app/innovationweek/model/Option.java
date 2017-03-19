@@ -20,6 +20,8 @@ public class Option implements Parcelable {
         this.correct = tmp[0];
     }
 
+    public Option(){}
+
     public static final Creator<Option> CREATOR = new Creator<Option>() {
         @Override
         public Option createFromParcel(Parcel in) {

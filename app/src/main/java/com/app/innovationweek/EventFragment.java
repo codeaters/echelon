@@ -188,6 +188,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.phase_leaderboard:
                 //get leaderboard Id from tag
+                Button button = (Button)view;
                 intent = new Intent(getActivity().getApplicationContext(),
                         LeaderboardActivity.class);
                 if (view.getTag() == null) {
@@ -196,7 +197,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 }
                 String leaderboardId = (String) view.getTag();
                 intent.putExtra("quiz_id", leaderboardId);
-                intent.putExtra("quiz_name", event.getName());
+                intent.putExtra("quiz_name", event.getName() + " : "+ button.getText().toString().split(" ")[1]);
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);
                 break;
