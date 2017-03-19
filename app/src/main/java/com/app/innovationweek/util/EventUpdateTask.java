@@ -69,6 +69,8 @@ public class EventUpdateTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase = new com.app.innovationweek.model.Phase();
                         daoPhase.setStartDate(phase.getStartDate());
                         daoPhase.setName(phase.getName());
+                        daoPhase.setSortOrder(phase.getSortOrder());
+                        daoPhase.setLeaderboardId(phase.getLeaderboardId());
                         daoPhase.setEventId(daoEvent.getId());
                         daoPhase.setSortOrder(phase.getSortOrder());
                         daoPhase.setLeaderboardId(phase.getLeaderboardId());

@@ -55,10 +55,9 @@ public class Phase implements Parcelable, Comparable<Phase> {
         startDate = in.readLong();
         eventId = in.readString();
         leaderboardId = in.readString();
+        sortOrder=in.readInt();
         in.readTypedList(rules, Rule.CREATOR);
     }
-
-
 
     @Generated(hash = 580159146)
     public Phase(Long id, long startDate, String eventId, String name, String leaderboardId,
@@ -90,6 +89,7 @@ public class Phase implements Parcelable, Comparable<Phase> {
         parcel.writeLong(startDate);
         parcel.writeString(eventId);
         parcel.writeString(leaderboardId);
+        parcel.writeInt(sortOrder);
         parcel.writeTypedList(rules);
     }
 

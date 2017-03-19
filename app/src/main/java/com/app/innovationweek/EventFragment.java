@@ -17,12 +17,16 @@ import android.widget.Toast;
 import com.app.innovationweek.model.Event;
 import com.app.innovationweek.model.Phase;
 import com.app.innovationweek.model.Rule;
+import com.app.innovationweek.util.HtmlCompat;
 import com.app.innovationweek.util.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+<<<<<<<<< Temporary merge branch 1
+=========
 import java.util.Comparator;
+>>>>>>>>> Temporary merge branch 2
 import java.util.Date;
 import java.util.List;
 
@@ -98,14 +102,8 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             //hide rules show phases
             rules.setVisibility(View.GONE);
             startDate.setVisibility(View.GONE);
-            List<Phase> phasesList = event.getPhases();
-            Collections.sort(phasesList, new Comparator<Phase>() {
-                @Override
-                public int compare(Phase phase, Phase t1) {
-                    return phase.getSortOrder() - t1.getSortOrder();
-                }
-            });
-            for (Phase phase : phasesList) {
+            Collections.sort(event.getPhases());
+            for (Phase phase : event.getPhases()) {
                 LinearLayout phaseView = (LinearLayout) inflater.inflate(R.layout.phase, phases, false);
                 ((TextView) phaseView.findViewById(R.id.phase_title)).setText(phase.getName());
                 ((TextView) phaseView.findViewById(R.id.start_date)).setText(getString(R.string
@@ -113,16 +111,18 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         dateFormat.format
                                 (new Date(phase.getStartDate()))));
                 if (phase.getRules() != null && phase.getRules().size() > 0) {
+                    this.leaderboard.setVisibility(View.GONE);
                     LinearLayout rules = (LinearLayout) phaseView.findViewById(R.id.rules);
                     for (Rule rule : phase.getRules()) {
                         TextView ruleView = (TextView) inflater.inflate(R.layout.rule, phaseView,
                                 false);
-                        ruleView.setText(rule.getRule());
+                        ruleView.setText(HtmlCompat.fromHtml(rule.getRule()));
                         rules.addView(ruleView);
                     }
-                    Button leaderboard = ButterKnife.findById(phaseView, R.id.phase_leaderboard);
+                    Button leaderboard=ButterKnife.findById(phaseView,R.id.phase_leaderboard);
+                    leaderboard.setText(phase.getName() + " Leaderboard");
                     leaderboard.setOnClickListener(this);
-                    if (phase.getLeaderboardId() == null || phase.getLeaderboardId().isEmpty())
+                    if(phase.getLeaderboardId()==null || phase.getLeaderboardId().isEmpty())
                         leaderboard.setVisibility(View.GONE);
                     else {
                         leaderboard.setVisibility(View.VISIBLE);
@@ -148,10 +148,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
         gotoEvent.setOnClickListener(this);
         leaderboard.setOnClickListener(this);
-        if (event.getQuizId() == null || event.getQuizId().isEmpty())
-            leaderboard.setVisibility(View.GONE);
-        else
-            leaderboard.setVisibility(View.VISIBLE);
         return rootView;
     }
 

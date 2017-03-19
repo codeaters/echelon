@@ -58,6 +58,8 @@ public class Phase {
         return "Phase{" +
                 "rules=" + rules +
                 ", name=" + name +
+                ", sortOrder=" + sortOrder +
+                ", leaderboardId=" + leaderboardId +
                 ", startDate=" + startDate +
                 '}';
     }
