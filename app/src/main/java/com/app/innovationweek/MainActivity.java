@@ -2,6 +2,7 @@ package com.app.innovationweek;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,8 @@ import com.app.innovationweek.service.UserFetchService;
 import com.app.innovationweek.util.EventInsertTask;
 import com.app.innovationweek.util.EventUpdateTask;
 import com.app.innovationweek.util.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,7 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Event>>, View.OnClickListener, DaoOperationComplete {
+        .LoaderCallbacks<List<Event>>, View.OnClickListener, DaoOperationComplete, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     private List<DataSnapshot> eventSnapShots;
     private DaoSession daoSession;
     private boolean allEventsFetched;
+    private GoogleApiClient mGoogleApiClient;
 
     {
         eventSnapShots = new ArrayList<>();
@@ -152,6 +156,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), null);
         // Set up the ViewPager with the sections adapter.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this, this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
@@ -284,6 +295,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             return;
         } else if (object instanceof Event) {
             if (mSectionsPagerAdapter != null) mSectionsPagerAdapter.updateEvent((Event) object);
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        if (!connectionResult.isSuccess()) {
+
         }
     }
 
