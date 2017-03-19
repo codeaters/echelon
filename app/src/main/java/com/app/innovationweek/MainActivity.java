@@ -30,6 +30,7 @@ import com.app.innovationweek.util.EventInsertTask;
 import com.app.innovationweek.util.EventUpdateTask;
 import com.app.innovationweek.util.Utils;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -156,13 +157,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), null);
         // Set up the ViewPager with the sections adapter.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .enableAutoManage(this, this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
@@ -185,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         }
         eventsRef.addChildEventListener(eventChildListener);
         eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
+        checkPlayServices();
         super.onStart();
     }
 
@@ -228,6 +223,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         }
         //noinspection SimplifiableIfStatement
 
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result, 1).show();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
