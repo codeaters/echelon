@@ -35,7 +35,7 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public LeaderboardEntryHolder(View itemView) {
+    public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         context = itemView.getContext();
@@ -43,6 +43,15 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         team.setSingleLine(true);
         team.setMarqueeRepeatLimit(5);
         team.setSelected(true);
+        name.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        name.setSingleLine(true);
+        name.setMarqueeRepeatLimit(5);
+        name.setSelected(true);
+        score.setOnClickListener(infoToaster);
+        correct.setOnClickListener(infoToaster);
+        incorrect.setOnClickListener(infoToaster);
+        time.setOnClickListener(infoToaster);
+        team.setOnClickListener(infoToaster);
     }
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
