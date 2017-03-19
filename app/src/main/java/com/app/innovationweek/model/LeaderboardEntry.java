@@ -11,35 +11,63 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Comparator;
+
 /**
  * Created by 1036870 on 3/10/2017.
  */
 @Entity
 public class LeaderboardEntry {
+    public static Comparator<LeaderboardEntry> SCORE_DEC = new Comparator<LeaderboardEntry>() {
+        @Override
+        public int compare(LeaderboardEntry l1, LeaderboardEntry l2) {
+            Float score = l1.getScore();
+            return score.compareTo(l2.getScore());
+        }
+    };
+    public static Comparator<LeaderboardEntry> RANK = new Comparator<LeaderboardEntry>() {
+        @Override
+        public int compare(LeaderboardEntry l1, LeaderboardEntry l2) {
+            Integer rank = l1.getRank();
+            return rank.compareTo(l2.getRank());
+        }
+    };
+    public static Comparator<LeaderboardEntry> SCORE_DEC_TIME_ASC = new Comparator<LeaderboardEntry>
+            () {
+        @Override
+        public int compare(LeaderboardEntry l1, LeaderboardEntry l2) {
+            Float score = l1.getScore();
+            int res = score.compareTo(l2.getScore());
+            if (res == 0) {
+                Long time = l1.getTotalTime();
+                return time.compareTo(l2.getTotalTime());
+            }
+            return res;
+
+        }
+    };
+
     @Id(autoincrement = true)
     private Long id;
-
     private String leaderboardId;
     @ToOne(joinProperty = "leaderboardId")
     private Leaderboard leaderboard;
-
     private String userId;
     @ToOne(joinProperty = "userId")
     private User user;
-
     private float score;
     private long totalTime;
-
-
     private int correct;
-
     private int incorrect;
-
-    /** Used to resolve relations */
+    private int rank;
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 683445952)
     private transient LeaderboardEntryDao myDao;
     @Generated(hash = 734411914)
@@ -47,9 +75,9 @@ public class LeaderboardEntry {
     @Generated(hash = 1867105156)
     private transient String user__resolvedKey;
 
-    @Generated(hash = 1232690436)
-    public LeaderboardEntry(Long id, String leaderboardId, String userId,
-                            float score, long totalTime, int correct, int incorrect) {
+    @Generated(hash = 947409762)
+    public LeaderboardEntry(Long id, String leaderboardId, String userId, float score, long totalTime,
+                            int correct, int incorrect, int rank) {
         this.id = id;
         this.leaderboardId = leaderboardId;
         this.userId = userId;
@@ -57,6 +85,7 @@ public class LeaderboardEntry {
         this.totalTime = totalTime;
         this.correct = correct;
         this.incorrect = incorrect;
+        this.rank = rank;
     }
 
     @Generated(hash = 1799948941)
@@ -119,7 +148,17 @@ public class LeaderboardEntry {
         this.incorrect = incorrect;
     }
 
-    /** To-one relationship, resolved on first access. */
+    public int getRank() {
+        return this.rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 1047939175)
     public Leaderboard getLeaderboard() {
         String __key = this.leaderboardId;
@@ -138,7 +177,9 @@ public class LeaderboardEntry {
         return leaderboard;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1670934944)
     public void setLeaderboard(Leaderboard leaderboard) {
         synchronized (this) {
@@ -148,7 +189,9 @@ public class LeaderboardEntry {
         }
     }
 
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 538271798)
     public User getUser() {
         String __key = this.userId;
@@ -167,7 +210,9 @@ public class LeaderboardEntry {
         return user;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1065606912)
     public void setUser(User user) {
         synchronized (this) {
@@ -213,7 +258,9 @@ public class LeaderboardEntry {
         myDao.update(this);
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1144773576)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

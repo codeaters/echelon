@@ -28,6 +28,7 @@ public class LeaderboardItem implements Parcelable {
     private long totalTime = 0;
     private int correct = 0;
     private int incorrect = 0;
+    private int rank;
     private String uid;
     private String imgUrl;
     private String displayName;
@@ -41,6 +42,7 @@ public class LeaderboardItem implements Parcelable {
         totalTime = in.readLong();
         correct = in.readInt();
         incorrect = in.readInt();
+        rank = in.readInt();
         uid = in.readString();
         imgUrl = in.readString();
         displayName = in.readString();
@@ -110,6 +112,14 @@ public class LeaderboardItem implements Parcelable {
         this.displayName = displayName;
     }
 
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(username);
@@ -117,6 +127,7 @@ public class LeaderboardItem implements Parcelable {
         dest.writeLong(totalTime);
         dest.writeInt(correct);
         dest.writeInt(incorrect);
+        dest.writeInt(rank);
         dest.writeString(uid);
         dest.writeString(imgUrl);
         dest.writeString(displayName);

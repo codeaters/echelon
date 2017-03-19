@@ -13,8 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
@@ -43,7 +41,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     @BindView(R.id.leaderboard)
     RecyclerView recyclerView;
     private LeaderboardAdapter leaderboardAdapter;
-    private String quizId, quizName;
+    private String quizId, quizName, leaderboardType;
     private DatabaseReference leaderboardRef, userRef;
     private ChildEventListener leaderboardEntryChildEventListener;
     private ValueEventListener leaderboardEntryValueEventListener;
@@ -60,7 +58,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "childAdded " + dataSnapshot);
                 if (allLeaderboardItemloaded) {
-                    new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                    new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType,
+                            LeaderboardActivity
                             .this, LeaderboardActivity.this).execute(dataSnapshot);
                     return;
                 }
@@ -70,7 +69,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "childUpdated " + dataSnapshot);
-                new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType, LeaderboardActivity
                         .this, LeaderboardActivity.this).execute(dataSnapshot);
             }
 
@@ -93,7 +92,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //all ileaderboard item loaded insert them in to database
-                new LeaderboardEntryUpdateTask(daoSession, quizId, LeaderboardActivity
+                new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType, LeaderboardActivity
                         .this, LeaderboardActivity.this).execute(dataSnapshots.toArray(new
                         DataSnapshot[dataSnapshots
                         .size()]));
@@ -124,21 +123,26 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>());
-        recyclerView.setAdapter(leaderboardAdapter);
+
         if (savedInstanceState == null) {
             if (getIntent() != null) {
                 if (getIntent().hasExtra("quiz_id")) quizId = getIntent().getStringExtra("quiz_id");
                 if (getIntent().hasExtra("quiz_name"))
                     quizName = getIntent().getStringExtra("quiz_name");
+                if (getIntent().hasExtra("leaderboard_type"))
+                    leaderboardType = getIntent().getStringExtra("leaderboard_type");
             }
         } else {
             quizId = savedInstanceState.getString("quiz_id", "");
             quizName = savedInstanceState.getString("quiz_name", "");
+            leaderboardType = savedInstanceState.getString("leaderboard_type", "");
             allLeaderboardItemloaded = savedInstanceState.getBoolean("allLeaderboardItemloaded",
                     false);
         }
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>(),leaderboardType);
+        recyclerView.setAdapter(leaderboardAdapter);
+
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         leaderboardRef = dbRef.child("leaderboard").child(quizId);
 //        userRef = dbRef.child("users");
@@ -155,6 +159,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         outState.putString("quiz_id", quizId);
         outState.putString("quiz_name", quizName);
         outState.putBoolean("allLeaderboardItemloaded", allLeaderboardItemloaded);
+        outState.putString("leaderboard_type", leaderboardType);
         super.onSaveInstanceState(outState);
     }
 
@@ -208,8 +213,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     }
 
     @Override
-    public void onNewUser(String userId,String leaderboardId) {
-        UserFetchService.startFetchingUserAndLeaderboardEntry(getApplicationContext(), userId,leaderboardId);
+    public void onNewUser(String userId, String leaderboardId) {
+        UserFetchService.startFetchingUserAndLeaderboardEntry(getApplicationContext(), userId, leaderboardId);
     }
 
 }

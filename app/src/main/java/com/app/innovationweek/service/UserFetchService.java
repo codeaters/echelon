@@ -131,7 +131,9 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
 
     void saveSingleLeaderboardEntry(DataSnapshot leaderboardEntry) {
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
-        new LeaderboardEntryUpdateTask(daoSession, leaderboardId, this, null).execute(leaderboardEntry);
+        new LeaderboardEntryUpdateTask(daoSession, leaderboardId,null, this, null).execute
+                (leaderboardEntry); //leaderboardType passed as null because the leaderboard can
+        // be identifies by its id only.
     }
 
     private void saveUser(DataSnapshot usersDataSnapshot) {

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.app.innovationweek.R;
+import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.model.LeaderboardEntry;
 
 import butterknife.BindView;
@@ -39,7 +40,8 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster) {
+    public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster, String
+            leaderboardType) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         context = itemView.getContext();
@@ -56,14 +58,27 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         if (incorrect != null) incorrect.setOnClickListener(infoToaster);
         time.setOnClickListener(infoToaster);
         team.setOnClickListener(infoToaster);
+        switch (leaderboardType) {
+            case LeaderboardAdapter.LEADERBOARD_TYPE.RANK:
+                score.setVisibility(View.GONE);
+                time.setVisibility(View.GONE);
+                break;
+            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE:
+                time.setVisibility(View.GONE);
+                break;
+            case LeaderboardAdapter.LEADERBOARD_TYPE.SCORE_TIME:
+            default:
+                //nothing to hide
+        }
     }
 
     public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
         name.setText(leaderboardEntry.getUser().getName());
         score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
         team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
-        if (correct != null) correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
-        if (incorrect != null)incorrect.setText(correct.getContext().getString(R.string.incorrect,
+        if (correct != null)
+            correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
+        if (incorrect != null) incorrect.setText(correct.getContext().getString(R.string.incorrect,
                 leaderboardEntry.getIncorrect()));
         rank.setText(String.valueOf(position + 1));
         switch (position + 1) {

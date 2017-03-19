@@ -26,16 +26,18 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, String, 
     private WeakReference<DaoOperationComplete> daoOperationCompleteWeakReference;
     private WeakReference<DaoSession> daoSessionWeakReference;
     private WeakReference<OnNewUserFoundClbk> newUserFoundClbkWeakReference;
-    private String quizId;
+    private String quizId, leaderboardType;
 
-    public LeaderboardEntryUpdateTask(DaoSession daoSession, String quizId, DaoOperationComplete
-            daoOperationComplete, OnNewUserFoundClbk onNewUserFoundClbk) {
+    public LeaderboardEntryUpdateTask(DaoSession daoSession, String quizId, String leaderboardType,
+                                      DaoOperationComplete
+                                              daoOperationComplete, OnNewUserFoundClbk onNewUserFoundClbk) {
         if (daoOperationComplete != null)
             daoOperationCompleteWeakReference = new WeakReference<>(daoOperationComplete);
         daoSessionWeakReference = new WeakReference<>(daoSession);
         if (onNewUserFoundClbk != null)
             newUserFoundClbkWeakReference = new WeakReference<>(onNewUserFoundClbk);
         this.quizId = quizId;
+        this.leaderboardType = leaderboardType;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, String, 
             if (leaderboardList != null && leaderboardList.size() > 0) {
                 leaderboard = leaderboardList.get(0);
             } else {
-                leaderboard = new Leaderboard(quizId);
+                leaderboard = new Leaderboard(quizId, leaderboardType);
                 if (daoSessionWeakReference.get() != null)
                     daoSessionWeakReference.get().getLeaderboardDao().insert(leaderboard);
             }
@@ -77,20 +79,30 @@ public class LeaderboardEntryUpdateTask extends AsyncTask<DataSnapshot, String, 
             if (leaderboardEntryList != null && leaderboardEntryList.size() > 0) {
                 //update
                 leaderboardEntry = leaderboardEntryList.get(0);
-                leaderboardEntry.setScore(entrySnapshot.child("totalScore").getValue(Float.class));
-                leaderboardEntry.setTotalTime(entrySnapshot.child("totalTime").getValue(Long.class));
+                if (entrySnapshot.hasChild("totalScore"))
+                    leaderboardEntry.setScore(entrySnapshot.child("totalScore").getValue(Float.class));
+                if (entrySnapshot.hasChild("totalTime"))
+                    leaderboardEntry.setTotalTime(entrySnapshot.child("totalTime").getValue(Long.class));
                 leaderboardEntry.setCorrect(entrySnapshot.hasChild("correct") ? entrySnapshot.child("correct").getValue(Integer.class) : 0);
                 leaderboardEntry.setIncorrect(entrySnapshot.hasChild("incorrect") ? entrySnapshot.child("incorrect").getValue(Integer.class) : 0);
+                if (entrySnapshot.hasChild("rank"))
+                    leaderboardEntry.setRank(entrySnapshot.child("rank").getValue(Integer.class));
                 leaderboardEntry.update();
             } else {
                 //insert
                 leaderboardEntry = new LeaderboardEntry();
                 leaderboardEntry.setLeaderboard(leaderboard);
                 leaderboardEntry.setUser(user);
-                leaderboardEntry.setScore(entrySnapshot.child("totalScore").getValue(Float.class));
-                leaderboardEntry.setTotalTime(entrySnapshot.child("totalTime").getValue(Long.class));
-                leaderboardEntry.setCorrect(entrySnapshot.hasChild("correct") ? entrySnapshot.child("correct").getValue(Integer.class) : 0);
-                leaderboardEntry.setIncorrect(entrySnapshot.hasChild("incorrect") ? entrySnapshot.child("incorrect").getValue(Integer.class) : 0);
+                if (entrySnapshot.hasChild("totalScore")) leaderboardEntry.setScore
+                        (entrySnapshot.child("totalScore").getValue(Float.class));
+                if (entrySnapshot.hasChild("totalTime")) leaderboardEntry.setTotalTime
+                        (entrySnapshot.child("totalTime").getValue(Long.class));
+                if (entrySnapshot.hasChild("correct")) leaderboardEntry.setCorrect
+                        (entrySnapshot.hasChild("correct") ? entrySnapshot.child("correct").getValue(Integer.class) : 0);
+                if (entrySnapshot.hasChild("incorrect")) leaderboardEntry.setIncorrect
+                        (entrySnapshot.hasChild("incorrect") ? entrySnapshot.child("incorrect").getValue(Integer.class) : 0);
+                if (entrySnapshot.hasChild("rank"))
+                    leaderboardEntry.setRank(entrySnapshot.child("rank").getValue(Integer.class));
                 daoSessionWeakReference.get().getLeaderboardEntryDao().insert(leaderboardEntry);
             }
         }
