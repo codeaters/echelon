@@ -41,15 +41,21 @@ public class Event implements Parcelable {
     private String name;
     private String description;
     private long startDate;
-    private String quizId;
+    private String quizId;//leaderboardId
+    private String leaderboardType;
+
     @ToMany(referencedJoinProperty = "eventId")
     private List<Rule> rules;
     @ToMany(referencedJoinProperty = "eventId")
     private List<Phase> phases;
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 1542254534)
     private transient EventDao myDao;
 
@@ -61,24 +67,29 @@ public class Event implements Parcelable {
         description = in.readString();
         startDate = in.readLong();
         quizId = in.readString();
+        leaderboardType = in.readString();
         in.readTypedList(rules, Rule.CREATOR);
         in.readTypedList(phases, Phase.CREATOR);
     }
 
-    @Generated(hash = 1633919326)
+
+    @Generated(hash = 693255534)
     public Event(String id, String imageUrl, String name, String description,
-            long startDate, String quizId) {
+                 long startDate, String quizId, String leaderboardType) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.quizId = quizId;
+        this.leaderboardType = leaderboardType;
     }
+
 
     @Generated(hash = 344677835)
     public Event() {
     }
+
 
     @Override
     public int describeContents() {
@@ -93,57 +104,81 @@ public class Event implements Parcelable {
         dest.writeString(description);
         dest.writeLong(startDate);
         dest.writeString(quizId);
+        dest.writeString(leaderboardType);
         dest.writeTypedList(rules);
         dest.writeTypedList(phases);
     }
+
 
     public String getId() {
         return this.id;
     }
 
+
     public void setId(String id) {
         this.id = id;
     }
+
 
     public String getImageUrl() {
         return this.imageUrl;
     }
 
+
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 
     public String getName() {
         return this.name;
     }
 
+
     public void setName(String name) {
         this.name = name;
     }
+
 
     public String getDescription() {
         return this.description;
     }
 
+
     public void setDescription(String description) {
         this.description = description;
     }
+
 
     public long getStartDate() {
         return this.startDate;
     }
 
+
     public void setStartDate(long startDate) {
         this.startDate = startDate;
     }
+
 
     public String getQuizId() {
         return this.quizId;
     }
 
+
     public void setQuizId(String quizId) {
         this.quizId = quizId;
     }
+
+
+    public String getLeaderboardType() {
+        return this.leaderboardType;
+    }
+
+
+    public void setLeaderboardType(String leaderboardType) {
+        this.leaderboardType = leaderboardType;
+    }
+
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -167,11 +202,15 @@ public class Event implements Parcelable {
         return rules;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 53842526)
     public synchronized void resetRules() {
         rules = null;
     }
+
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -195,11 +234,15 @@ public class Event implements Parcelable {
         return phases;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 199272319)
     public synchronized void resetPhases() {
         phases = null;
     }
+
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -213,6 +256,7 @@ public class Event implements Parcelable {
         myDao.delete(this);
     }
 
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -224,6 +268,7 @@ public class Event implements Parcelable {
         }
         myDao.refresh(this);
     }
+
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
@@ -237,7 +282,10 @@ public class Event implements Parcelable {
         myDao.update(this);
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1459865304)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

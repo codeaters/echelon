@@ -11,6 +11,7 @@ public class Phase {
     Long startDate;
     String name;
     String leaderboardId;
+    String leaderboardType;
     int sortOrder;
 
     public String getLeaderboardId() {
@@ -53,6 +54,14 @@ public class Phase {
         this.name = name;
     }
 
+    public String getLeaderboardType() {
+        return leaderboardType;
+    }
+
+    public void setLeaderboardType(String leaderboardType) {
+        this.leaderboardType = leaderboardType;
+    }
+
     @Override
     public String toString() {
         return "Phase{" +
@@ -60,6 +69,7 @@ public class Phase {
                 ", name=" + name +
                 ", sortOrder=" + sortOrder +
                 ", leaderboardId=" + leaderboardId +
+                ", leaderboardType=" + leaderboardType +
                 ", startDate=" + startDate +
                 '}';
     }

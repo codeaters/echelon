@@ -11,21 +11,26 @@ import org.greenrobot.greendao.annotation.Generated;
 public class Leaderboard {
     @Id
     private String id;
-
-    @Generated(hash = 1527334501)
-    public Leaderboard(String id) {
+    private String type;
+    @Generated(hash = 137228492)
+    public Leaderboard(String id, String type) {
         this.id = id;
+        this.type = type;
     }
-
     @Generated(hash = 1566480275)
     public Leaderboard() {
     }
-
     public String getId() {
         return this.id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
+    public String getType() {
+        return this.type;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }
