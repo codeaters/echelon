@@ -33,7 +33,7 @@
             android:textColor="#fff"
             android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="12"/>
+            tools:text="1"/>
 
 
         <LinearLayout

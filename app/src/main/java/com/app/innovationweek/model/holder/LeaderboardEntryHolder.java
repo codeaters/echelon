@@ -2,6 +2,7 @@ package com.app.innovationweek.model.holder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -61,6 +62,19 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         correct.setText(correct.getContext().getString(R.string.correct, leaderboardEntry.getCorrect()));
         incorrect.setText(correct.getContext().getString(R.string.incorrect, leaderboardEntry.getIncorrect()));
         rank.setText(String.valueOf(position + 1));
+        switch (position + 1) {
+            case 1:
+                rank.setBackground(ContextCompat.getDrawable(rank.getContext(), R.drawable.first));
+                break;
+            case 2:
+                rank.setBackground(ContextCompat.getDrawable(rank.getContext(), R.drawable.second));
+                break;
+            case 3:
+                rank.setBackground(ContextCompat.getDrawable(rank.getContext(), R.drawable.third));
+                break;
+            default:
+                rank.setBackground(ContextCompat.getDrawable(rank.getContext(), R.drawable.other));
+        }
         time.setText(getTimeString(leaderboardEntry.getTotalTime()));
     }
 

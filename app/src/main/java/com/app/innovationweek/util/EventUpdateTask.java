@@ -72,8 +72,6 @@ public class EventUpdateTask extends AsyncTask<DataSnapshot, Void, com.app.innov
                         daoPhase.setSortOrder(phase.getSortOrder());
                         daoPhase.setLeaderboardId(phase.getLeaderboardId());
                         daoPhase.setEventId(daoEvent.getId());
-                        daoPhase.setSortOrder(phase.getSortOrder());
-                        daoPhase.setLeaderboardId(phase.getLeaderboardId());
                         daoSessionWeakReference.get().getPhaseDao().insert(daoPhase);
                         if (phase.getRules() != null && phase.getRules().size() > 0) {
                             for (Map.Entry<String, String> rme : phase.getRules().entrySet()) {

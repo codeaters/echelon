@@ -37,8 +37,7 @@ public class Utils {
     }
 
     public static boolean isSpecialUser(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString("special_message",
-                "").isEmpty();
+        return getSpecialMessage(context) != null;
     }
 
     public static String getSpecialMessage(Context context) {
