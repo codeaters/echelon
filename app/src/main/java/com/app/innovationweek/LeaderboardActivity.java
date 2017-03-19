@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +14,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.innovationweek.adapter.LeaderboardAdapter;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
@@ -26,6 +30,7 @@ import com.app.innovationweek.model.LeaderboardEntry;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.service.UserFetchService;
 import com.app.innovationweek.util.LeaderboardEntryUpdateTask;
+import com.app.innovationweek.util.Utils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,9 +74,9 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "childAdded " + dataSnapshot);
                 if (allLeaderboardItemloaded) {
-                    new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType,
+                    new LeaderboardEntryUpdateTask(daoSession, quizId, leaderboardType,
                             LeaderboardActivity
-                            .this, LeaderboardActivity.this).execute(dataSnapshot);
+                                    .this, LeaderboardActivity.this).execute(dataSnapshot);
                     return;
                 }
                 dataSnapshots.add(dataSnapshot);
@@ -80,7 +85,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "childUpdated " + dataSnapshot);
-                new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType, LeaderboardActivity
+                new LeaderboardEntryUpdateTask(daoSession, quizId, leaderboardType, LeaderboardActivity
                         .this, LeaderboardActivity.this).execute(dataSnapshot);
             }
 
@@ -104,7 +109,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //all ileaderboard item loaded insert them in to database
-                new LeaderboardEntryUpdateTask(daoSession, quizId,leaderboardType, LeaderboardActivity
+                new LeaderboardEntryUpdateTask(daoSession, quizId, leaderboardType, LeaderboardActivity
                         .this, LeaderboardActivity.this).execute(dataSnapshots.toArray(new
                         DataSnapshot[dataSnapshots
                         .size()]));
@@ -135,6 +140,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (savedInstanceState == null) {
             if (getIntent() != null) {
@@ -152,7 +158,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
                     false);
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>(),leaderboardType);
+        leaderboardAdapter = new LeaderboardAdapter(new ArrayList<LeaderboardEntry>(), leaderboardType);
         recyclerView.setAdapter(leaderboardAdapter);
 
         setEmptyMessage();
@@ -207,6 +213,37 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             getSupportLoaderManager().getLoader(0).forceLoad();
             dataSnapshots.clear();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (Utils.isLoggedIn(getApplicationContext())) {
+            getMenuInflater().inflate(R.menu.menu_leaderboard, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_scroll_to_me:
+                String userId = Utils.getUid(getApplicationContext());
+                int position = leaderboardAdapter.getPosition(userId);
+                if (position == -1) {
+                    Toast.makeText(getApplicationContext(), "You are not on the leaderboard", Toast
+                            .LENGTH_SHORT).show();
+                    return true;
+                }
+                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null,
+                        position);
+                leaderboardAdapter.highlight(position, userId);
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
