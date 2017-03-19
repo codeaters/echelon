@@ -23,6 +23,8 @@ public class User {
     private String username;
     private String name;
     private long teamId;
+    private boolean canThinkQuick;
+
     @ToOne(joinProperty = "teamId")
     private Team team;
     /** Used to resolve relations */
@@ -33,15 +35,20 @@ public class User {
     private transient UserDao myDao;
     @Generated(hash = 1834174654)
     private transient Long team__resolvedKey;
-    @Generated(hash = 175564657)
-    public User(String id, String username, String name, long teamId) {
+
+
+    @Generated(hash = 586692638)
+    public User() {
+    }
+
+    @Generated(hash = 1513811421)
+    public User(String id, String username, String name, long teamId,
+                boolean canThinkQuick) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.teamId = teamId;
-    }
-    @Generated(hash = 586692638)
-    public User() {
+        this.canThinkQuick = canThinkQuick;
     }
 
     public String getId() {
@@ -76,7 +83,17 @@ public class User {
         this.teamId = teamId;
     }
 
-    /** To-one relationship, resolved on first access. */
+    public boolean getCanThinkQuick() {
+        return this.canThinkQuick;
+    }
+
+    public void setCanThinkQuick(boolean canThinkQuick) {
+        this.canThinkQuick = canThinkQuick;
+    }
+
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 1193690988)
     public Team getTeam() {
         long __key = this.teamId;
@@ -94,7 +111,10 @@ public class User {
         }
         return team;
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1078274893)
     public void setTeam(@NotNull Team team) {
         if (team == null) {
@@ -107,6 +127,7 @@ public class User {
             team__resolvedKey = teamId;
         }
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
      * Entity must attached to an entity context.
@@ -118,6 +139,7 @@ public class User {
         }
         myDao.delete(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -129,6 +151,7 @@ public class User {
         }
         myDao.refresh(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
      * Entity must attached to an entity context.
@@ -140,10 +163,15 @@ public class User {
         }
         myDao.update(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 2059241980)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
+
+
 }

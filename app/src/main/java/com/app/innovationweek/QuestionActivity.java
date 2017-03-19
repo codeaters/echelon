@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import com.app.innovationweek.model.Option;
 import com.app.innovationweek.model.Question;
+import com.app.innovationweek.model.User;
+import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.firebase.LeaderboardItem;
 import com.app.innovationweek.model.firebase.Response;
 import com.app.innovationweek.util.Utils;
@@ -82,6 +84,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
     private String quizId, questionId, Uid;
     private ValueEventListener questionListener, responseListener, currentQuestionListener;
+
+    private DaoSession daoSession;
     private long startTime;
     /**
      * The question this activity is showing
@@ -99,7 +103,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     questionRef.addValueEventListener(questionListener);
                 } else {
                     Toast.makeText(getApplicationContext(), "No question active right now for this quiz!", Toast.LENGTH_LONG).show();
-                    finish();
+                    QuestionActivity.this.finish();
                 }
                 Log.d(TAG, "Current Question Id is: " + questionId);
             }
@@ -126,7 +130,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "Question Listener", databaseError.toException());
-                Toast.makeText(getApplicationContext(), "There was an error retrieving the qustion. Please contact the admins.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "There was an error retrieving the question. Please contact the admins.", Toast.LENGTH_LONG).show();
             }
         };
         responseListener = new ValueEventListener() {
@@ -156,6 +160,13 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         };
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,6 +190,18 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             questionId = savedInstanceState.getString("question_id");
             question = savedInstanceState.getParcelable("question");
         }
+
+
+        //check if user eligible for this quiz
+        daoSession = ((EchelonApplication) getApplication()).getDaoSession();
+        User user = daoSession.getUserDao().load(Utils.getUid(QuestionActivity.this));
+        Log.d(TAG, "User is: " + user);
+
+        if (!user.getCanThinkQuick() && quizId.equals("thinkQuick")) {
+            Toast.makeText(getApplicationContext(), "You have not nominated yourself for this quiz during the nomination period. You are not eligible to answer questions for this quiz.", Toast.LENGTH_LONG).show();
+            QuestionActivity.this.finish();
+        }
+
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         currentQuestionRef = dbRef.child("currentQuestion").child(quizId);
         currentQuestionRef.addListenerForSingleValueEvent(currentQuestionListener);
@@ -201,6 +224,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             submit.setEnabled(false);
         }
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+
+
     }
 
     @Override
@@ -452,6 +477,4 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-
-    private enum QuestionType {FIB, MCQ}
 }

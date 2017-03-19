@@ -95,7 +95,7 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent.getAction().equals("FETCH_ONE_USER")) {
+        if (intent.getAction() != null && intent.getAction().equals("FETCH_ONE_USER")) {
             userId = intent.getStringExtra("USER_ID");
             leaderboardId = intent.getStringExtra("LEADERBOARD_ID");
             FirebaseDatabase.getInstance().getReference("users").child(userId)
@@ -124,6 +124,7 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
         user.setName(singleUser.child("name").getValue(String.class));
         user.setUsername(singleUser.child("username").getValue(String.class));
         user.setTeam(team);
+        user.setCanThinkQuick(singleUser.hasChild("canThinkQuick") ? singleUser.child("canThinkQuick").getValue(Boolean.class) : false);
         daoSession.getUserDao().insertOrReplace(user);
         Log.d(TAG, "updatedUser:" + user.getName());
     }
