@@ -57,20 +57,25 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     public void setLeaderboardEntryList(List<LeaderboardEntry> leaderboardEntryList) {
         this.leaderboardEntryList = leaderboardEntryList;
-        sort();
+        if (leaderboardType != null)
+            sort();
         notifyDataSetChanged();
     }
 
     public void updateLeaderboardEntry(@NonNull LeaderboardEntry leaderboardEntry) {
-        switch (leaderboardType) {
-            case LEADERBOARD_TYPE.RANK:
-            case LEADERBOARD_TYPE.SCORE:
-                updateAndSort(leaderboardEntry);
-                break;
-            case LEADERBOARD_TYPE.SCORE_TIME:
-            default:
-                updateBySortTime(leaderboardEntry);
-        }
+        if (leaderboardType == null)
+            updateBySortTime(leaderboardEntry);
+        else
+            switch (leaderboardType) {
+                case LEADERBOARD_TYPE.RANK:
+                case LEADERBOARD_TYPE.SCORE:
+                    updateAndSort(leaderboardEntry);
+                    sort();
+                    break;
+                case LEADERBOARD_TYPE.SCORE_TIME:
+                default:
+                    updateBySortTime(leaderboardEntry);
+            }
     }
 
     private void updateAndSort(LeaderboardEntry leaderboardEntry) {
@@ -88,7 +93,6 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         } else {
             leaderboardEntryList.add(leaderboardEntry);
         }
-        sort();
     }
 
     private void updateBySortTime(LeaderboardEntry leaderboardEntry) {
@@ -166,6 +170,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
     }
 
     private void sort() {
+        if (leaderboardType == null) {
+            notifyDataSetChanged();
+            return;
+        }
         switch (leaderboardType) {
             case LEADERBOARD_TYPE.SCORE:
                 Collections.sort(leaderboardEntryList, LeaderboardEntry.SCORE_DEC);
@@ -185,6 +193,5 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         String RANK = "rank";
         String SCORE_TIME = "score_time";
     }
-
 
 }
