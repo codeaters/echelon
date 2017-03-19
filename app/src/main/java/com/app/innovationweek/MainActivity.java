@@ -1,6 +1,7 @@
 package com.app.innovationweek;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     private DaoSession daoSession;
     private boolean allEventsFetched;
     private GoogleApiClient mGoogleApiClient;
+    private int currentPage;
 
     {
         eventSnapShots = new ArrayList<>();
@@ -160,7 +162,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-
+        if(savedInstanceState!=null){
+            currentPage=savedInstanceState.getInt("current_page");
+        }
         //subscribe to topic for FCM notifications
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
@@ -181,6 +185,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
         checkPlayServices();
         super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        currentPage=mViewPager.getCurrentItem();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        mViewPager.setCurrentItem(currentPage);
+        super.onResume();
     }
 
     @Override
@@ -223,6 +239,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         }
         //noinspection SimplifiableIfStatement
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("current_page",currentPage);
+        super.onSaveInstanceState(outState);
     }
 
     private boolean checkPlayServices() {

@@ -219,9 +219,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
     public boolean onCreateOptionsMenu(Menu menu) {
         if (Utils.isLoggedIn(getApplicationContext())) {
             getMenuInflater().inflate(R.menu.menu_leaderboard, menu);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -240,7 +239,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
                 leaderboardAdapter.highlight(position, userId);
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
