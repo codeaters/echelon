@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:layout_marginTop="4dp"
     android:layout_marginBottom="0dp"
+    android:layout_marginTop="4dp"
     android:background="?attr/selectableItemBackground"
     app:cardCornerRadius="@dimen/cardview_default_radius"
     >
@@ -38,7 +38,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_toEndOf="@id/rank"
+            android:layout_toRightOf="@id/rank"
             android:orientation="horizontal">
 
             <TextView
@@ -59,7 +61,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:drawableStart="@drawable/ic_done_green_18dp"
+                android:drawableLeft="@drawable/ic_done_green_18dp"
                 android:gravity="center"
                 android:textSize="12sp"
                 tools:text=" 3"/>
@@ -69,7 +73,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:drawableStart="@drawable/ic_close_red_500_18dp"
+                android:drawableLeft="@drawable/ic_close_red_500_18dp"
                 android:gravity="center"
                 android:textSize="12sp"
                 tools:text=" 3"/>
@@ -80,6 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignStart="@id/response_count"
+            android:layout_alignLeft="@id/response_count"
             android:layout_below="@+id/response_count"
             android:layout_marginTop="4dp"
             android:orientation="horizontal">
@@ -89,6 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_star_yellow_700_18dp"
+                android:drawableLeft="@drawable/ic_star_yellow_700_18dp"
                 android:gravity="center"
                 android:textSize="12sp"
                 tools:text=" 34"/>
@@ -98,7 +106,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:drawableStart="@drawable/ic_access_time_light_blue_500_18dp"
+                android:drawableLeft="@drawable/ic_access_time_light_blue_500_18dp"
                 android:gravity="center"
                 android:textSize="12sp"
                 tools:text=" 1 Min 34 Sec"
@@ -109,7 +119,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:drawableStart="@drawable/ic_group_grey_18dp"
+                android:drawableLeft="@drawable/ic_group_grey_18dp"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
