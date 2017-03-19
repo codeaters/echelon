@@ -21,8 +21,8 @@ public class LeaderboardEntry {
     public static Comparator<LeaderboardEntry> SCORE_DEC = new Comparator<LeaderboardEntry>() {
         @Override
         public int compare(LeaderboardEntry l1, LeaderboardEntry l2) {
-            Float score = l1.getScore();
-            return score.compareTo(l2.getScore());
+            Float score = l2.getScore();
+            return score.compareTo(l1.getScore());
         }
     };
     public static Comparator<LeaderboardEntry> RANK = new Comparator<LeaderboardEntry>() {
@@ -36,8 +36,8 @@ public class LeaderboardEntry {
             () {
         @Override
         public int compare(LeaderboardEntry l1, LeaderboardEntry l2) {
-            Float score = l1.getScore();
-            int res = score.compareTo(l2.getScore());
+            Float score = l2.getScore();
+            int res = score.compareTo(l1.getScore());
             if (res == 0) {
                 Long time = l1.getTotalTime();
                 return time.compareTo(l2.getTotalTime());
