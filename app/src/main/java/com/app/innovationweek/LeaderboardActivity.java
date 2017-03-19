@@ -121,8 +121,8 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
                     quizName = getIntent().getStringExtra("quiz_name");
             }
         } else {
-            quizId = savedInstanceState.getString("quiz_id", "generalQuiz");
-            quizName = savedInstanceState.getString("quiz_name", "Quizzer");
+            quizId = savedInstanceState.getString("quiz_id", "");
+            quizName = savedInstanceState.getString("quiz_name", "");
             allLeaderboardItemloaded = savedInstanceState.getBoolean("allLeaderboardItemloaded",
                     false);
         }
@@ -134,14 +134,15 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         getSupportLoaderManager().initLoader(0, null, this);
         leaderboardRef.addListenerForSingleValueEvent(leaderboardEntryValueEventListener);
         setTitle(quizName);
+        Log.d(TAG,allLeaderboardItemloaded+":"+quizName+":"+quizId);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+    public void onSaveInstanceState(Bundle outState) {
         outState.putString("quiz_id", quizId);
         outState.putString("quiz_name", quizName);
         outState.putBoolean("allLeaderboardItemloaded", allLeaderboardItemloaded);
-        super.onSaveInstanceState(outState, outPersistentState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -155,6 +156,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "activity stopped, removing listeners");
         leaderboardRef.removeEventListener(leaderboardEntryChildEventListener);
         super.onStop();
     }
@@ -185,6 +187,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
         } else {
             //leaderboard entities bulk update or1
             //users bulk update
+            Log.d(TAG, "loader reset");
             getSupportLoaderManager().getLoader(0).forceLoad();
             dataSnapshots.clear();
         }

@@ -91,7 +91,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
             notifyItemChanged(oldIndex);
         else {
             notifyItemMoved(oldIndex, index);
-            notifyItemRangeChanged(index < oldIndex ? index : oldIndex, Math.abs(oldIndex - index + 1));
+            notifyItemRangeChanged(index < oldIndex ? index : oldIndex, Math.abs(oldIndex -
+                    index) + 1);
         }
         Log.d(TAG, "list:" + leaderboardEntryList.toString());
     }
