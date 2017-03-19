@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -123,8 +124,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         leaderboard.setVisibility(View.VISIBLE);
                         leaderboard.setTag(phase.getLeaderboardId());
                     }
-                } else
-                    this.leaderboard.setVisibility(View.GONE);
+                }
                 phases.addView(phaseView);
             }
         } else if (event.getRules() != null && event.getRules().size() > 0) {
@@ -169,8 +169,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 } else {
                     intent = new Intent(getActivity(), LoginActivity.class);
                     intent.putExtra("quiz_id", event.getQuizId());
-                    intent.putExtra("loginMessage", getResources().getString(R.string
-                            .login_message));
+                    intent.putExtra("loginMessage", getResources().getString(R.string.login_message));
                     intent.putExtra("launchNext", QuestionActivity.class.getSimpleName());
                     startActivity(intent);
                 }
@@ -189,16 +188,16 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.phase_leaderboard:
                 //get leaderboard Id from tag
-                Button button = (Button) view;
+                Button button = (Button)view;
                 intent = new Intent(getActivity().getApplicationContext(),
                         LeaderboardActivity.class);
                 if (view.getTag() == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards for event are not available yet.", Toast.LENGTH_LONG).show();
                     break;
                 }
-                String leaderboardId=(String)view.getTag();
+                String leaderboardId = (String) view.getTag();
                 intent.putExtra("quiz_id", leaderboardId);
-                intent.putExtra("quiz_name", event.getName() + " : Phase " + button.getText().toString().split(" ")[1]);
+                intent.putExtra("quiz_name", event.getName() + " : "+ button.getText().toString().split(" ")[1]);
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);
                 break;
