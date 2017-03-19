@@ -1,11 +1,17 @@
 package com.app.innovationweek.model.holder;
 
+import android.animation.Animator;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +27,7 @@ import butterknife.ButterKnife;
  */
 
 public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
+    public static final String TAG = LeaderboardEntryHolder.class.getSimpleName();
     @Nullable
     @BindView(R.id.correct_count)
     TextView correct;
@@ -37,13 +44,15 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
     TextView team;
     @BindView(R.id.rank)
     TextView rank;
-
+    CardView rootView;
     private Context context;
+    private ObjectAnimator colorFade;
 
     public LeaderboardEntryHolder(View itemView, View.OnClickListener infoToaster, String
             leaderboardType) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        rootView = (CardView) itemView;
         context = itemView.getContext();
         team.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         team.setSingleLine(true);
@@ -73,7 +82,8 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
             }
     }
 
-    public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry) {
+    public void setLeaderboardEntry(int position, @NonNull LeaderboardEntry leaderboardEntry,
+                                    String hightlightUserId,Animator.AnimatorListener animatorListener) {
         name.setText(leaderboardEntry.getUser().getName());
         score.setText(score.getContext().getString(R.string.score, leaderboardEntry.getScore()));
         team.setText(team.getContext().getString(R.string.team, leaderboardEntry.getUser().getTeam().getName()));
@@ -96,6 +106,18 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
                 rank.setBackground(ContextCompat.getDrawable(rank.getContext(), R.drawable.other));
         }
         time.setText(getTimeString(leaderboardEntry.getTotalTime()));
+        if (hightlightUserId != null && hightlightUserId.equals(leaderboardEntry.getUserId())) {
+//                rootView.set
+            Log.d(TAG, "coloring done");
+            if (colorFade != null && colorFade.isRunning()) colorFade.end();
+            colorFade = ObjectAnimator.ofObject(rootView, "backgroundColor",
+                    new ArgbEvaluator(), Color.parseColor("#80CBC4"), Color.WHITE);
+            colorFade.setDuration(3000);
+            colorFade.addListener(animatorListener);
+            colorFade.start();
+        } else {
+            if (colorFade != null && colorFade.isRunning()) colorFade.end();
+        }
     }
 
     private String getTimeString(long totalTime) {

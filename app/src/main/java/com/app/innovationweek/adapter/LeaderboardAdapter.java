@@ -1,5 +1,6 @@
 package com.app.innovationweek.adapter;
 
+import android.animation.Animator;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,7 +24,32 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         View.OnClickListener {
     public static final String TAG = LeaderboardAdapter.class.getSimpleName();
     private List<LeaderboardEntry> leaderboardEntryList;
-    private String leaderboardType;
+    private String leaderboardType, hightlightUser;
+    private Animator.AnimatorListener colorAnimatorListener;
+
+    {
+        colorAnimatorListener = new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                hightlightUser = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        };
+    }
 
     public LeaderboardAdapter(List<LeaderboardEntry> leaderboardEntries, String leaderboardType) {
         this.leaderboardEntryList = leaderboardEntries;
@@ -33,7 +59,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     @Override
     public LeaderboardEntryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(leaderboardType==null)
+        if (leaderboardType == null)
             return new LeaderboardEntryHolder(LayoutInflater.from(parent.getContext()).inflate(R
                     .layout.item_leaderboard, parent, false), this, leaderboardType);
         switch (leaderboardType) {
@@ -50,7 +76,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
 
     @Override
     public void onBindViewHolder(LeaderboardEntryHolder holder, int position) {
-        holder.setLeaderboardEntry(position, leaderboardEntryList.get(position));
+        holder.setLeaderboardEntry(position, leaderboardEntryList.get(position), hightlightUser,
+                colorAnimatorListener);
+
     }
 
     @Override
@@ -189,6 +217,25 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
                 Collections.sort(leaderboardEntryList, LeaderboardEntry.SCORE_DEC_TIME_ASC);
         }
         notifyDataSetChanged();
+    }
+
+    public int getPosition(@NonNull String userId) {
+        int position = 0;
+        boolean found = false;
+        for (LeaderboardEntry le : leaderboardEntryList) {
+            if (le.getUser().getId().equals(userId)) {
+                found = true;
+                break;
+            }
+            position++;
+        }
+        Log.d(TAG, "user found at" + (found ? position : -1));
+        return found ? position : -1;
+    }
+
+    public void highlight(int currentPosition, String userId) {
+        hightlightUser = userId;
+        notifyItemChanged(currentPosition);
     }
 
     public interface LEADERBOARD_TYPE {
