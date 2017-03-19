@@ -382,7 +382,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                     saveResponse(answer, score);
                 } else /*This was an fib*/ {
                     String answer = editTextFIB.getText().toString();
-                    int score = editTextFIB.getTag().toString().equals(answer) ? 5 : 0;
+                    int score = editTextFIB.getTag().toString().equalsIgnoreCase(answer.trim()) ? 5 : 0;
                     saveResponse(answer, score);
                 }
                 break;
