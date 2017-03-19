@@ -17,13 +17,14 @@ import android.widget.Toast;
 import com.app.innovationweek.model.Event;
 import com.app.innovationweek.model.Phase;
 import com.app.innovationweek.model.Rule;
-import com.app.innovationweek.util.HtmlCompat;
 import com.app.innovationweek.util.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,8 +98,14 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             //hide rules show phases
             rules.setVisibility(View.GONE);
             startDate.setVisibility(View.GONE);
-            Collections.sort(event.getPhases());
-            for (Phase phase : event.getPhases()) {
+            List<Phase> phasesList = event.getPhases();
+            Collections.sort(phasesList, new Comparator<Phase>() {
+                @Override
+                public int compare(Phase phase, Phase t1) {
+                    return phase.getSortOrder() - t1.getSortOrder();
+                }
+            });
+            for (Phase phase : phasesList) {
                 LinearLayout phaseView = (LinearLayout) inflater.inflate(R.layout.phase, phases, false);
                 ((TextView) phaseView.findViewById(R.id.phase_title)).setText(phase.getName());
                 ((TextView) phaseView.findViewById(R.id.start_date)).setText(getString(R.string
@@ -106,25 +113,22 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         dateFormat.format
                                 (new Date(phase.getStartDate()))));
                 if (phase.getRules() != null && phase.getRules().size() > 0) {
-                    this.leaderboard.setVisibility(View.GONE);
                     LinearLayout rules = (LinearLayout) phaseView.findViewById(R.id.rules);
                     for (Rule rule : phase.getRules()) {
                         TextView ruleView = (TextView) inflater.inflate(R.layout.rule, phaseView,
                                 false);
-                        ruleView.setText(HtmlCompat.fromHtml(rule.getRule()));
+                        ruleView.setText(rule.getRule());
                         rules.addView(ruleView);
                     }
-                    Button leaderboard=ButterKnife.findById(phaseView,R.id.phase_leaderboard);
-                    leaderboard.setText(phase.getName() + " Leaderboard");
+                    Button leaderboard = ButterKnife.findById(phaseView, R.id.phase_leaderboard);
                     leaderboard.setOnClickListener(this);
-                    if(phase.getLeaderboardId()==null || phase.getLeaderboardId().isEmpty())
+                    if (phase.getLeaderboardId() == null || phase.getLeaderboardId().isEmpty())
                         leaderboard.setVisibility(View.GONE);
                     else {
                         leaderboard.setVisibility(View.VISIBLE);
                         leaderboard.setTag(phase.getLeaderboardId());
                     }
-                } else
-                    this.leaderboard.setVisibility(View.GONE);
+                }
                 phases.addView(phaseView);
             }
         } else if (event.getRules() != null && event.getRules().size() > 0) {
@@ -144,6 +148,10 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
         gotoEvent.setOnClickListener(this);
         leaderboard.setOnClickListener(this);
+        if (event.getQuizId() == null || event.getQuizId().isEmpty())
+            leaderboard.setVisibility(View.GONE);
+        else
+            leaderboard.setVisibility(View.VISIBLE);
         return rootView;
     }
 
@@ -188,16 +196,15 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.phase_leaderboard:
                 //get leaderboard Id from tag
-                Button button = (Button) view;
                 intent = new Intent(getActivity().getApplicationContext(),
                         LeaderboardActivity.class);
                 if (view.getTag() == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "The Leaderboards for event are not available yet.", Toast.LENGTH_LONG).show();
                     break;
                 }
-                String leaderboardId=(String)view.getTag();
+                String leaderboardId = (String) view.getTag();
                 intent.putExtra("quiz_id", leaderboardId);
-                intent.putExtra("quiz_name", event.getName() + " : Phase " + button.getText().toString().split(" ")[1]);
+                intent.putExtra("quiz_name", event.getName());
                 Log.d(TAG, "Starting leaderboard " + leaderboardId);
                 startActivity(intent);
                 break;
