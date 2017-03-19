@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:layout_marginTop="4dp"
     android:background="?attr/selectableItemBackground"
     app:cardCornerRadius="@dimen/cardview_default_radius"
     >
@@ -77,9 +78,9 @@
             android:id="@+id/user_response_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignStart="@id/response_count"
             android:layout_below="@+id/response_count"
             android:layout_marginTop="4dp"
-            android:layout_alignStart="@id/response_count"
             android:orientation="horizontal">
 
             <TextView

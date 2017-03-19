@@ -177,7 +177,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         } else {
             quizId = savedInstanceState.getString("quiz_id");
             questionId = savedInstanceState.getString("question_id");
-            question=savedInstanceState.getParcelable("question");
+            question = savedInstanceState.getParcelable("question");
         }
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         currentQuestionRef = dbRef.child("currentQuestion").child(quizId);
@@ -205,9 +205,9 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putString("quiz_id",quizId);
-        outState.putString("question_id",questionId);
-        outState.putParcelable("question",question);
+        outState.putString("quiz_id", quizId);
+        outState.putString("question_id", questionId);
+        outState.putParcelable("question", question);
         super.onSaveInstanceState(outState, outPersistentState);
     }
 
@@ -379,7 +379,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                             System.out.println(TAG + " Difference is: " + difference);
 
 
-
                             if (question.getStartTime() > response.getEndTime() || question.getEndTime() < response.getEndTime()) {
                                 Toast.makeText(getApplicationContext(), "You exceeded the time limit. Your response is invalid.", Toast.LENGTH_LONG).show();
                                 response.setScore(0);
@@ -406,16 +405,16 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                                             if (dataSnapshot.getValue(LeaderboardItem.class) != null)
                                                 leaderboardItem = dataSnapshot.getValue(LeaderboardItem.class);
                                             else
-                                            //if the user has answered below
+                                                //if the user has answered below
                                                 leaderboardItem = new LeaderboardItem();
                                             System.out.println(TAG + "LeaderboardItem is: " + leaderboardItem);
 
                                             leaderboardItem.setTotalScore(leaderboardItem.getTotalScore() + response.getScore());
                                             leaderboardItem.setTotalTime(leaderboardItem.getTotalTime() + response.getDuration());
-                                            if(response.getScore()>0)
-                                            leaderboardItem.setCorrect(leaderboardItem.getCorrect() + 1);
+                                            if (response.getScore() > 0)
+                                                leaderboardItem.setCorrect(leaderboardItem.getCorrect() + 1);
                                             else
-                                            leaderboardItem.setIncorrect(leaderboardItem.getIncorrect() + 1);
+                                                leaderboardItem.setIncorrect(leaderboardItem.getIncorrect() + 1);
                                             leaderBoardRef.setValue(leaderboardItem);
                                         }
 

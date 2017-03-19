@@ -1,7 +1,7 @@
 package com.app.innovationweek;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
-import com.app.innovationweek.model.User;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.EventDao;
 import com.app.innovationweek.service.UserFetchService;
@@ -245,6 +244,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             getSupportLoaderManager().getLoader(0).forceLoad();
             eventSnapShots.clear();
             return;
+        } else if (object instanceof Event) {
+            if (mSectionsPagerAdapter != null) mSectionsPagerAdapter.updateEvent((Event) object);
         }
     }
 
@@ -287,6 +288,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         public void setPages(List<Event> pages) {
             this.pages = pages;
             notifyDataSetChanged();
+        }
+
+        void updateEvent(@NonNull Event event) {
+            for (int i = 0; i < pages.size(); i++) {
+                if (pages.get(i).getId().equals(event.getId())) {
+                    pages.set(i, event);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
         }
     }
 

@@ -45,7 +45,6 @@ public class LeaderboardEntryHolder extends RecyclerView.ViewHolder {
         score.setOnClickListener(infoToaster);
         correct.setOnClickListener(infoToaster);
         incorrect.setOnClickListener(infoToaster);
-        rank.setOnClickListener(infoToaster);
         time.setOnClickListener(infoToaster);
         team.setOnClickListener(infoToaster);
     }

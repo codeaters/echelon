@@ -103,6 +103,18 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
             case R.id.team:
                 msg = "This is team name";
                 break;
+            case R.id.time:
+                msg = "This is total time taken to answer the questions";
+                break;
+            case R.id.score:
+                msg = "This is total score received";
+                break;
+            case R.id.correct_count:
+                msg = "Number of question answered correctly";
+                break;
+            case R.id.incorrect_count:
+                msg = "Number of question answered incorrectly";
+                break;
             default:
                 msg = "Click not implmented";
         }
