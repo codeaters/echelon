@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class UserFetchService extends IntentService implements DaoOperationComplete {
@@ -111,7 +112,7 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
         Log.d(TAG, "saving single user " + singleUser);
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         teamName = singleUser.child("team").getValue(String.class);
-        if(teamName==null || teamName.isEmpty()) {
+        if (teamName == null || teamName.isEmpty()) {
             Log.d(TAG, "noUser:" + singleUser.getKey());
             return;
         }
@@ -149,7 +150,7 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
                     saveSingleUser(userDs);
                 }
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
-                        .putBoolean("is_users_fetched", true).apply();
+                        .putLong("users_fetched_on", Calendar.getInstance().getTimeInMillis()).apply();
             }
         }).start();
 

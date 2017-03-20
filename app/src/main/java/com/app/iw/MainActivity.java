@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
-    private DatabaseReference eventsRef, userCanThinkQuickRef, usersUpdatedRef;
+    private DatabaseReference eventsRef, userCanThinkQuickRef, usersUpdatedOnRef;
     private ChildEventListener eventChildListener;
     private ValueEventListener eventValueEventListener;
     private List<DataSnapshot> eventSnapShots;
@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "" + dataSnapshot);
                 if (Utils.isUsersFetched(getApplication().getApplicationContext())) {
-                    if (dataSnapshot.getValue(Boolean.class)) {
+                    if (dataSnapshot.getValue(Long.class) > Utils.usersFetchedOn
+                            (getApplicationContext())) {
                         Log.d(TAG, "fetching users");
                         UserFetchService.startFetchingUser(getApplicationContext());
                     }
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         eventsRef = dbRef.child("events");
-        usersUpdatedRef = dbRef.child("usersUpdated");
+        usersUpdatedOnRef = dbRef.child("usersUpdatedOn");
 
         String uid = Utils.getUid(getApplicationContext());
         if (Utils.isLoggedIn(getApplicationContext()) && uid != null && !uid.isEmpty()) {
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             Log.d(TAG, "fetching users");
             UserFetchService.startFetchingUser(getApplicationContext());
         }
-        usersUpdatedRef.addValueEventListener(usersUpdatedRefValueEventListener);
+        usersUpdatedOnRef.addValueEventListener(usersUpdatedRefValueEventListener);
         eventsRef.addChildEventListener(eventChildListener);
         eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
         checkPlayServices();
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onStop() {
         eventsRef.removeEventListener(eventChildListener);
-        usersUpdatedRef.removeEventListener(usersUpdatedRefValueEventListener);
+        usersUpdatedOnRef.removeEventListener(usersUpdatedRefValueEventListener);
         if (Utils.isLoggedIn(getApplicationContext()) && userCanThinkQuickRef != null) {
             userCanThinkQuickRef.removeEventListener(userCanThinkValueEventListener);
         }
