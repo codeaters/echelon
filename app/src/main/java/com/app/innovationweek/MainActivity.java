@@ -1,7 +1,6 @@
 package com.app.innovationweek;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -20,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     TextView errorMsg;
     @BindView(R.id.retry)
     Button retry;
+    @BindView(R.id.hidden_button)
+    Button hiddenButton;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -162,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-        if(savedInstanceState!=null){
-            currentPage=savedInstanceState.getInt("current_page");
+        if (savedInstanceState != null) {
+            currentPage = savedInstanceState.getInt("current_page");
         }
         //subscribe to topic for FCM notifications
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
@@ -172,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         userRef = dbRef.child("users");
         getSupportLoaderManager().initLoader(0, null, this);
+        hiddenButton.setOnClickListener(this);
     }
 
     @Override
@@ -189,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     protected void onPause() {
-        currentPage=mViewPager.getCurrentItem();
+        currentPage = mViewPager.getCurrentItem();
         super.onPause();
     }
 
@@ -243,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("current_page",currentPage);
+        outState.putInt("current_page", currentPage);
         super.onSaveInstanceState(outState);
     }
 
@@ -307,6 +310,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             case R.id.retry:
                 Log.d(TAG, "trying again");
                 break;
+            case R.id.hidden_button:
+                Toast.makeText(getApplicationContext(), "Codeaters: Zeeshan & Danish", Toast.LENGTH_SHORT).show();
             default:
                 Log.d(TAG, "click not implemented");
         }
