@@ -108,8 +108,13 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
     }
 
     private void saveSingleUser(DataSnapshot singleUser) {
+        Log.d(TAG, "saving single user " + singleUser);
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
         teamName = singleUser.child("team").getValue(String.class);
+        if(teamName==null || teamName.isEmpty()) {
+            Log.d(TAG, "noUser:" + singleUser.getKey());
+            return;
+        }
         List<Team> teams = daoSession.getTeamDao().queryBuilder().where(TeamDao
                 .Properties.Name.eq(teamName)).build().list();
         if (teams.size() == 0) {
@@ -131,7 +136,7 @@ public class UserFetchService extends IntentService implements DaoOperationCompl
 
     void saveSingleLeaderboardEntry(DataSnapshot leaderboardEntry) {
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
-        new LeaderboardEntryUpdateTask(daoSession, leaderboardId,null, this, null).execute
+        new LeaderboardEntryUpdateTask(daoSession, leaderboardId, null, this, null).execute
                 (leaderboardEntry); //leaderboardType passed as null because the leaderboard can
         // be identifies by its id only.
     }

@@ -28,7 +28,9 @@ import com.app.iw.callbacks.OnNewUserFoundClbk;
 import com.app.iw.loader.LeaderboardEntryTaskLoader;
 import com.app.iw.model.LeaderboardEntry;
 import com.app.iw.model.dao.DaoSession;
+import com.app.iw.model.dao.LeaderboardEntryDao;
 import com.app.iw.service.UserFetchService;
+import com.app.iw.util.LeaderboardEntryInsertTask;
 import com.app.iw.util.LeaderboardEntryUpdateTask;
 import com.app.iw.util.Utils;
 import com.google.firebase.database.ChildEventListener;
@@ -91,7 +93,14 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                //TODO: delete leaderboard entry
+                String userId = dataSnapshot.getKey();
+                if (quizId != null) {
+                    daoSession.getLeaderboardEntryDao().queryBuilder().where(LeaderboardEntryDao
+                            .Properties.UserId.eq(userId), LeaderboardEntryDao
+                            .Properties.LeaderboardId.eq(quizId)).buildDelete().executeDeleteWithoutDetachingEntities();
+                    if (leaderboardAdapter != null)
+                        leaderboardAdapter.removeEntry(dataSnapshot.getKey());
+                }
             }
 
             @Override
@@ -109,7 +118,7 @@ public class LeaderboardActivity extends AppCompatActivity implements DaoOperati
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //all ileaderboard item loaded insert them in to database
-                new LeaderboardEntryUpdateTask(daoSession, quizId, leaderboardType, LeaderboardActivity
+                new LeaderboardEntryInsertTask(daoSession, quizId, leaderboardType, LeaderboardActivity
                         .this, LeaderboardActivity.this).execute(dataSnapshots.toArray(new
                         DataSnapshot[dataSnapshots
                         .size()]));

@@ -86,6 +86,23 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardEntryHol
         return leaderboardEntryList == null ? 0 : leaderboardEntryList.size();
     }
 
+    public void removeEntry(@NonNull String userId) {
+        int i = 0;
+        boolean found = false;
+        for (LeaderboardEntry le : leaderboardEntryList) {
+            if (le.getUserId().equals(userId)) {
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found) {
+            leaderboardEntryList.remove(i);
+            notifyItemRemoved(i);
+            notifyItemRangeChanged(i, leaderboardEntryList.size() - 1);
+        }
+    }
+
     public void setLeaderboardEntryList(List<LeaderboardEntry> leaderboardEntryList) {
         this.leaderboardEntryList = leaderboardEntryList;
         if (leaderboardType != null)
