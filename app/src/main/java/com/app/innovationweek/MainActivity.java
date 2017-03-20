@@ -2,7 +2,6 @@ package com.app.innovationweek;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -24,8 +23,11 @@ import android.widget.Toast;
 import com.app.innovationweek.callbacks.DaoOperationComplete;
 import com.app.innovationweek.loader.EventAsyncTaskLoader;
 import com.app.innovationweek.model.Event;
+import com.app.innovationweek.model.Team;
+import com.app.innovationweek.model.User;
 import com.app.innovationweek.model.dao.DaoSession;
 import com.app.innovationweek.model.dao.EventDao;
+import com.app.innovationweek.model.dao.TeamDao;
 import com.app.innovationweek.service.UserFetchService;
 import com.app.innovationweek.util.EventInsertTask;
 import com.app.innovationweek.util.EventUpdateTask;
@@ -42,13 +44,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager
-        .LoaderCallbacks<List<Event>>, View.OnClickListener, DaoOperationComplete, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        .LoaderCallbacks<List<Event>>, View.OnClickListener, DaoOperationComplete {
     public static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -78,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
-    private DatabaseReference eventsRef, userRef;
+    private DatabaseReference eventsRef, userCanThinkQuickRef;
     private ChildEventListener eventChildListener;
     private ValueEventListener eventValueEventListener;
-    private Map<String, String> currentQuestions;
     private List<DataSnapshot> eventSnapShots;
     private DaoSession daoSession;
+    private ValueEventListener userCanThinkValueEventListener;
     private boolean allEventsFetched;
     private GoogleApiClient mGoogleApiClient;
     private int currentPage;
@@ -146,6 +147,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             }
         };
 
+        userCanThinkValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                saveSingleUser(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "User fetch for canThinkQuick failed.");
+            }
+        };
+
     }
 
     @Override
@@ -171,8 +184,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
+        String uid = Utils.getUid(getApplicationContext());
+        if (Utils.isLoggedIn(getApplicationContext()) && uid != null && !uid.isEmpty()) {
+            userCanThinkQuickRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            userCanThinkQuickRef.addValueEventListener(userCanThinkValueEventListener);
+        }
+
         daoSession = ((EchelonApplication) getApplication()).getDaoSession();
-        userRef = dbRef.child("users");
+
         getSupportLoaderManager().initLoader(0, null, this);
         hiddenButton.setOnClickListener(this);
     }
@@ -205,6 +224,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onStop() {
         eventsRef.removeEventListener(eventChildListener);
+        if (Utils.isLoggedIn(getApplicationContext()) && userCanThinkQuickRef != null) {
+            userCanThinkQuickRef.removeEventListener(userCanThinkValueEventListener);
+        }
         allEventsFetched = false;
         super.onStop();
     }
@@ -248,6 +270,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt("current_page", currentPage);
         super.onSaveInstanceState(outState);
+    }
+
+    private void saveSingleUser(DataSnapshot singleUser) {
+        Team team;
+        User user;
+        String teamName = singleUser.child("team").getValue(String.class);
+        List<Team> teams = daoSession.getTeamDao().queryBuilder().where(TeamDao
+                .Properties.Name.eq(teamName)).build().list();
+        if (teams.size() == 0) {
+            team = new Team();
+            team.setName(teamName);
+            daoSession.getTeamDao().insert(team);
+        } else {
+            team = teams.get(0);
+        }
+        user = new User();
+        user.setId(singleUser.getKey());
+        user.setName(singleUser.child("name").getValue(String.class));
+        user.setUsername(singleUser.child("username").getValue(String.class));
+        user.setTeam(team);
+        user.setCanThinkQuick(singleUser.hasChild("canThinkQuick") ? singleUser.child("canThinkQuick").getValue(Boolean.class) : false);
+        daoSession.getUserDao().insertOrReplace(user);
+        Log.d(TAG, "UpdatedUser as part of canThinkQuick update:" + user.getName());
     }
 
     private boolean checkPlayServices() {
@@ -332,22 +377,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
 
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        if (!connectionResult.isSuccess()) {
-
-        }
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
