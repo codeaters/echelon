@@ -80,12 +80,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private MainActivity.SectionsPagerAdapter mSectionsPagerAdapter;
-    private DatabaseReference eventsRef, userCanThinkQuickRef;
+    private DatabaseReference eventsRef, userCanThinkQuickRef, usersUpdatedRef;
     private ChildEventListener eventChildListener;
     private ValueEventListener eventValueEventListener;
     private List<DataSnapshot> eventSnapShots;
     private DaoSession daoSession;
-    private ValueEventListener userCanThinkValueEventListener;
+    private ValueEventListener userCanThinkValueEventListener, usersUpdatedRefValueEventListener;
     private boolean allEventsFetched;
     private GoogleApiClient mGoogleApiClient;
     private int currentPage;
@@ -159,7 +159,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
                 Log.d(TAG, "User fetch for canThinkQuick failed.");
             }
         };
+        usersUpdatedRefValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "" + dataSnapshot);
+                if (Utils.isUsersFetched(getApplication().getApplicationContext())) {
+                    if (dataSnapshot.getValue(Boolean.class)) {
+                        Log.d(TAG, "fetching users");
+                        UserFetchService.startFetchingUser(getApplicationContext());
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -184,7 +200,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
         //subscribe to topic for FCM notifications
         Log.d(TAG, ": Subscribing to Topic defaultTopic");
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        eventsRef = FirebaseDatabase.getInstance().getReference("events");
+        eventsRef = dbRef.child("events");
+        usersUpdatedRef = dbRef.child("usersUpdated");
+
         String uid = Utils.getUid(getApplicationContext());
         if (Utils.isLoggedIn(getApplicationContext()) && uid != null && !uid.isEmpty()) {
             userCanThinkQuickRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
@@ -204,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             Log.d(TAG, "fetching users");
             UserFetchService.startFetchingUser(getApplicationContext());
         }
+        usersUpdatedRef.addValueEventListener(usersUpdatedRefValueEventListener);
         eventsRef.addChildEventListener(eventChildListener);
         eventsRef.addListenerForSingleValueEvent(eventValueEventListener);
         checkPlayServices();
@@ -225,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onStop() {
         eventsRef.removeEventListener(eventChildListener);
+        usersUpdatedRef.removeEventListener(usersUpdatedRefValueEventListener);
         if (Utils.isLoggedIn(getApplicationContext()) && userCanThinkQuickRef != null) {
             userCanThinkQuickRef.removeEventListener(userCanThinkValueEventListener);
         }
@@ -377,7 +397,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager
             if (mSectionsPagerAdapter != null) mSectionsPagerAdapter.updateEvent((Event) object);
         }
     }
-
 
 
     /**
