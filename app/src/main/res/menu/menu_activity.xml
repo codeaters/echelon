@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.app.innovationweek.LeaderboardActivity">
+    tools:context="com.app.innovationweek.com.app.iw.LeaderboardActivity">
     <item
         android:id="@+id/special"
         android:icon="@drawable/ic_stars_grey_50_24dp"

@@ -5,7 +5,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.app.innovationweek"
+        applicationId "com.app.iw"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 3
@@ -22,7 +22,7 @@ android {
 }
 greendao {
     schemaVersion 9
-    daoPackage 'com.app.innovationweek.model.dao'
+    daoPackage 'com.app.iw.model.dao'
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
