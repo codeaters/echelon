@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -187,6 +186,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 questionId = bundle.getString("question_id");
             }
         } else {
+            Uid = savedInstanceState.getString("uid");
             quizId = savedInstanceState.getString("quiz_id");
             questionId = savedInstanceState.getString("question_id");
             question = savedInstanceState.getParcelable("question");
@@ -202,6 +202,10 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(), "You have not nominated yourself for this quiz during the nomination period. You are not eligible to answer questions for this quiz.", Toast.LENGTH_LONG).show();
             QuestionActivity.this.finish();
         }
+
+        Log.d(TAG, "Bundle is: " + savedInstanceState);
+        Log.d(TAG, "Uid is: " + Uid);
+        Log.d(TAG, "quizId is: " + quizId);
 
         leaderBoardRef = dbRef.child("leaderboard").child(quizId).child(Uid);
         currentQuestionRef = dbRef.child("currentQuestion").child(quizId);
@@ -230,11 +234,17 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
         outState.putString("quiz_id", quizId);
         outState.putString("question_id", questionId);
         outState.putParcelable("question", question);
-        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString("uid", Uid);
+        super.onSaveInstanceState(outState);
     }
 
     private void showProgress(String message) {
